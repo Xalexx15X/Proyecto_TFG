@@ -18,11 +18,11 @@ public class DetalleReservaBotella {
     
     @ManyToOne
     @JoinColumn(name = "reserva_botella_idReserva_botella", nullable = false)
-    private ReservaBotella reservaBotella;
+    private ReservaBotella reserva_botella_idReserva_botella;
     
     @ManyToOne
     @JoinColumn(name = "botella_idBotella", nullable = false)
-    private Botella botella;
+    private Botella botella_idBotella;
     
     @Column(nullable = false)
     private Integer cantidad;
