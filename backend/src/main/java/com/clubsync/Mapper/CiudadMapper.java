@@ -13,7 +13,7 @@ public class CiudadMapper implements GenericMapper<Ciudad, DtoCiudad> {
     @Override
     public DtoCiudad toDto(Ciudad entity) {
         if (entity == null) return null;
-        
+
         DtoCiudad dto = new DtoCiudad();
         dto.setIdCiudad(entity.getIdCiudad());
         dto.setNombre(entity.getNombre());
