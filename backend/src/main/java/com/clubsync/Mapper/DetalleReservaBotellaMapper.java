@@ -22,16 +22,15 @@ public class DetalleReservaBotellaMapper implements GenericMapper<DetalleReserva
         if (entity == null) return null;
         
         DtoDetalleReservaBotella dto = new DtoDetalleReservaBotella();
-        dto.setId(entity.getId());
+        dto.setId(entity.getIdDetalleReservaBotella()); // Corregido para usar el nombre correcto
         dto.setCantidad(entity.getCantidad());
         dto.setPrecioUnidad(entity.getPrecioUnidad());
         
-        // Relaciones
-        dto.setIdReservaBotella(entity.getReserva_botella_idReserva_botella() != null ? 
-                entity.getReserva_botella_idReserva_botella().getIdReservaBotella() : null);
+        dto.setIdReservaBotella(entity.getReservaBotella() != null ? 
+                entity.getReservaBotella().getIdReservaBotella() : null);
                 
-        dto.setIdBotella(entity.getBotella_idBotella() != null ? 
-                entity.getBotella_idBotella().getIdBotella() : null);
+        dto.setIdBotella(entity.getBotella() != null ? 
+                entity.getBotella().getIdBotella() : null);
         
         return dto;
     }
@@ -41,18 +40,17 @@ public class DetalleReservaBotellaMapper implements GenericMapper<DetalleReserva
         if (dto == null) return null;
         
         DetalleReservaBotella entity = new DetalleReservaBotella();
-        entity.setId(dto.getId());
+        entity.setIdDetalleReservaBotella(dto.getId()); // Corregido para usar el nombre correcto
         entity.setCantidad(dto.getCantidad());
         entity.setPrecioUnidad(dto.getPrecioUnidad());
         
-        // Establecer relaciones
         if (dto.getIdReservaBotella() != null) {
-            entity.setReserva_botella_idReserva_botella(
+            entity.setReservaBotella(
                     reservaBotellaRepository.findById(dto.getIdReservaBotella()).orElse(null));
         }
         
         if (dto.getIdBotella() != null) {
-            entity.setBotella_idBotella(botellaRepository.findById(dto.getIdBotella()).orElse(null));
+            entity.setBotella(botellaRepository.findById(dto.getIdBotella()).orElse(null));
         }
         
         return entity;

@@ -46,11 +46,11 @@ public class DetalleReservaBotellaServiceImpl implements DetalleReservaBotellaSe
 
     @Override
     public List<DetalleReservaBotella> findByReservaBotellaId(Integer reservaBotellaId) {
-        return detalleReservaBotellaRepository.findByReservaBotellaIdReservaBotella(reservaBotellaId);
+        return detalleReservaBotellaRepository.findByReservaBotella_IdReservaBotella(reservaBotellaId);
     }
 
     @Override
     public List<DetalleReservaBotella> findByBotellaId(Integer botellaId) {
-        return detalleReservaBotellaRepository.findByBotellaIdBotella(botellaId);
+        return detalleReservaBotellaRepository.findByBotella_IdBotella(botellaId);
     }
 }

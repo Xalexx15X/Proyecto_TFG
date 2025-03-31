@@ -78,7 +78,7 @@ public class DetalleReservaBotellaController {
         }
 
         DetalleReservaBotella detalle = detalleReservaBotellaMapper.toEntity(dtoDetalle);
-        detalle.setId(id);
+        detalle.setIdDetalleReservaBotella(id);
         DetalleReservaBotella detalleActualizado = detalleReservaBotellaService.save(detalle);
         return ResponseEntity.ok(detalleReservaBotellaMapper.toDto(detalleActualizado));
     }

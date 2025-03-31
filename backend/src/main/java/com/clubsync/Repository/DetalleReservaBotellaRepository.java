@@ -5,10 +5,12 @@ import com.clubsync.Entity.DetalleReservaBotella;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+
+@Repository
 public interface DetalleReservaBotellaRepository extends JpaRepository<DetalleReservaBotella, Integer> {
-
-    List<DetalleReservaBotella> findByReservaBotellaIdReservaBotella(Integer reservaBotellaId);
-
-    List<DetalleReservaBotella> findByBotellaIdBotella(Integer botellaId);
+    List<DetalleReservaBotella> findByReservaBotella_IdReservaBotella(Integer idReservaBotella);
+    
+    List<DetalleReservaBotella> findByBotella_IdBotella(Integer idBotella);
 }

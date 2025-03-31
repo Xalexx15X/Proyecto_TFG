@@ -15,6 +15,7 @@ public class ReservaBotella {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_reserva_botella")
     private Integer idReservaBotella;
     
     @Column(nullable = false)
@@ -30,7 +31,7 @@ public class ReservaBotella {
     @JoinColumn(name = "entrada_idEntrada", nullable = false)
     private Entrada entrada;
     
-    @OneToMany(mappedBy = "reservaBotella")
+    @OneToMany(mappedBy = "reservaBotella", cascade = CascadeType.ALL)
     private List<DetalleReservaBotella> detallesReservasBotellas;
     
     @OneToMany(mappedBy = "reservaBotella")

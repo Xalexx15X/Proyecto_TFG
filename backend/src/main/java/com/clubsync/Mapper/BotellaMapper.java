@@ -36,7 +36,7 @@ public class BotellaMapper implements GenericMapper<Botella, DtoBotella> {
                 new ArrayList<>());
                 
         dto.setIdDetallesReservasBotellas(entity.getDetallesReservasBotellas() != null ? 
-                entity.getDetallesReservasBotellas().stream().map(drb -> drb.getId()).collect(Collectors.toList()) : 
+                entity.getDetallesReservasBotellas().stream().map(drb -> drb.getIdDetalleReservaBotella()).collect(Collectors.toList()) : 
                 new ArrayList<>());
         
         return dto;

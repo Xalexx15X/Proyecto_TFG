@@ -15,6 +15,7 @@ public class Botella {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_botella")
     private Integer idBotella;
     
     @Column(nullable = false, length = 80)
@@ -43,6 +44,6 @@ public class Botella {
     @OneToMany(mappedBy = "botella")
     private List<Recompensa> recompensas;
     
-    @OneToMany(mappedBy = "botella")
+    @OneToMany(mappedBy = "botella", cascade = CascadeType.ALL)
     private List<DetalleReservaBotella> detallesReservasBotellas;
 }

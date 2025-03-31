@@ -29,7 +29,7 @@ public class ReservaBotellaMapper implements GenericMapper<ReservaBotella, DtoRe
         dto.setIdEntrada(entity.getEntrada() != null ? entity.getEntrada().getIdEntrada() : null);
         
         dto.setIdDetallesReservasBotella(entity.getDetallesReservasBotellas() != null ? 
-                entity.getDetallesReservasBotellas().stream().map(drb -> drb.getId()).collect(Collectors.toList()) : 
+                entity.getDetallesReservasBotellas().stream().map(drb -> drb.getIdDetalleReservaBotella()).collect(Collectors.toList()) : 
                 new ArrayList<>());
                 
         dto.setIdRecompensas(entity.getRecompensas() != null ? 
