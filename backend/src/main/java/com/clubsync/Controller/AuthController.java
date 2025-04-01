@@ -53,7 +53,6 @@ public class AuthController {
                 token,
                 usuario.getEmail(),
                 usuario.getNombre(),
-                null, // No devolvemos la contraseña
                 usuario.getRole(),
                 usuario.getMonedero(),
                 usuario.getPuntosRecompensa()
@@ -63,7 +62,7 @@ public class AuthController {
 
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new AuthResponseDTO(null, null, null, null, null, null, null));
+                .body(new AuthResponseDTO(null, null, null, null, null, null));
         }
     }
 
@@ -81,7 +80,7 @@ public class AuthController {
             usuario.setNombre(registerDto.getNombre());
             usuario.setEmail(registerDto.getEmail());
             usuario.setPassword(passwordEncoder.encode(registerDto.getPassword()));
-            usuario.setRole("ROLE_USER"); // Rol por defecto
+            usuario.setRole("ROLE_CLIENTE");  // Rol por defecto
             usuario.setMonedero(0.0); // Monedero inicial
             usuario.setPuntosRecompensa(0); // Puntos iniciales
 

@@ -1,0 +1,59 @@
+<section class="register-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-6">
+        <div class="p-5">
+          <h2 class="display-4 text-white text-center mb-5">Registro</h2>
+          
+          <!-- Mensaje de éxito -->
+          <div *ngIf="success" class="alert alert-success">
+            Registro exitoso. Redirigiendo al login...
+          </div>
+
+          <!-- Mensaje de error -->
+          <div *ngIf="error" class="alert alert-danger">
+            {{error}}
+          </div>
+
+          <form (ngSubmit)="onRegister()" #registerForm="ngForm">
+            <div class="mb-3">
+              <label for="nombre" class="form-label">Nombre</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                id="nombre" 
+                [(ngModel)]="registerData.nombre" 
+                name="nombre" 
+                required>
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input 
+                type="email" 
+                class="form-control" 
+                id="email" 
+                [(ngModel)]="registerData.email" 
+                name="email" 
+                required>
+            </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Contraseña</label>
+              <input 
+                type="password" 
+                class="form-control" 
+                id="password" 
+                [(ngModel)]="registerData.password" 
+                name="password" 
+                required>
+            </div>
+            <div class="text-center">
+              <button type="submit" class="btn btn-primary" [disabled]="success">
+                {{success ? 'Registrado' : 'Registrarse'}}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

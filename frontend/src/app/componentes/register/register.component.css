@@ -1,0 +1,45 @@
+.register-section {
+  padding-top: 7rem;
+  padding-bottom: 7rem;
+  background: linear-gradient(135deg, #673ab7 0%, #9c27b0 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+.form-control {
+  border-radius: 2rem;
+  padding: 1.5rem 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.form-control:focus {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.form-label {
+  color: white;
+}
+
+.btn-primary {
+  padding: 1.25rem 2.25rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 10rem;
+  background: #ffd740;
+  color: #000;
+}
+
+.btn-primary:hover {
+  background: #ffab00;
+}
+
+.alert {
+  border-radius: 1rem;
+}

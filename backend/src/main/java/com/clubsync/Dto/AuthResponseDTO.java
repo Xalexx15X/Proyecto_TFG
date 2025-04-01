@@ -9,7 +9,6 @@ public class AuthResponseDTO {
     private String token;
     private String email;
     private String nombre;
-    private String password;
     private String role;
     private Double monedero;
     private Integer puntosRecompensa;

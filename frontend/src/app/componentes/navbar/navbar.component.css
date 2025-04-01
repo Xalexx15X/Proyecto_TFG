@@ -1,0 +1,33 @@
+.css */
+.navbar-custom {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  background-color: rgba(103, 58, 183, 0.9); /* Morado con transparencia */
+}
+
+.navbar-custom .navbar-brand {
+  text-transform: uppercase;
+  font-size: 1rem;
+  letter-spacing: 0.1rem;
+  font-weight: 700;
+}
+
+.navbar-custom .navbar-nav .nav-item .nav-link {
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1rem;
+}
+
+.navbar-custom .navbar-nav .nav-item .nav-link.active {
+  color: #ffd740; /* Ámbar */
+}
+
+.navbar-custom .navbar-nav .nav-item .nav-link:hover {
+  color: #ffab00; /* Ámbar más oscuro */
+}
+
+.navbar-custom.navbar-shrink {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}

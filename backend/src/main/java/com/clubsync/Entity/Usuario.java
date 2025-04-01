@@ -28,10 +28,10 @@ public class Usuario implements org.springframework.security.core.userdetails.Us
     @Column(nullable = false, length = 80)
     private String email;
     
-    @Column(nullable = false, length = 45)
+    @Column(nullable = false, length = 255)  // Aumentamos la longitud para passwords encriptados
     private String password;
     
-    @Column(nullable = false, length = 80)
+    @Column(nullable = false, length = 20)   // Reducimos la longitud del role
     private String role;
     
     @Column
