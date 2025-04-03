@@ -173,3 +173,22 @@
     color: #ffd740;
   }
 }
+
+.navbar-logo {
+  height: 120px;  /* Reducido de 40px a 30px */
+  width: auto;
+  object-fit: contain;  /* Mantiene la proporción */
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;  /* Espacio entre logo y texto */
+}
+
+/* Para pantallas más pequeñas */
+@media (max-width: 768px) {
+  .navbar-logo {
+    height: 25px;  /* Aún más pequeño en móviles */
+  }
+}

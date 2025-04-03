@@ -1,0 +1,72 @@
+.footer {
+  background: linear-gradient(135deg, #673ab7 0%, #9c27b0 100%);
+  color: white;
+  padding: 3rem 0 1rem;
+  margin-top: auto;
+  text-align: center;  /* Centrado general */
+}
+
+.footer-heading {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.social-links {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  justify-content: center;  /* Centrar iconos sociales */
+}
+
+.social-link {
+  color: white;
+  font-size: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.social-link:hover {
+  color: #ffd740;
+  transform: translateY(-3px);
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;  /* Centrar listas */
+  display: flex;
+  flex-direction: column;
+  align-items: center;  /* Centrar elementos de la lista */
+}
+
+.footer-links li {
+  margin-bottom: 0.75rem;
+}
+
+.footer-links a {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  text-align: center;  /* Centrar texto de enlaces */
+}
+
+.footer-links a:hover {
+  color: #ffd740;
+  text-decoration: none;
+}
+
+.footer-bottom {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Asegurar que las columnas están centradas en móviles */
+@media (max-width: 768px) {
+  .col-md-4 {
+    margin-bottom: 2rem;
+  }
+}
