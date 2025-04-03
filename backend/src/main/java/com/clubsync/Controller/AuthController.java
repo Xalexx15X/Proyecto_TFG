@@ -44,10 +44,8 @@ public class AuthController {
                     loginRequest.getPassword()
                 )
             );
-
             // Generar token
             String token = jwtTokenProvider.generateToken(authentication);
-
             // Crear respuesta
             AuthResponseDTO authResponse = new AuthResponseDTO(
                 token,
@@ -74,7 +72,6 @@ public class AuthController {
                 return ResponseEntity.badRequest()
                     .body("El email ya está registrado");
             }
-
             // Crear nuevo usuario
             Usuario usuario = new Usuario();
             usuario.setNombre(registerDto.getNombre());
@@ -86,7 +83,6 @@ public class AuthController {
 
             // Guardar usuario
             usuarioService.save(usuario);
-
             return ResponseEntity.ok("Usuario registrado exitosamente");
         } catch (Exception e) {
             return ResponseEntity.badRequest()

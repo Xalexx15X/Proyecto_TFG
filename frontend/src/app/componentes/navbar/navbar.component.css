@@ -1,13 +1,11 @@
-.css */
 .navbar-custom {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-  background-color: rgba(103, 58, 183, 0.9); /* Morado con transparencia */
+  background: linear-gradient(135deg, #673ab7 0%, #9c27b0 100%);
+  padding: 1rem 0;
 }
 
 .navbar-custom .navbar-brand {
   text-transform: uppercase;
-  font-size: 1rem;
+  font-size: 1.5rem;
   letter-spacing: 0.1rem;
   font-weight: 700;
 }
@@ -15,19 +13,163 @@
 .navbar-custom .navbar-nav .nav-item .nav-link {
   text-transform: uppercase;
   font-size: 0.8rem;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 0.1rem;
+  padding: 0.5rem 1rem !important;
+  transition: all 0.3s ease;
 }
 
 .navbar-custom .navbar-nav .nav-item .nav-link.active {
-  color: #ffd740; /* Ámbar */
+  color: #ffd740 !important;
 }
 
 .navbar-custom .navbar-nav .nav-item .nav-link:hover {
-  color: #ffab00; /* Ámbar más oscuro */
+  color: #ffd740 !important;
 }
 
 .navbar-custom.navbar-shrink {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
+}
+
+.dropdown-menu {
+  background: #fff;
+  border: none;
+  box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+}
+
+.dropdown-item {
+  padding: 0.75rem 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+  color: #9c27b0;
+}
+
+.navbar-toggler {
+  border: none;
+  padding: 0.5rem;
+}
+
+.navbar-toggler:focus {
+  box-shadow: none;
+}
+
+@media (max-width: 991.98px) {
+  .navbar-collapse {
+    background: rgba(103, 58, 183, 0.95);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-top: 0.5rem;
+  }
+}
+
+/* Estilos para el carrito */
+.bi-cart3 {
+  font-size: 1.2rem;
+}
+
+.badge {
+  font-size: 0.6rem;
+  padding: 0.35em 0.5em;
+}
+
+/* Animación hover para el carrito */
+.nav-link:has(.bi-cart3):hover {
+  transform: translateY(-2px);
+}
+
+/* Ajuste de posición del badge */
+.position-relative {
+  display: inline-block;
+}
+
+/* Estilos para el monedero */
+.wallet-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+}
+
+.bi-wallet2 {
+  font-size: 1.2rem;
+  color: #CA9CDA;  /* Cambiado a blanco con ligera transparencia */
+  transition: color 0.3s ease;
+}
+
+.wallet-amount {
+  font-weight: 500;
+  color: #CA9CDA;  /* Cambiado a blanco con ligera transparencia */
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+}
+
+/* Efecto hover para monedero */
+.wallet-link:hover .bi-wallet2,
+.wallet-link:hover .wallet-amount {
+  color: #ffd740;  /* Color amarillo al hacer hover */
+  transform: translateY(-2px);
+}
+
+.wallet-link:hover {
+  transform: translateY(-2px);
+  transition: transform 0.2s ease;
+}
+
+/* Ajuste de espaciado entre elementos */
+.navbar-nav .nav-item:not(:last-child) {
+  margin-right: 0.5rem;
+}
+
+@media (max-width: 991.98px) {
+  .wallet-link {
+    justify-content: flex-start;
+  }
+}
+
+/* Estilos para los dropdowns del admin discoteca */
+.navbar-nav .dropdown-menu {
+  border: none;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+  border-radius: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.navbar-nav .dropdown-item {
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9rem;
+  color: #424242;
+  transition: all 0.3s ease;
+}
+
+.navbar-nav .dropdown-item:hover {
+  background-color: rgba(156, 39, 176, 0.1);
+  color: #9c27b0;
+  transform: translateX(5px);
+}
+
+.navbar-nav .dropdown-divider {
+  margin: 0.5rem 0;
+  border-color: rgba(0,0,0,0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 991.98px) {
+  .navbar-nav .dropdown-menu {
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: none;
+  }
+
+  .navbar-nav .dropdown-item {
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .navbar-nav .dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ffd740;
+  }
 }

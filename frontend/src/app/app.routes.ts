@@ -6,6 +6,6 @@ export const routes: Routes = [
     { path: '', redirectTo: '/login', pathMatch: 'full' },
     { path: 'login', component: LoginComponent },
     { path: 'registro', component: RegisterComponent },
-    // Ruta wildcard para manejar rutas no encontradas
+    
     { path: '**', redirectTo: '/login' }
 ];

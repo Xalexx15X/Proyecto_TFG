@@ -5,12 +5,99 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarResponsive">
-      <ul class="navbar-nav ms-auto">
+      <ul class="navbar-nav me-auto">
+        <!-- Menú común para todos los usuarios -->
         <li class="nav-item">
-          <a class="nav-link" routerLink="/registro" routerLinkActive="active">Registro</a>
+          <a class="nav-link" routerLink="/eventos" routerLinkActive="active">Eventos</a>
         </li>
         <li class="nav-item">
+          <a class="nav-link" routerLink="/discotecas" routerLinkActive="active">Discotecas</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/djs" routerLinkActive="active">DJs</a>
+        </li>
+
+        <!-- Menú para usuarios registrados (ROLE_CLIENTE) -->
+        <li class="nav-item" *ngIf="isCliente()">
+          <a class="nav-link" routerLink="/wallet" routerLinkActive="active">Mi Wallet</a>
+        </li>
+        <li class="nav-item" *ngIf="isCliente()">
+          <a class="nav-link" routerLink="/recompensas" routerLinkActive="active">Recompensas</a>
+        </li>
+
+        <!-- Menú para administradores de discoteca -->
+        <li class="nav-item dropdown" *ngIf="isAdminDiscoteca()">
+          <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown">
+            Gestión Eventos
+          </a>
+        </li>
+
+        <li class="nav-item dropdown" *ngIf="isAdminDiscoteca()">
+          <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown">
+            Gestión Horarios
+          </a>
+        </li>
+
+        <li class="nav-item dropdown" *ngIf="isAdminDiscoteca()">
+          <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown">
+            Gestión Reservas
+          </a>
+        </li>
+
+        <li class="nav-item dropdown" *ngIf="isAdminDiscoteca()">
+          <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown">
+            Estadísticas
+          </a>
+        </li>
+
+        <!-- Menú para administradores del sistema -->
+        <li class="nav-item" *ngIf="isAdmin()">
+          <a class="nav-link" routerLink="/admin-usuarios" routerLinkActive="active">Gestión Usuarios</a>
+        </li>
+        <li class="nav-item" *ngIf="isAdmin()">
+          <a class="nav-link" routerLink="/admin-discotecas" routerLinkActive="active">Gestión Discotecas</a>
+        </li>
+        <li class="nav-item" *ngIf="isAdmin()">
+          <a class="nav-link" routerLink="/admin-sistema" routerLinkActive="active">Config. Sistema</a>
+        </li>
+      </ul>
+
+      <!-- Menú de usuario -->
+      <ul class="navbar-nav ms-auto">
+        <!-- Usuario no autenticado -->
+        <li class="nav-item" *ngIf="!isLoggedIn">
+          <a class="nav-link" routerLink="/registro" routerLinkActive="active">Registro</a>
+        </li>
+        <li class="nav-item" *ngIf="!isLoggedIn">
           <a class="nav-link" routerLink="/login" routerLinkActive="active">Login</a>
+        </li>
+
+        <!-- Monedero y Carrito para usuarios registrados -->
+        <li class="nav-item" *ngIf="isCliente()">
+          <a class="nav-link wallet-link" routerLink="/wallet">
+            <i class="bi bi-wallet2"></i>
+            <span class="wallet-amount">{{userData?.monedero | currency:'EUR':'symbol':'1.2-2'}}</span>
+          </a>
+        </li>
+        <li class="nav-item" *ngIf="isCliente()">
+          <a class="nav-link position-relative" routerLink="/carrito">
+            <i class="bi bi-cart3"></i>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark">
+              {{cantidadCarrito}}
+            </span>
+          </a>
+        </li>
+
+        <!-- Usuario autenticado -->
+        <li class="nav-item dropdown" *ngIf="isLoggedIn">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+            {{ userData?.nombre }}
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" routerLink="/perfil">Mi Perfil</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#" (click)="onLogout()">Cerrar Sesión</a></li>
+          </ul>
         </li>
       </ul>
     </div>
