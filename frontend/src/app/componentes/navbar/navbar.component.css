@@ -33,19 +33,37 @@
 }
 
 .dropdown-menu {
-  background: #fff;
+  background-color: white;
   border: none;
   box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+  margin-top: 0.5rem;
+  border-radius: 0.5rem;
 }
 
 .dropdown-item {
+  cursor: pointer !important;
   padding: 0.75rem 1.5rem;
   transition: all 0.3s ease;
 }
 
 .dropdown-item:hover {
-  background-color: #f8f9fa;
+  background-color: rgba(156, 39, 176, 0.1);
   color: #9c27b0;
+}
+
+.dropdown-toggle::after {
+  display: inline-block;
+  margin-left: 0.5em;
+  vertical-align: middle;
+  content: "";
+  border-top: 0.3em solid;
+  border-right: 0.3em solid transparent;
+  border-bottom: 0;
+  border-left: 0.3em solid transparent;
+}
+
+.nav-link {
+  cursor: pointer;
 }
 
 .navbar-toggler {
@@ -189,6 +207,84 @@
 /* Para pantallas más pequeñas */
 @media (max-width: 768px) {
   .navbar-logo {
-    height: 25px;  /* Aún más pequeño en móviles */
+    height: 90px;  /* Aún más pequeño en móviles */
   }
+}
+
+@media (max-width: 568px) {
+  .navbar-logo {
+    height: 90px;  /* Aún más pequeño en móviles */
+  }
+}
+
+.nav-link.dropdown-toggle {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+}
+
+.nav-link.dropdown-toggle:hover {
+  color: #ffd740;
+}
+
+.dropdown-item:active {
+  background-color: rgba(156, 39, 176, 0.2);
+}
+
+button.dropdown-item {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  font-size: inherit;
+}
+
+.custom-dropdown {
+  position: relative;
+}
+
+.custom-dropdown summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.custom-dropdown summary::-webkit-details-marker {
+  display: none;
+}
+
+.custom-dropdown .dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  min-width: 160px;
+  box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+  border-radius: 0.5rem;
+  margin-top: 0.5rem;
+  display: block;
+}
+
+.custom-dropdown:not([open]) .dropdown-menu {
+  display: none;
+}
+
+.dropdown-item {
+  display: block;
+  padding: 0.75rem 1.5rem;
+  color: #212529;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dropdown-item:hover {
+  background-color: rgba(156, 39, 176, 0.1);
+  color: #9c27b0;
+}
+
+.dropdown-divider {
+  margin: 0.5rem 0;
+  border-top: 1px solid rgba(0,0,0,0.1);
 }

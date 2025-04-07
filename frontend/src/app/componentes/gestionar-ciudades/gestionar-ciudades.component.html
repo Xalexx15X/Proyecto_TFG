@@ -1,0 +1,141 @@
+<div class="container-fluid py-5 mt-5"> <!-- Cambiado a container-fluid y ajustado el padding -->
+  <!-- Header con título y botón crear -->
+  <div class="d-flex justify-content-between align-items-center mb-4 pt-4"> <!-- Añadido padding-top -->
+    <h2 class="text-white">Gestión de Ciudades</h2>
+    <button class="btn btn-create" (click)="mostrarCrear()" *ngIf="!mostrarFormulario">
+      <i class="bi bi-plus-lg"></i> Nueva Ciudad
+    </button>
+  </div>
+
+  <!-- Formulario de búsqueda -->
+  <div class="search-container mb-4" *ngIf="!mostrarFormulario">
+    <div class="input-group">
+      <span class="input-group-text">
+        <i class="bi bi-search"></i>
+      </span>
+      <input 
+        type="text" 
+        class="form-control search-input" 
+        placeholder="Buscar ciudad por nombre..." 
+        [(ngModel)]="terminoBusqueda"
+        (input)="buscar($event)"
+        (keypress)="validarInput($event)">
+    </div>
+  </div>
+
+  <!-- Formulario de creación/edición -->
+  <div class="card mb-4" *ngIf="mostrarFormulario || modoEdicion">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="card-title m-0">{{modoEdicion ? 'Editar Ciudad' : 'Nueva Ciudad'}}</h3>
+        <button class="btn btn-close-form" (click)="cancelar()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      
+      <form (ngSubmit)="modoEdicion ? actualizarCiudad() : crearCiudad()" #ciudadForm="ngForm">
+        <div class="mb-3">
+          <label for="nombre" class="form-label">Nombre de la ciudad</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="nombre"
+            name="nombre"
+            [ngModel]="modoEdicion ? ciudadSeleccionada!.nombre : nuevaCiudad.nombre"
+            (ngModelChange)="modoEdicion ? (ciudadSeleccionada!.nombre = $event) : (nuevaCiudad.nombre = $event)"
+            required
+            minlength="3"
+            (keypress)="validarInput($event)">
+        </div>
+
+        <div class="mb-3">
+          <label for="provincia" class="form-label">Provincia</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="provincia"
+            name="provincia"
+            [ngModel]="modoEdicion ? ciudadSeleccionada!.provincia : nuevaCiudad.provincia"
+            (ngModelChange)="modoEdicion ? (ciudadSeleccionada!.provincia = $event) : (nuevaCiudad.provincia = $event)"
+            required
+            minlength="3"
+            (keypress)="validarInput($event)">
+        </div>
+
+        <div class="mb-3">
+          <label for="pais" class="form-label">País</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="pais"
+            name="pais"
+            [ngModel]="modoEdicion ? ciudadSeleccionada!.pais : nuevaCiudad.pais"
+            (ngModelChange)="modoEdicion ? (ciudadSeleccionada!.pais = $event) : (nuevaCiudad.pais = $event)"
+            required
+            minlength="3"
+            (keypress)="validarInput($event)">
+        </div>
+
+        <div class="mb-3">
+          <label for="codigoPostal" class="form-label">Código Postal</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="codigoPostal"
+            name="codigoPostal"
+            [ngModel]="modoEdicion ? ciudadSeleccionada!.codigoPostal : nuevaCiudad.codigoPostal"
+            (ngModelChange)="modoEdicion ? (ciudadSeleccionada!.codigoPostal = $event) : (nuevaCiudad.codigoPostal = $event)"
+            required
+            pattern="[0-9]{5}"
+            maxlength="5">
+        </div>
+
+        <div class="d-flex gap-2">
+          <button 
+            type="submit" 
+            class="btn btn-create"
+            [disabled]="!ciudadForm.form.valid">
+            {{modoEdicion ? 'Actualizar' : 'Crear'}}
+          </button>
+          <button 
+            type="button" 
+            class="btn btn-secondary" 
+            (click)="cancelar()">
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Tabla de ciudades -->
+  <div class="table-responsive" *ngIf="!mostrarFormulario">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Provincia</th>
+          <th>País</th>
+          <th>Código Postal</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let ciudad of ciudades">
+          <td>{{ciudad.nombre}}</td>
+          <td>{{ciudad.provincia}}</td>
+          <td>{{ciudad.pais}}</td>
+          <td>{{ciudad.codigoPostal}}</td>
+          <td>
+            <button class="btn btn-icon me-2" (click)="editarCiudad(ciudad)">
+              <i class="bi bi-pencil"></i>
+            </button>
+            <button class="btn btn-icon btn-danger" (click)="eliminarCiudad(ciudad.idCiudad!)">
+              <i class="bi bi-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

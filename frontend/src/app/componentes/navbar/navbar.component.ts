@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../service/auth.service';
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-navbar',
@@ -10,31 +11,43 @@ import { AuthService } from '../../service/auth.service';
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
-export class NavbarComponent implements OnInit {
-  isLoggedIn = false;
+export class NavbarComponent implements OnInit, AfterViewInit {
   userData: any = null;
-  cantidadCarrito = 0; // Nueva propiedad
+  cantidadCarrito: number = 0;
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
-  ngOnInit(): void {
-    // Suscripción al estado de autenticación
-    this.authService.isLoggedIn$.subscribe(
-      status => {
-        this.isLoggedIn = status;
-        if (status) {
-          this.userData = this.authService.getUserData();
-          // Aquí podrías suscribirte a un servicio de carrito
-          // para actualizar cantidadCarrito
-        } else {
-          this.userData = null;
-          this.cantidadCarrito = 0;
-        }
-      }
-    );
+  ngOnInit() {
+    this.loadUserData();
+    // Suscribirse a cambios en el estado de autenticación
+    this.authService.login$.subscribe(() => {
+      this.loadUserData();
+    });
   }
 
-  // Métodos helper para verificar roles
+  ngAfterViewInit() {
+    // Inicializar todos los dropdowns después de que la vista se haya cargado
+    const dropdownElements = document.querySelectorAll('.dropdown-toggle');
+    dropdownElements.forEach(element => {
+      new bootstrap.Dropdown(element);
+    });
+  }
+
+  loadUserData(): void {
+    if (this.isLoggedIn()) {
+      this.userData = this.authService.getUserData();
+    } else {
+      this.userData = null;
+    }
+  }
+
+  isLoggedIn(): boolean {
+    return this.authService.isLoggedIn();
+  }
+
   isAdmin(): boolean {
     return this.authService.isAdmin();
   }
@@ -47,13 +60,9 @@ export class NavbarComponent implements OnInit {
     return this.authService.isAdminDiscoteca();
   }
 
-  actualizarDatosUsuario(): void {
-    if (this.isLoggedIn) {
-      this.userData = this.authService.getUserData();
-    }
-  }
-
   onLogout(): void {
     this.authService.logout();
+    this.userData = null;
+    this.router.navigate(['/login']);
   }
 }

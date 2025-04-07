@@ -60,17 +60,20 @@
           <a class="nav-link" routerLink="/admin-discotecas" routerLinkActive="active">Gestión Discotecas</a>
         </li>
         <li class="nav-item" *ngIf="isAdmin()">
-          <a class="nav-link" routerLink="/admin-sistema" routerLinkActive="active">Config. Sistema</a>
+          <a class="nav-link" routerLink="/admin/ciudades" routerLinkActive="active">Gestión Ciudades</a>
+        </li>
+        <li class="nav-item" *ngIf="isAdmin()">
+          <a class="nav-link" routerLink="/admin-sistema" routerLinkActive="active">Gestion Recompensas</a>
         </li>
       </ul>
 
       <!-- Menú de usuario -->
       <ul class="navbar-nav ms-auto">
         <!-- Usuario no autenticado -->
-        <li class="nav-item" *ngIf="!isLoggedIn">
+        <li class="nav-item" *ngIf="!isLoggedIn()">
           <a class="nav-link" routerLink="/registro" routerLinkActive="active">Registro</a>
         </li>
-        <li class="nav-item" *ngIf="!isLoggedIn">
+        <li class="nav-item" *ngIf="!isLoggedIn()">
           <a class="nav-link" routerLink="/login" routerLinkActive="active">Login</a>
         </li>
 
@@ -91,15 +94,15 @@
         </li>
 
         <!-- Usuario autenticado -->
-        <li class="nav-item dropdown" *ngIf="isLoggedIn">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-            {{ userData?.nombre }}
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" routerLink="/perfil">Mi Perfil</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#" (click)="onLogout()">Cerrar Sesión</a></li>
-          </ul>
+        <li class="nav-item dropdown" *ngIf="isLoggedIn()">
+          <details class="custom-dropdown">
+            <summary class="nav-link">{{ userData?.nombre || 'Usuario' }}</summary>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" routerLink="/perfil">Mi Perfil</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" (click)="onLogout()">Cerrar Sesión</a></li>
+            </ul>
+          </details>
         </li>
       </ul>
     </div>

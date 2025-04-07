@@ -4,20 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../service/auth.service';
 
-export interface LoginRequest {
-    email: string;
-    password: string;
-}
-
-export interface LoginResponse {
-    token: string;
-    email: string;
-    nombre: string;
-    role: string;
-    monedero: number;
-    puntosRecompensa: number;
-}
-
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -30,7 +16,7 @@ export class LoginComponent {
     email: '',
     password: ''
   };
-  error = '';
+  error: string = '';
 
   constructor(
     private authService: AuthService,
@@ -38,15 +24,12 @@ export class LoginComponent {
   ) {}
 
   onLogin(): void {
-    console.log('Datos de login:', this.loginData);
-    
     this.authService.login(this.loginData).subscribe({
       next: (response) => {
-        console.log('Login exitoso:', response);
+        this.authService.saveUserData(response);
         this.router.navigate(['/']);
       },
       error: (err) => {
-        console.error('Error en login:', err);
         this.error = 'Error en el inicio de sesión';
       }
     });
