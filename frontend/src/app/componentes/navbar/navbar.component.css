@@ -139,7 +139,7 @@
 
 /* Ajuste de espaciado entre elementos */
 .navbar-nav .nav-item:not(:last-child) {
-  margin-right: 0.5rem;
+  margin-right: 0.75rem; /* Reducido de 1rem a 0.75rem */
 }
 
 @media (max-width: 991.98px) {
@@ -192,16 +192,20 @@
   }
 }
 
+/* Ajuste del logo */
 .navbar-logo {
-  height: 120px;  /* Reducido de 40px a 30px */
+  height: 90px;
   width: auto;
-  object-fit: contain;  /* Mantiene la proporción */
+  object-fit: contain;
+  margin-right: 1rem; /* Reducido de 2rem a 1rem */
 }
 
 .navbar-brand {
   display: flex;
   align-items: center;
-  gap: 0.5rem;  /* Espacio entre logo y texto */
+  gap: 0.5rem;
+  margin-right: 1rem; /* Reducido de 2rem a 1rem */
+  padding-right: 0.5rem; /* Reducido de 1rem a 0.5rem */
 }
 
 /* Para pantallas más pequeñas */
@@ -287,4 +291,27 @@ button.dropdown-item {
 .dropdown-divider {
   margin: 0.5rem 0;
   border-top: 1px solid rgba(0,0,0,0.1);
+}
+
+.navbar-nav .nav-link {
+  padding-left: 0.75rem !important;  /* Ajustado de 0.5rem a 0.75rem */
+  padding-right: 0.75rem !important; /* Ajustado de 0.5rem a 0.75rem */
+}
+
+/* Ajuste del menú de usuario */
+.navbar-nav.ms-auto {
+  margin-left: 1rem !important; /* Reducido de 2rem a 1rem */
+}
+
+/* Ajuste específico para el nombre de usuario */
+.navbar-nav .nav-item:last-child {
+  margin-left: 0.75rem; /* Reducido de 1.5rem */
+}
+
+/* Ajuste del contenedor principal */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding-left: 1rem !important;  /* Reducido de 2rem a 1rem */
+  padding-right: 1rem !important; /* Reducido de 2rem a 1rem */
 }

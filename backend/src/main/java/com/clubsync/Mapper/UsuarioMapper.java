@@ -1,8 +1,7 @@
 package com.clubsync.Mapper;
 
 import org.springframework.stereotype.Component;
-import java.util.stream.Collectors;
-import java.util.ArrayList;
+
 
 import com.clubsync.Dto.DtoUsuario;
 import com.clubsync.Entity.Usuario;
@@ -22,24 +21,7 @@ public class UsuarioMapper implements GenericMapper<Usuario, DtoUsuario> {
         dto.setRole(entity.getRole());
         dto.setMonedero(entity.getMonedero());
         dto.setPuntosRecompensa(entity.getPuntosRecompensa());
-        
-        // Relaciones
-        dto.setIdEntradas(entity.getEntradas() != null ? 
-                entity.getEntradas().stream().map(e -> e.getIdEntrada()).collect(Collectors.toList()) : 
-                new ArrayList<>());
-                
-        dto.setIdEventos(entity.getEventos() != null ? 
-                entity.getEventos().stream().map(e -> e.getIdEvento()).collect(Collectors.toList()) : 
-                new ArrayList<>());
-                
-        dto.setIdPedidos(entity.getPedidos() != null ? 
-                entity.getPedidos().stream().map(p -> p.getIdPedido()).collect(Collectors.toList()) : 
-                new ArrayList<>());
-                
-        dto.setIdDiscotecas(entity.getDiscotecas() != null ? 
-                entity.getDiscotecas().stream().map(d -> d.getIdDiscoteca()).collect(Collectors.toList()) : 
-                new ArrayList<>());
-        
+         
         return dto;
     }
 
