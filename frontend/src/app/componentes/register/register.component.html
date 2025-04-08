@@ -10,42 +10,62 @@
             Registro exitoso. Redirigiendo al login...
           </div>
 
-          <!-- Mensaje de error -->
-          <div *ngIf="error" class="alert alert-danger">
-            {{error}}
+          <!-- Mensaje de error general -->
+          <div *ngIf="formErrors.general" class="alert alert-warning mb-3">
+            {{formErrors.general}}
           </div>
 
           <form (ngSubmit)="onRegister()" #registerForm="ngForm">
+            <!-- Nombre -->
             <div class="mb-3">
-              <label for="nombre" class="form-label">Nombre</label>
+              <label for="nombre" class="form-label text-white">Nombre</label>
               <input 
                 type="text" 
-                class="form-control" 
+                class="form-control"
+                [class.is-invalid]="formErrors.nombre"
                 id="nombre" 
                 [(ngModel)]="registerData.nombre" 
                 name="nombre" 
-                required>
+                required
+                minlength="3">
+              <div class="invalid-feedback" *ngIf="formErrors.nombre">
+                {{formErrors.nombre}}
+              </div>
             </div>
+
+            <!-- Email -->
             <div class="mb-3">
-              <label for="email" class="form-label">Email</label>
+              <label for="email" class="form-label text-white">Email</label>
               <input 
                 type="email" 
-                class="form-control" 
+                class="form-control"
+                [class.is-invalid]="formErrors.email"
                 id="email" 
                 [(ngModel)]="registerData.email" 
                 name="email" 
                 required>
+              <div class="invalid-feedback" *ngIf="formErrors.email">
+                {{formErrors.email}}
+              </div>
             </div>
+            
+            <!-- Password -->
             <div class="mb-3">
-              <label for="password" class="form-label">Contraseña</label>
+              <label for="password" class="form-label text-white">Contraseña</label>
               <input 
                 type="password" 
-                class="form-control" 
+                class="form-control"
+                [class.is-invalid]="formErrors.password"
                 id="password" 
                 [(ngModel)]="registerData.password" 
                 name="password" 
-                required>
+                required
+                minlength="6">
+              <div class="invalid-feedback" *ngIf="formErrors.password">
+                {{formErrors.password}}
+              </div>
             </div>
+
             <div class="text-center">
               <button type="submit" class="btn btn-primary" [disabled]="success">
                 {{success ? 'Registrado' : 'Registrarse'}}

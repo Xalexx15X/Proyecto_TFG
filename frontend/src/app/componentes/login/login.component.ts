@@ -17,6 +17,11 @@ export class LoginComponent {
     password: ''
   };
   error: string = '';
+  formErrors = {
+    email: '',
+    password: '',
+    general: ''
+  };
 
   constructor(
     private authService: AuthService,
@@ -24,14 +29,41 @@ export class LoginComponent {
   ) {}
 
   onLogin(): void {
+    if (!this.validarFormulario()) return;
+
     this.authService.login(this.loginData).subscribe({
       next: (response) => {
         this.authService.saveUserData(response);
         this.router.navigate(['/']);
       },
       error: (err) => {
-        this.error = 'Error en el inicio de sesión';
+        this.formErrors.general = 'Usuario o contraseña incorrectos';
       }
     });
+  }
+
+  validarFormulario(): boolean {
+    this.limpiarErrores();
+    let isValid = true;
+
+    if (!this.loginData.email || !this.validarEmail(this.loginData.email)) {
+      this.formErrors.email = 'Introduce un email válido';
+      isValid = false;
+    }
+
+    if (!this.loginData.password) {
+      this.formErrors.password = 'La contraseña es requerida';
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
+  limpiarErrores(): void {
+    this.formErrors = {
+      email: '',
+      password: '',
+      general: ''
+    };
   }
 }

@@ -22,6 +22,12 @@ export class RegisterComponent {
   };
   error = '';
   success = false;
+  formErrors = {
+    nombre: '',
+    email: '',
+    password: '',
+    general: ''
+  };
 
   constructor(
     private authService: AuthService,
@@ -29,28 +35,58 @@ export class RegisterComponent {
   ) {}
 
   onRegister(): void {
-    console.log('Intentando registrar:', this.registerData);
-    
+    if (!this.validarFormulario()) return;
+
     this.authService.register(this.registerData).subscribe({
       next: (response) => {
-        console.log('Registro exitoso:', response);
         this.success = true;
         setTimeout(() => {
           this.router.navigate(['/login']);
         }, 2000);
       },
       error: (err) => {
-        console.error('Error completo:', err);
-        if (err.status === 200) {
-          // Si el servidor devuelve 200 pero hay un error en el parsing
-          this.success = true;
-          setTimeout(() => {
-            this.router.navigate(['/login']);
-          }, 2000);
+        if (err.error === 'El email ya está registrado') {
+          this.formErrors.email = 'Este email ya está registrado';
         } else {
-          this.error = err.error?.message || 'Error en el registro';
+          this.formErrors.general = 'Error en el registro';
         }
       }
     });
+  }
+
+  validarFormulario(): boolean {
+    this.limpiarErrores();
+    let isValid = true;
+
+    if (!this.registerData.nombre || this.registerData.nombre.length < 3) {
+      this.formErrors.nombre = 'El nombre debe tener al menos 3 caracteres';
+      isValid = false;
+    }
+
+    if (!this.registerData.email || !this.validarEmail(this.registerData.email)) {
+      this.formErrors.email = 'Introduce un email válido';
+      isValid = false;
+    }
+
+    if (!this.registerData.password || this.registerData.password.length < 6) {
+      this.formErrors.password = 'La contraseña debe tener al menos 6 caracteres';
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
+  limpiarErrores(): void {
+    this.formErrors = {
+      nombre: '',
+      email: '',
+      password: '',
+      general: ''
+    };
+  }
+
+  validarEmail(email: string): boolean {
+    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@(([^<>()[\]\.,;:\s@"]+\.[^<>()[\]\.,;:\s@"]{2,}))$/i;
+    return re.test(String(email).toLowerCase());
   }
 }

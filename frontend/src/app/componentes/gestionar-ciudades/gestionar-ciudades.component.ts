@@ -24,6 +24,14 @@ export class GestionarCiudadesComponent implements OnInit {
     codigoPostal: ''
   };
 
+  formErrors = {
+    nombre: '',
+    provincia: '',
+    pais: '',
+    codigoPostal: '',
+    general: ''
+  };
+
   constructor(private ciudadService: CiudadService) {}
 
   ngOnInit(): void {
@@ -57,13 +65,17 @@ export class GestionarCiudadesComponent implements OnInit {
 
   // Crear ciudad
   crearCiudad(): void {
+    if (!this.validarFormulario()) return;
+    
     this.ciudadService.createCiudad(this.nuevaCiudad).subscribe({
       next: (ciudad) => {
         this.ciudades.unshift(ciudad); // esto es para crearla al principio del array 
         this.mostrarFormulario = false;
         this.limpiarFormulario();
       },
-      error: (error) => alert('Error al crear la ciudad')
+      error: (error) => {
+        this.formErrors.general = 'Error al crear la ciudad';
+      }
     });
   }
 
@@ -76,6 +88,8 @@ export class GestionarCiudadesComponent implements OnInit {
 
   // Actualizar ciudad
   actualizarCiudad(): void {
+    if (!this.validarFormulario()) return;
+    
     if (this.ciudadSeleccionada?.idCiudad) {
       this.ciudadService.updateCiudad(this.ciudadSeleccionada.idCiudad, this.ciudadSeleccionada).subscribe({ // aqui primero le pasamos el id de la ciudad a actualizar y luego la ciudad entera con todos sus datos
         next: (ciudadActualizada) => {
@@ -88,21 +102,26 @@ export class GestionarCiudadesComponent implements OnInit {
           this.modoEdicion = false;
           this.ciudadSeleccionada = null;
         },
-        error: (error) => alert('Error al actualizar la ciudad')
+        error: (error) => {
+          this.formErrors.general = 'Error al actualizar la ciudad';
+        }
       });
     }
   }
 
   // Eliminar ciudad
   eliminarCiudad(id: number): void {
-    if (confirm('¿Seguro que desea eliminar esta ciudad?')) {
-      this.ciudadService.deleteCiudad(id).subscribe({
-        next: () => {
-          this.ciudades = this.ciudades.filter(c => c.idCiudad !== id);
-        },
-        error: (error) => alert('Error al eliminar la ciudad')
-      });
-    }
+    const confirmacion = confirm('¿Seguro que desea eliminar esta ciudad?');
+    if (!confirmacion) return;
+    
+    this.ciudadService.deleteCiudad(id).subscribe({
+      next: () => {
+        this.ciudades = this.ciudades.filter(c => c.idCiudad !== id);
+      },
+      error: (error) => {
+        this.formErrors.general = 'Error al eliminar la ciudad';
+      }
+    });
   }
 
   // Mostrar formulario de creación
@@ -133,5 +152,42 @@ export class GestionarCiudadesComponent implements OnInit {
   // Validar entrada de solo letras y espacios
   validarInput(event: KeyboardEvent): boolean {
     return /[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]/.test(event.key);
+  }
+
+  validarFormulario(): boolean {
+    this.limpiarErrores();
+    let isValid = true;
+    
+    if (!this.nuevaCiudad.nombre || this.nuevaCiudad.nombre.length < 3) {
+      this.formErrors.nombre = 'El nombre debe tener al menos 3 caracteres';
+      isValid = false;
+    }
+
+    if (!this.nuevaCiudad.provincia || this.nuevaCiudad.provincia.length < 3) {
+      this.formErrors.provincia = 'La provincia debe tener al menos 3 caracteres';
+      isValid = false;
+    }
+
+    if (!this.nuevaCiudad.pais || this.nuevaCiudad.pais.length < 3) {
+      this.formErrors.pais = 'El país debe tener al menos 3 caracteres';
+      isValid = false;
+    }
+
+    if (!this.nuevaCiudad.codigoPostal || !/^\d{5}$/.test(this.nuevaCiudad.codigoPostal)) {
+      this.formErrors.codigoPostal = 'El código postal debe tener 5 dígitos';
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
+  limpiarErrores(): void {
+    this.formErrors = {
+      nombre: '',
+      provincia: '',
+      pais: '',
+      codigoPostal: '',
+      general: ''
+    };
   }
 }

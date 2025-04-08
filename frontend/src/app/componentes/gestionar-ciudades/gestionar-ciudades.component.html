@@ -33,19 +33,26 @@
         </button>
       </div>
       
+      <!-- Mensaje de error general -->
+      <div *ngIf="formErrors.general" class="alert alert-warning mb-3">
+        {{formErrors.general}}
+      </div>
+
       <form (ngSubmit)="modoEdicion ? actualizarCiudad() : crearCiudad()" #ciudadForm="ngForm">
         <div class="mb-3">
-          <label for="nombre" class="form-label">Nombre de la ciudad</label>
+          <label for="nombre" class="form-label">Nombre</label>
           <input 
             type="text" 
-            class="form-control" 
+            class="form-control"
+            [class.is-invalid]="formErrors.nombre"
             id="nombre"
             name="nombre"
             [ngModel]="modoEdicion ? ciudadSeleccionada!.nombre : nuevaCiudad.nombre"
             (ngModelChange)="modoEdicion ? (ciudadSeleccionada!.nombre = $event) : (nuevaCiudad.nombre = $event)"
-            required
-            minlength="3"
-            (keypress)="validarInput($event)">
+            required>
+          <div class="invalid-feedback" *ngIf="formErrors.nombre">
+            {{formErrors.nombre}}
+          </div>
         </div>
 
         <div class="mb-3">
