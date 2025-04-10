@@ -51,8 +51,8 @@ public class DiscotecaController {
         // 1. Convertimos DTO a entidad
         Discoteca discoteca = discotecaMapper.toEntity(dtoDiscoteca);
         
-        // 2. Guardamos la entidad
-        Discoteca discotecaGuardada = discotecaService.save(discoteca);
+        // 2. Guardamos la entidad junto con sus administradores
+        Discoteca discotecaGuardada = discotecaService.save(discoteca, dtoDiscoteca.getIdUsuarios());
         
         // 3. Convertimos la entidad guardada a DTO
         return ResponseEntity.ok(discotecaMapper.toDto(discotecaGuardada));
@@ -71,8 +71,8 @@ public class DiscotecaController {
         Discoteca discoteca = discotecaMapper.toEntity(dtoDiscoteca);
         discoteca.setIdDiscoteca(id);
         
-        // 2. Actualizamos la entidad
-        Discoteca discotecaActualizada = discotecaService.save(discoteca);
+        // 2. Actualizamos la discoteca junto con sus administradores
+        Discoteca discotecaActualizada = discotecaService.save(discoteca, dtoDiscoteca.getIdUsuarios());
         
         // 3. Convertimos la entidad actualizada a DTO
         return ResponseEntity.ok(discotecaMapper.toDto(discotecaActualizada));

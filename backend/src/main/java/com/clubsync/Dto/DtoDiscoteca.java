@@ -12,10 +12,6 @@ public class DtoDiscoteca {
     private String contacto;
     private String capacidadTotal;
     private String imagen;
-
     private Integer idCiudad;
-    private List<Integer> idEventos;
-    private List<Integer> idTramosHorarios;
-    private List<Integer> idBotellas;
-    private List<Integer> idUsuarios;
+    private List<Integer> idUsuarios; // Solo necesitamos esto para la relación many-to-many con usuarios
 }

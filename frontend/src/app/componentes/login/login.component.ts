@@ -59,6 +59,11 @@ export class LoginComponent {
     return isValid;
   }
 
+  validarEmail(email: string): boolean {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(String(email).toLowerCase());
+  }
+
   limpiarErrores(): void {
     this.formErrors = {
       email: '',

@@ -211,18 +211,24 @@
 }
 
 .invalid-feedback {
-  color: #ffc107;
+  color: #ffc107 !important;
   font-size: 0.875rem;
   margin-top: 0.25rem;
 }
 
 .form-control.is-invalid, 
 .form-select.is-invalid {
-  border-color: #ffc107;
+  border-color: #ffc107 !important;
 }
 
 .form-control.is-invalid:focus, 
 .form-select.is-invalid:focus {
-  border-color: #ffc107;
-  box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
+  border-color: #ffc107 !important;
+  box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25) !important;
+}
+
+.alert-warning {
+  color: #ffc107;
+  background-color: rgba(255, 193, 7, 0.1);
+  border-color: rgba(255, 193, 7, 0.2);
 }

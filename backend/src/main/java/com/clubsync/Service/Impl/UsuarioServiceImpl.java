@@ -48,4 +48,9 @@ public class UsuarioServiceImpl implements UsuarioService {
     public Optional<Usuario> findByEmail(String email) {
         return usuarioRepository.findByEmail(email);
     }
+
+    @Override
+    public List<Usuario> findByRole(String role) {
+        return usuarioRepository.findByRole(role);
+    }
 }

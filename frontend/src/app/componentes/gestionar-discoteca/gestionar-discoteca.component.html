@@ -1,0 +1,224 @@
+<div class="container-fluid py-5 mt-5">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4 pt-4">
+    <h2 class="text-white">Gestión de Discotecas</h2>
+    <button class="btn btn-create" (click)="mostrarCrear()" *ngIf="!mostrarFormulario">
+      <i class="bi bi-plus-lg"></i> Nueva Discoteca
+    </button>
+  </div>
+
+  <!-- Búsqueda -->
+  <div class="search-container mb-4" *ngIf="!mostrarFormulario">
+    <div class="input-group">
+      <span class="input-group-text">
+        <i class="bi bi-search"></i>
+      </span>
+      <input type="text" class="form-control search-input" 
+             placeholder="Buscar discoteca..." 
+             [(ngModel)]="terminoBusqueda"
+             (input)="buscar($event)">
+    </div>
+  </div>
+
+  <!-- Formulario -->
+  <div class="row justify-content-center" *ngIf="mostrarFormulario">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-body p-4">
+          <h3 class="card-title mb-4">{{modoEdicion ? 'Editar' : 'Nueva'}} Discoteca</h3>
+          
+          <form (ngSubmit)="modoEdicion ? actualizarDiscoteca() : crearDiscoteca()" #discotecaForm="ngForm">
+            <div class="row">
+              <!-- Columna izquierda: Información y detalles -->
+              <div class="col-md-7 pe-md-4 border-end-md">
+                <!-- Información básica -->
+                <div class="section-title">Información Básica</div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Nombre</label>
+                      <input type="text" 
+                             class="form-control" 
+                             [class.is-invalid]="formErrors.nombre"
+                             [(ngModel)]="nuevaDiscoteca.nombre" 
+                             name="nombre">
+                      <div class="invalid-feedback" *ngIf="formErrors.nombre">
+                        {{formErrors.nombre}}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label>Ciudad</label>
+                      <select class="form-select text-white" 
+                              [(ngModel)]="nuevaDiscoteca.idCiudad" 
+                              name="ciudad"
+                              [class.is-invalid]="formErrors.idCiudad">
+                        <option [ngValue]="null">Seleccionar ciudad</option>
+                        <option *ngFor="let ciudad of ciudades" [value]="ciudad.idCiudad">
+                          {{ciudad.nombre}}
+                        </option>
+                      </select>
+                      <div class="invalid-feedback" *ngIf="formErrors.idCiudad">
+                        {{formErrors.idCiudad}}
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Campo de dirección -->
+                  <div class="col-md-12">
+                    <div class="mb-3">
+                      <label class="form-label">Dirección</label>
+                      <input type="text" 
+                             class="form-control" 
+                             [class.is-invalid]="formErrors.direccion"
+                             [(ngModel)]="nuevaDiscoteca.direccion" 
+                             name="direccion">
+                      <div class="invalid-feedback" *ngIf="formErrors.direccion">
+                        {{formErrors.direccion}}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Detalles -->
+                <div class="section-title mt-4">Detalles</div>
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="mb-3">
+                      <label>Descripción</label>
+                      <textarea class="form-control" rows="3" [(ngModel)]="nuevaDiscoteca.descripcion" name="descripcion"></textarea>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label>Contacto</label>
+                      <input type="text" class="form-control" [(ngModel)]="nuevaDiscoteca.contacto" name="contacto">
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label>Capacidad Total</label>
+                      <input type="text" class="form-control" [(ngModel)]="nuevaDiscoteca.capacidadTotal" name="capacidadTotal">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Administradores -->
+                <div class="section-title mt-4">Administradores</div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="admin-search mb-3">
+                      <input type="text" class="form-control" 
+                             placeholder="Buscar administrador..."
+                             [(ngModel)]="adminBusqueda"
+                             name="adminBusqueda">
+                    </div>
+                    <div class="admin-list">
+                      <div *ngFor="let admin of filtrarAdmins()" 
+                           class="admin-item" 
+                           (click)="agregarAdmin(admin.idUsuario)">
+                        {{admin.nombre}}
+                        <i class="bi bi-plus-circle"></i>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="selected-admins">
+                      <div *ngFor="let idAdmin of nuevaDiscoteca.idUsuarios" 
+                           class="admin-badge">
+                        {{getAdminNombre(idAdmin)}}
+                        <button class="btn-remove" (click)="removerAdmin(idAdmin)">
+                          <i class="bi bi-x"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Columna derecha: Imágenes y Preview -->
+              <div class="col-md-5 ps-md-4">
+                <div class="section-title">Imágenes</div>
+                <div class="mb-4">
+                  <div class="mb-3">
+                    <label class="form-label">Subir imágenes</label>
+                    <input type="file" class="form-control" (change)="onFileSelected($event)" multiple accept="image/*">
+                    <small class="text-white-50">Máximo 10 imágenes</small>
+                  </div>
+                  
+                  <div class="image-preview-section">
+                    <h5 class="text-white mb-3">Previsualización</h5>
+                    <div class="image-preview-container">
+                      <div *ngIf="imagenesPreview && imagenesPreview.length === 0" class="no-images-message">
+                        <p class="text-white-50">No hay imágenes seleccionadas</p>
+                      </div>
+                      <div *ngFor="let img of imagenesPreview; let i = index" class="image-preview-item">
+                        <img [src]="img" class="preview-image">
+                        <button type="button" class="btn-remove-image" (click)="borrarImagen(i)">
+                          <i class="bi bi-x"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Botones -->
+            <div class="mt-4 text-center">
+              <button type="submit" class="btn btn-create me-2">
+                {{modoEdicion ? 'Actualizar' : 'Crear'}}
+              </button>
+              <button type="button" class="btn btn-secondary" (click)="cerrarFormulario()">
+                Cancelar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de discotecas -->
+  <div class="table-responsive" *ngIf="!mostrarFormulario">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Imagen</th>
+          <th>Nombre</th>
+          <th>Ciudad</th>
+          <th>Dirección</th>
+          <th>Capacidad</th>
+          <th>Administradores</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let discoteca of discotecas">
+          <td>
+            <img [src]="discoteca.imagen || '/assets/images/placeholder.jpg'" class="table-thumbnail" alt="Discoteca">
+          </td>
+          <td>{{discoteca.nombre}}</td>
+          <td>{{getCiudadNombre(discoteca.idCiudad)}}</td>
+          <td>{{discoteca.direccion}}</td>
+          <td>{{discoteca.capacidadTotal}}</td>
+          <td>
+            <div class="admin-badges">
+              <span class="badge" *ngFor="let adminId of discoteca.idUsuarios">
+                {{getAdminNombre(adminId)}}
+              </span>
+            </div>
+          </td>
+          <td>
+            <button class="btn btn-icon me-2" (click)="editarDiscoteca(discoteca)">
+              <i class="bi bi-pencil"></i>
+            </button>
+            <button class="btn btn-icon btn-danger" (click)="eliminarDiscoteca(discoteca.idDiscoteca!)">
+              <i class="bi bi-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

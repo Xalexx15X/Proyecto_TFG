@@ -50,6 +50,15 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioMapper.toDto(usuario));
     }
 
+    @GetMapping("/role/{role}")
+    public ResponseEntity<List<DtoUsuario>> getUsuariosByRole(@PathVariable String role) {
+        List<Usuario> usuarios = usuarioService.findByRole(role);
+        List<DtoUsuario> dtosUsuarios = usuarios.stream()
+            .map(usuarioMapper::toDto)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(dtosUsuarios);
+    }
+
     @PostMapping
     public ResponseEntity<?> createUsuario(@RequestBody DtoUsuario dtoUsuario) {
         try {

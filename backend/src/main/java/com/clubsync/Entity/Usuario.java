@@ -49,12 +49,7 @@ public class Usuario implements org.springframework.security.core.userdetails.Us
     @OneToMany(mappedBy = "usuario")
     private List<Pedido> pedidos;
     
-    @ManyToMany
-    @JoinTable(
-        name = "usuario_tiene_discoteca",
-        joinColumns = @JoinColumn(name = "usuario_idUsuario"),
-        inverseJoinColumns = @JoinColumn(name = "discoteca_idDiscoteca")
-    )
+    @ManyToMany(mappedBy = "usuarios")
     private List<Discoteca> discotecas;
 
     @Override

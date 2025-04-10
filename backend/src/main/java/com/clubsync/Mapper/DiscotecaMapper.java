@@ -28,23 +28,7 @@ public class DiscotecaMapper implements GenericMapper<Discoteca, DtoDiscoteca> {
         dto.setCapacidadTotal(entity.getCapacidadTotal());
         dto.setImagen(entity.getImagen());
         
-        // Relación con Ciudad
         dto.setIdCiudad(entity.getCiudad() != null ? entity.getCiudad().getIdCiudad() : null);
-        
-        // Relaciones OneToMany
-        dto.setIdEventos(entity.getEventos() != null ? 
-                entity.getEventos().stream().map(e -> e.getIdEvento()).collect(Collectors.toList()) : 
-                new ArrayList<>());
-                
-        dto.setIdTramosHorarios(entity.getTramosHorarios() != null ? 
-                entity.getTramosHorarios().stream().map(th -> th.getIdTramoHorario()).collect(Collectors.toList()) : 
-                new ArrayList<>());
-                
-        dto.setIdBotellas(entity.getBotellas() != null ? 
-                entity.getBotellas().stream().map(b -> b.getIdBotella()).collect(Collectors.toList()) : 
-                new ArrayList<>());
-                
-        // Relación ManyToMany
         dto.setIdUsuarios(entity.getUsuarios() != null ? 
                 entity.getUsuarios().stream().map(u -> u.getIdUsuario()).collect(Collectors.toList()) : 
                 new ArrayList<>());
@@ -65,7 +49,7 @@ public class DiscotecaMapper implements GenericMapper<Discoteca, DtoDiscoteca> {
         entity.setCapacidadTotal(dto.getCapacidadTotal());
         entity.setImagen(dto.getImagen());
         
-        // Establecer relación con Ciudad
+        // Solo establecemos la relación con Ciudad
         if (dto.getIdCiudad() != null) {
             entity.setCiudad(ciudadRepository.findById(dto.getIdCiudad()).orElse(null));
         }

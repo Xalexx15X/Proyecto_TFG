@@ -32,12 +32,12 @@ public class Discoteca {
     @Column(name = "capacidad_total", nullable = false, length = 45)
     private String capacidadTotal;
     
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     @Lob
     private String imagen;
     
     @ManyToOne
-    @JoinColumn(name = "ciudad_idRecompensa", nullable = false)
+    @JoinColumn(name = "ciudad_id_ciudad", nullable = false)
     private Ciudad ciudad;
     
     @OneToMany(mappedBy = "discoteca")
@@ -49,6 +49,11 @@ public class Discoteca {
     @OneToMany(mappedBy = "discoteca")
     private List<Botella> botellas;
     
-    @ManyToMany(mappedBy = "discotecas")
+    @ManyToMany
+    @JoinTable(
+        name = "usuario_tiene_discoteca",
+        joinColumns = @JoinColumn(name = "discoteca_id_discoteca", referencedColumnName = "idDiscoteca"),
+        inverseJoinColumns = @JoinColumn(name = "usuario_id_usuario", referencedColumnName = "idUsuario")
+    )
     private List<Usuario> usuarios;
 }

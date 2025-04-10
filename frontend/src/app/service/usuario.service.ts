@@ -44,4 +44,10 @@ export class UsuarioService {
   deleteUsuario(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+  getUsuariosByRole(role: string): Observable<Usuario[]> {
+    return this.http.get<Usuario[]>(`${this.apiUrl}/role/${role}`).pipe(
+      map(usuarios => usuarios.sort((a, b) => (b.idUsuario || 0) - (a.idUsuario || 0)))
+    );
+  }
 }
