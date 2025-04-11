@@ -1,0 +1,224 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #673ab7 0%, #9c27b0 100%);
+  padding-top: 76px;
+}
+
+.container-fluid {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Header y búsqueda */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.page-title {
+  color: white;
+  font-size: 2rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.search-container {
+  max-width: 500px;
+  margin: 2rem auto;
+}
+
+.search-input {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 25px;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.input-group-text {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  border-radius: 25px 0 0 25px;
+}
+
+/* Formulario */
+.card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.card-body {
+  padding: 2rem;
+}
+
+.card-title {
+  color: #ffd740;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  color: white;
+  margin-bottom: 0.5rem;
+}
+
+.form-control,
+.form-select {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: #ffd740;
+  box-shadow: 0 0 0 0.2rem rgba(255, 215, 64, 0.25);
+  color: white;
+}
+
+/* Tabla */
+.table-responsive {
+  margin-top: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.table {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-radius: 10px;
+  overflow: hidden;
+  font-size: 1.1rem;
+}
+
+.table thead th {
+  background: rgba(0, 0, 0, 0.2);
+  color: white;
+  border: none;
+  font-size: 1.2rem;
+  font-weight: 500;
+  padding: 1rem;
+}
+
+.table td {
+  border-color: rgba(255, 255, 255, 0.1);
+  padding: 1rem;
+  vertical-align: middle;
+}
+
+.table th {
+  background: linear-gradient(135deg, #673ab7 0%, #9c27b0 100%);
+  color: white;
+}
+
+.table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Desplegables */
+.form-select {
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffd740;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+}
+
+/* Solo modificar el color de las opciones del select */
+.form-select option {
+  background-color: #2b2b2b;
+  color: white;
+}
+
+.form-select:focus {
+  background-color: rgba(0, 0, 0, 0.3);
+  border-color: #ffd740;
+  box-shadow: 0 0 0 0.2rem rgba(255, 215, 64, 0.25);
+  color: #ffd740;
+}
+
+/* Botones */
+.btn-create {
+  background-color: #ffd740;
+  color: #000;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-create:hover {
+  background-color: #ffec8b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.btn-icon {
+  background-color: #673ab7;
+  border: none;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.btn-icon i {
+  font-size: 1.2rem;
+}
+
+.btn-icon:hover {
+  background-color: #563098;
+  color: #ffd740;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.btn-icon.btn-danger {
+  background-color: #dc3545;
+}
+
+.btn-icon.btn-danger:hover {
+  background-color: #bb2d3b;
+  color: #ffd740;
+}
+
+/* Mensajes de error */
+.invalid-feedback {
+  color: #ff8a8a;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .card-body {
+    padding: 1rem;
+  }
+
+  .table-responsive {
+    border-radius: 10px;
+    overflow: hidden;
+  }
+}

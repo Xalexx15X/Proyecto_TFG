@@ -4,8 +4,10 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 @Table(name = "recompensa")
@@ -13,47 +15,52 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Recompensa {
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idRecompensa;
-    
-    @Column(nullable = false, length = 80)
+
+    @Column(nullable = false)
     private String nombre;
-    
+
+    @Column(nullable = false)
+    private String descripcion;
+
     @Column(name = "puntos_necesarios", nullable = false)
     private Integer puntosNecesarios;
-    
-    @Column(nullable = false, length = 800)
-    private String descripcion;
-    
+
     @Column(name = "fecha_inicio", nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     private LocalDateTime fechaInicio;
-    
+
     @Column(name = "fecha_fin", nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     private LocalDateTime fechaFin;
-    
+
+    @Column(nullable = false)
+    private String tipo;
+
+    // Relaciones opcionales
     @ManyToOne
-    @JoinColumn(name = "botella_idBotella", nullable = false)
+    @JoinColumn(name = "botella_id_botella", nullable = true)
     private Botella botella;
-    
+
     @ManyToOne
-    @JoinColumn(name = "reserva_botella_idReserva_botella", nullable = false)
-    private ReservaBotella reservaBotella;
-    
-    @ManyToOne
-    @JoinColumn(name = "entrada_idEntrada", nullable = false)
+    @JoinColumn(name = "entrada_id_entrada", nullable = true)
     private Entrada entrada;
-    
+
     @ManyToOne
-    @JoinColumn(name = "Evento_idEvento", nullable = false)
+    @JoinColumn(name = "evento_id_evento", nullable = true)
     private Evento evento;
-    
+
+    @ManyToOne
+    @JoinColumn(name = "reserva_botella_id_reserva_botella", nullable = true)
+    private ReservaBotella reservaBotella;
+
     @ManyToMany
     @JoinTable(
         name = "recompensa_tiene_usuario",
         joinColumns = @JoinColumn(name = "recompensa_idRecompensa"),
         inverseJoinColumns = @JoinColumn(name = "usuario_idUsuario")
     )
-    private List<Usuario> usuarios;
+    private List<Usuario> usuarios = new ArrayList<>();
 }

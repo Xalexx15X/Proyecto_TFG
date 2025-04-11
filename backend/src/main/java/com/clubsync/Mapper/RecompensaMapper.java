@@ -1,87 +1,57 @@
 package com.clubsync.Mapper;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import java.util.stream.Collectors;
-import java.util.ArrayList;
-
 import com.clubsync.Dto.DtoRecompensa;
 import com.clubsync.Entity.Recompensa;
-import com.clubsync.Repository.BotellaRepository;
-import com.clubsync.Repository.ReservaBotellaRepository;
-import com.clubsync.Repository.EntradaRepository;
-import com.clubsync.Repository.EventoRepository;
+import org.springframework.stereotype.Component;
 
 @Component
-public class RecompensaMapper implements GenericMapper<Recompensa, DtoRecompensa> {
-
-    @Autowired
-    private BotellaRepository botellaRepository;
+public class RecompensaMapper {
     
-    @Autowired
-    private ReservaBotellaRepository reservaBotellaRepository;
-    
-    @Autowired
-    private EntradaRepository entradaRepository;
-    
-    @Autowired
-    private EventoRepository eventoRepository;
-
-    @Override
-    public DtoRecompensa toDto(Recompensa entity) {
-        if (entity == null) return null;
-        
+    public DtoRecompensa toDto(Recompensa recompensa) {
         DtoRecompensa dto = new DtoRecompensa();
-        dto.setIdRecompensa(entity.getIdRecompensa());
-        dto.setNombre(entity.getNombre());
-        dto.setPuntosNecesarios(entity.getPuntosNecesarios());
-        dto.setDescripcion(entity.getDescripcion());
-        dto.setFechaInicio(entity.getFechaInicio());
-        dto.setFechaFin(entity.getFechaFin());
+        dto.setIdRecompensa(recompensa.getIdRecompensa());
+        dto.setNombre(recompensa.getNombre());
+        dto.setDescripcion(recompensa.getDescripcion());
+        dto.setPuntosNecesarios(recompensa.getPuntosNecesarios());
+        dto.setFechaInicio(recompensa.getFechaInicio());
+        dto.setFechaFin(recompensa.getFechaFin());
         
-        // Relaciones
-        dto.setIdBotella(entity.getBotella() != null ? entity.getBotella().getIdBotella() : null);
-        dto.setIdReservaBotella(entity.getReservaBotella() != null ? entity.getReservaBotella().getIdReservaBotella() : null);
-        dto.setIdEntrada(entity.getEntrada() != null ? entity.getEntrada().getIdEntrada() : null);
-        dto.setIdEvento(entity.getEvento() != null ? entity.getEvento().getIdEvento() : null);
+        // Manejar IDs de relaciones
+        if (recompensa.getBotella() != null) {
+            dto.setBotellaIdBotella(recompensa.getBotella().getIdBotella());
+        }
+        if (recompensa.getEntrada() != null) {
+            dto.setEntradaIdEntrada(recompensa.getEntrada().getIdEntrada());
+        }
+        if (recompensa.getEvento() != null) {
+            dto.setEventoIdEvento(recompensa.getEvento().getIdEvento());
+        }
+        if (recompensa.getReservaBotella() != null) {
+            dto.setReservaBotellaIdReservaBotella(recompensa.getReservaBotella().getIdReservaBotella());
+        }
         
-        // Relaciones muchos a muchos
-        dto.setIdUsuarios(entity.getUsuarios() != null ? 
-                entity.getUsuarios().stream().map(u -> u.getIdUsuario()).collect(Collectors.toList()) : 
-                new ArrayList<>());
+        dto.setTipo(recompensa.getTipo());
         
         return dto;
     }
 
-    @Override
     public Recompensa toEntity(DtoRecompensa dto) {
-        if (dto == null) return null;
+        Recompensa recompensa = new Recompensa();
+        recompensa.setIdRecompensa(dto.getIdRecompensa());
+        recompensa.setNombre(dto.getNombre());
+        recompensa.setDescripcion(dto.getDescripcion());
+        recompensa.setPuntosNecesarios(dto.getPuntosNecesarios());
+        recompensa.setFechaInicio(dto.getFechaInicio());
+        recompensa.setFechaFin(dto.getFechaFin());
         
-        Recompensa entity = new Recompensa();
-        entity.setIdRecompensa(dto.getIdRecompensa());
-        entity.setNombre(dto.getNombre());
-        entity.setPuntosNecesarios(dto.getPuntosNecesarios());
-        entity.setDescripcion(dto.getDescripcion());
-        entity.setFechaInicio(dto.getFechaInicio());
-        entity.setFechaFin(dto.getFechaFin());
+        // Al crear una recompensa genérica, todos los IDs de relación son null
+        recompensa.setBotella(null);
+        recompensa.setEntrada(null);
+        recompensa.setEvento(null);
+        recompensa.setReservaBotella(null);
         
-        // Establecer relaciones
-        if (dto.getIdBotella() != null) {
-            entity.setBotella(botellaRepository.findById(dto.getIdBotella()).orElse(null));
-        }
+        recompensa.setTipo(dto.getTipo());
         
-        if (dto.getIdReservaBotella() != null) {
-            entity.setReservaBotella(reservaBotellaRepository.findById(dto.getIdReservaBotella()).orElse(null));
-        }
-        
-        if (dto.getIdEntrada() != null) {
-            entity.setEntrada(entradaRepository.findById(dto.getIdEntrada()).orElse(null));
-        }
-        
-        if (dto.getIdEvento() != null) {
-            entity.setEvento(eventoRepository.findById(dto.getIdEvento()).orElse(null));
-        }
-        
-        return entity;
+        return recompensa;
     }
 }

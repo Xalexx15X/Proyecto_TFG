@@ -1,19 +1,20 @@
 <div class="container-fluid py-5 mt-5">
-  <!-- Header -->
-  <div class="d-flex justify-content-between align-items-center mb-4 pt-4">
-    <h2 class="text-white">Gestión de Discotecas</h2>
+  <!-- Header con título y botón -->
+  <div class="page-header">
+    <h2 class="page-title">Gestión de Discotecas</h2>
     <button class="btn btn-create" (click)="mostrarCrear()" *ngIf="!mostrarFormulario">
       <i class="bi bi-plus-lg"></i> Nueva Discoteca
     </button>
   </div>
 
   <!-- Búsqueda -->
-  <div class="search-container mb-4" *ngIf="!mostrarFormulario">
+  <div class="search-container" *ngIf="!mostrarFormulario">
     <div class="input-group">
       <span class="input-group-text">
         <i class="bi bi-search"></i>
       </span>
-      <input type="text" class="form-control search-input" 
+      <input type="text" 
+             class="form-control search-input" 
              placeholder="Buscar discoteca..." 
              [(ngModel)]="terminoBusqueda"
              (input)="buscar($event)">

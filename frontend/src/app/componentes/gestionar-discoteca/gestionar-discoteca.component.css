@@ -11,7 +11,7 @@
   padding: 2rem;
 }
 
-/* Header y búsqueda */
+/* Estilos para la búsqueda */
 .search-container {
   max-width: 500px;
   margin: 2rem auto;
@@ -22,7 +22,7 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: white;
   padding: 0.75rem 1rem;
-  border-radius: 0 25px 25px 0;
+  border-radius: 25px;
 }
 
 .search-input::placeholder {
@@ -34,6 +34,21 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: white;
   border-radius: 25px 0 0 25px;
+}
+
+/* Header y búsqueda */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.page-title {
+  color: white;
+  font-size: 2rem;
+  font-weight: 500;
+  margin: 0;
 }
 
 /* Formulario */
@@ -85,28 +100,62 @@
   color: white;
 }
 
+/* Ajuste para los selects */
+.form-select {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  width: 100%;
+}
+
+.form-select option {
+  background-color: #2b2b2b;
+  color: white;
+}
+
+.form-select:focus {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: #ffd740;
+  box-shadow: 0 0 0 0.2rem rgba(255, 215, 64, 0.25);
+  color: white;
+}
+
 /* Tabla */
+.table-responsive {
+  margin-top: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 1.5rem;
+}
+
 .table {
   background: rgba(255, 255, 255, 0.1);
   color: white;
-  border-radius: 15px;
+  border-radius: 10px;
   overflow: hidden;
-  margin-top: 2rem;
+  font-size: 1.1rem;
+}
+
+.table thead th {
+  background: rgba(0, 0, 0, 0.2);
+  color: white;
+  border: none;
+  font-size: 1.2rem;
+  font-weight: 500;
+  padding: 1rem;
 }
 
 .table th {
-  background: rgba(0, 0, 0, 0.2);
+  background: linear-gradient(135deg, #673ab7 0%, #9c27b0 100%);
   color: white;
-  font-size: 1.1rem;
-  font-weight: 500;
-  padding: 1rem;
-  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .table td {
+  border-color: rgba(255, 255, 255, 0.1);
   padding: 1rem;
   vertical-align: middle;
-  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .table tbody tr:hover {
@@ -138,32 +187,37 @@
 }
 
 .btn-icon {
-  width: 35px;
-  height: 35px;
-  padding: 0;
+  background-color: #673ab7;
+  border: none;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  border: none;
-  margin: 0 0.3rem;
   transition: all 0.3s ease;
 }
 
+.btn-icon i {
+  font-size: 1.2rem;
+}
+
 .btn-icon:hover {
-  background: rgba(255, 215, 64, 0.2);
+  background-color: #563098;
   color: #ffd740;
   transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
 .btn-icon.btn-danger {
-  background: rgba(220, 53, 69, 0.8);
+  background-color: #dc3545;
 }
 
 .btn-icon.btn-danger:hover {
-  background: #dc3545;
+  background-color: #bb2d3b;
+  color: #ffd740;
 }
 
 /* Previsualización de imágenes */
@@ -306,13 +360,6 @@
 }
 
 /* Estilos para la tabla */
-.table-thumbnail {
-  width: 60px;
-  height: 40px;
-  object-fit: cover;
-  border-radius: 4px;
-}
-
 .table td .badge {
   background-color: rgba(103, 58, 183, 0.5);
   color: white;
@@ -338,6 +385,27 @@
   padding: 0.5rem 0.75rem;
   border-radius: 15px;
   font-weight: normal;
+}
+
+/* Desplegables */
+.form-select {
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffd740;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+}
+
+.form-select option {
+  background-color: #2b2b2b;
+  color: white;
+}
+
+.form-select:focus {
+  background-color: rgba(0, 0, 0, 0.3);
+  border-color: #ffd740;
+  box-shadow: 0 0 0 0.2rem rgba(255, 215, 64, 0.25);
+  color: #ffd740;
 }
 
 /* Mensajes de error */

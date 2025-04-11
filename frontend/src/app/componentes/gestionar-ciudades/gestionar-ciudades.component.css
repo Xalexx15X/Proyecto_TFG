@@ -15,6 +15,7 @@
 .container-fluid {
   max-width: 1400px;
   margin: 0 auto;
+  padding: 2rem;
 }
 
 /* Estilos para la búsqueda */
@@ -28,7 +29,7 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: white;
   padding: 0.75rem 1rem;
-  border-radius: 0 25px 25px 0;
+  border-radius: 25px;
 }
 
 .search-input::placeholder {
@@ -40,6 +41,21 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: white;
   border-radius: 25px 0 0 25px;
+}
+
+/* Header y búsqueda */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.page-title {
+  color: white;
+  font-size: 2rem;
+  font-weight: 500;
+  margin: 0;
 }
 
 /* Estilos para la tabla */
@@ -71,12 +87,16 @@
   color: white;
 }
 
+.table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
 /* Ajuste para el espaciado general */
 .table-responsive {
   margin-top: 2rem;
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  padding: 1rem;
+  border-radius: 15px;
+  padding: 1.5rem;
 }
 
 /* Estilos para los botones */
@@ -125,8 +145,8 @@
   color: white;
   padding: 0.5rem;
   border-radius: 50%;
-  width: 40px; /* Aumentado el tamaño */
-  height: 40px; /* Aumentado el tamaño */
+  width: 35px;
+  height: 35px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -138,19 +158,18 @@
 }
 
 .btn-icon:hover {
-  background-color: #563098;
+  background: rgba(255, 215, 64, 0.2);
   color: #ffd740;
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
 .btn-icon.btn-danger {
-  background-color: #dc3545; /* Color rojo para el botón eliminar */
+  background: rgba(220, 53, 69, 0.8);
 }
 
 .btn-icon.btn-danger:hover {
-  background-color: #bb2d3b;
-  color: #ffd740;
+  background: #dc3545;
 }
 
 .btn-close-form {
@@ -175,20 +194,64 @@
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   border: none;
-  border-radius: 10px;
-  box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.card-body {
+  padding: 2rem;
 }
 
 .card-title {
   color: white;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .form-label {
   color: white;
+  margin-bottom: 0.5rem;
 }
 
 .form-control {
   background-color: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: white;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+}
+
+.form-select {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+}
+
+.form-select option {
+  background-color: #2b2b2b;
+  color: white;
+}
+
+/* Validación */
+.invalid-feedback {
+  color: #ff8a8a;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container-fluid {
+    padding: 1rem;
+  }
+  
+  .card-body {
+    padding: 1rem;
+  }
+  
+  .table-responsive {
+    padding: 1rem;
+  }
 }

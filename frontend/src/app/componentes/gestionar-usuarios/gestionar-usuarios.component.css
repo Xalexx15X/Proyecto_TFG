@@ -15,6 +15,7 @@
 .container-fluid {
   max-width: 1400px;
   margin: 0 auto;
+  padding: 2rem;
 }
 
 /* Estilos para la búsqueda */
@@ -28,7 +29,7 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: white;
   padding: 0.75rem 1rem;
-  border-radius: 0 25px 25px 0;
+  border-radius: 0 25px 25px 0; /* Cambiado: solo redondo en el lado derecho */
 }
 
 .search-input::placeholder {
@@ -39,7 +40,22 @@
   background-color: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: white;
-  border-radius: 25px 0 0 25px;
+  border-radius: 25px 0 0 25px; /* Mantiene el redondeo en el lado izquierdo */
+}
+
+/* Header y búsqueda */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.page-title {
+  color: white;
+  font-size: 2rem;
+  font-weight: 500;
+  margin: 0;
 }
 
 /* Estilos para la tabla */
@@ -71,12 +87,16 @@
   color: white;
 }
 
+.table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
 /* Ajuste para el espaciado general */
 .table-responsive {
   margin-top: 2rem;
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  padding: 1rem;
+  border-radius: 15px;
+  padding: 1.5rem;
 }
 
 /* Estilos para los botones */
