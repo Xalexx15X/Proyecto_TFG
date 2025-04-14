@@ -9,14 +9,14 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarResponsive">
       <ul class="navbar-nav me-auto">
-        <!-- Menú común para todos los usuarios -->
-        <li class="nav-item">
+        <!-- Menú común solo para usuarios sin registrar y clientes -->
+        <li class="nav-item" *ngIf="!isAdmin() && !isAdminDiscoteca()">
           <a class="nav-link" routerLink="/eventos" routerLinkActive="active">Eventos</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" *ngIf="!isAdmin() && !isAdminDiscoteca()">
           <a class="nav-link" routerLink="/discotecas" routerLinkActive="active">Discotecas</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" *ngIf="!isAdmin() && !isAdminDiscoteca()">
           <a class="nav-link" routerLink="/djs" routerLinkActive="active">DJs</a>
         </li>
 
@@ -30,27 +30,38 @@
 
         <!-- Menú para administradores de discoteca -->
         <li class="nav-item dropdown" *ngIf="isAdminDiscoteca()">
-          <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown">
-            Gestión Eventos
-          </a>
+          <details class="custom-dropdown">
+            <summary class="nav-link">Gestión Eventos</summary>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" routerLink="/admin-discoteca/eventos">Eventos</a></li>
+              <li><a class="dropdown-item" routerLink="/admin-discoteca/djs">DJs</a></li>
+            </ul>
+          </details>
+        </li>
+
+        <li class="nav-item" *ngIf="isAdminDiscoteca()">
+          <a class="nav-link" routerLink="/admin-discoteca/tramos">Gestión Tramos Horarios</a>
         </li>
 
         <li class="nav-item dropdown" *ngIf="isAdminDiscoteca()">
-          <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown">
-            Gestión Horarios
-          </a>
+          <details class="custom-dropdown">
+            <summary class="nav-link">Catálogo Reservados y Botellas</summary>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" routerLink="/admin-discoteca/reservados/inventario">Inventario Botellas</a></li>
+              <li><a class="dropdown-item" routerLink="/admin-discoteca/reservados/zonas">Zonas VIP</a></li>
+            </ul>
+          </details>
         </li>
 
         <li class="nav-item dropdown" *ngIf="isAdminDiscoteca()">
-          <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown">
-            Gestión Reservas
-          </a>
-        </li>
-
-        <li class="nav-item dropdown" *ngIf="isAdminDiscoteca()">
-          <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown">
-            Estadísticas
-          </a>
+          <details class="custom-dropdown">
+            <summary class="nav-link">Estadísticas</summary>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" routerLink="/admin-discoteca/estadisticas/eventos">Por Eventos</a></li>
+              <li><a class="dropdown-item" routerLink="/admin-discoteca/estadisticas/horarios">Por Horarios</a></li>
+              <li><a class="dropdown-item" routerLink="/admin-discoteca/estadisticas/reservas">Por Reservas</a></li>
+            </ul>
+          </details>
         </li>
 
         <!-- Menú para administradores del sistema -->
