@@ -2,18 +2,21 @@ package com.clubsync.Mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import java.util.stream.Collectors;
-import java.util.ArrayList;
+
 
 import com.clubsync.Dto.DtoDiscoteca;
 import com.clubsync.Entity.Discoteca;
 import com.clubsync.Repository.CiudadRepository;
+import com.clubsync.Repository.UsuarioRepository;
 
 @Component
 public class DiscotecaMapper implements GenericMapper<Discoteca, DtoDiscoteca> {
 
     @Autowired
     private CiudadRepository ciudadRepository;
+    
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @Override
     public DtoDiscoteca toDto(Discoteca entity) {
@@ -27,11 +30,9 @@ public class DiscotecaMapper implements GenericMapper<Discoteca, DtoDiscoteca> {
         dto.setContacto(entity.getContacto());
         dto.setCapacidadTotal(entity.getCapacidadTotal());
         dto.setImagen(entity.getImagen());
-        
         dto.setIdCiudad(entity.getCiudad() != null ? entity.getCiudad().getIdCiudad() : null);
-        dto.setIdUsuarios(entity.getUsuarios() != null ? 
-                entity.getUsuarios().stream().map(u -> u.getIdUsuario()).collect(Collectors.toList()) : 
-                new ArrayList<>());
+        dto.setIdAdministrador(entity.getAdministrador() != null ? 
+            entity.getAdministrador().getIdUsuario() : null);
         
         return dto;
     }
@@ -49,9 +50,12 @@ public class DiscotecaMapper implements GenericMapper<Discoteca, DtoDiscoteca> {
         entity.setCapacidadTotal(dto.getCapacidadTotal());
         entity.setImagen(dto.getImagen());
         
-        // Solo establecemos la relación con Ciudad
         if (dto.getIdCiudad() != null) {
             entity.setCiudad(ciudadRepository.findById(dto.getIdCiudad()).orElse(null));
+        }
+        
+        if (dto.getIdAdministrador() != null) {
+            entity.setAdministrador(usuarioRepository.findById(dto.getIdAdministrador()).orElse(null));
         }
         
         return entity;

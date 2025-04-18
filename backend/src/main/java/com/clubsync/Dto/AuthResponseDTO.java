@@ -12,4 +12,6 @@ public class AuthResponseDTO {
     private String role;
     private Double monedero;
     private Integer puntosRecompensa;
+    private Integer idDiscoteca; 
+    private Integer idUsuario;
 }

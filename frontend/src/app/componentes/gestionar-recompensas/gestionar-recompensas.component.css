@@ -74,8 +74,7 @@
   margin-bottom: 0.5rem;
 }
 
-.form-control,
-.form-select {
+.form-control {
   background-color: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: white;
@@ -83,8 +82,7 @@
   padding: 0.75rem 1rem;
 }
 
-.form-control:focus,
-.form-select:focus {
+.form-control:focus {
   background-color: rgba(255, 255, 255, 0.15);
   border-color: #ffd740;
   box-shadow: 0 0 0 0.2rem rgba(255, 215, 64, 0.25);
@@ -131,26 +129,31 @@
   background: rgba(255, 255, 255, 0.05);
 }
 
-/* Desplegables */
+/* Desplegables - SOLO EL BUENO */
 .form-select {
   background-color: rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #ffd740;
+  color: white;
   border-radius: 8px;
   padding: 0.75rem 1rem;
+  cursor: pointer;
 }
 
-/* Solo modificar el color de las opciones del select */
 .form-select option {
-  background-color: #2b2b2b;
-  color: white;
+  background-color: #494949;
+  color: #ffffff;
+  padding: 10px;
 }
 
 .form-select:focus {
   background-color: rgba(0, 0, 0, 0.3);
   border-color: #ffd740;
   box-shadow: 0 0 0 0.2rem rgba(255, 215, 64, 0.25);
-  color: #ffd740;
+  color: white;
+}
+
+.form-select:active {
+  border-left: 4px solid #ffd740;
 }
 
 /* Botones */

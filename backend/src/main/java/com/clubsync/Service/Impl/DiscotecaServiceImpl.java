@@ -12,7 +12,6 @@ import com.clubsync.Error.ResourceNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.ArrayList;
 
 @Service
 @Transactional  
@@ -35,51 +34,48 @@ public class DiscotecaServiceImpl implements DiscotecaService {
     }
 
     @Override
+    public Optional<Discoteca> findByAdministrador(Usuario administrador) {
+        return discotecaRepository.findByAdministrador(administrador);
+    }
+
+    @Override
+    @Transactional
     public Discoteca save(Discoteca discoteca) {
+        // Si hay un administrador asignado
+        if (discoteca.getAdministrador() != null) {
+            Usuario admin = usuarioRepository.findById(discoteca.getAdministrador().getIdUsuario())
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario", "id", 
+                    discoteca.getAdministrador().getIdUsuario()));
+            
+            // Verificar que el admin no tenga otra discoteca asignada
+            Optional<Discoteca> discotecaExistente = findByAdministrador(admin);
+            if (discotecaExistente.isPresent() && 
+                (discoteca.getIdDiscoteca() == null || 
+                !discotecaExistente.get().getIdDiscoteca().equals(discoteca.getIdDiscoteca()))) {
+                throw new RuntimeException("El administrador ya tiene una discoteca asignada");
+            }
+        }
+        
         return discotecaRepository.save(discoteca);
     }
 
     @Override
+    @Transactional
     public void deleteById(Integer id) {
-        if (!discotecaRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Discoteca", "id", id);
+        Discoteca discoteca = discotecaRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Discoteca", "id", id));
+        
+        // Limpiar la relación con el administrador
+        if (discoteca.getAdministrador() != null) {
+            discoteca.getAdministrador().setDiscotecaAdministrada(null);
+            discoteca.setAdministrador(null);
         }
-        discotecaRepository.deleteById(id);
+        
+        discotecaRepository.delete(discoteca);
     }
 
     @Override
     public boolean existsById(Integer id) {
         return discotecaRepository.existsById(id);
-    }
-
-    @Override
-    @Transactional
-    public Discoteca save(Discoteca discoteca, List<Integer> idUsuarios) {
-        // 1. Guardamos la discoteca primero
-        Discoteca discotecaGuardada = discotecaRepository.save(discoteca);
-        
-        // 2. Si hay usuarios para asignar, los buscamos y asignamos
-        if (idUsuarios != null && !idUsuarios.isEmpty()) {
-            List<Usuario> usuarios = usuarioRepository.findAllById(idUsuarios);
-            
-            // Establecer la relación bidireccional
-            discotecaGuardada.setUsuarios(usuarios);
-            for (Usuario usuario : usuarios) {
-                if (usuario.getDiscotecas() == null) {
-                    usuario.setDiscotecas(new ArrayList<>());
-                }
-                if (!usuario.getDiscotecas().contains(discotecaGuardada)) {
-                    usuario.getDiscotecas().add(discotecaGuardada);
-                }
-            }
-            
-            // Guardar los usuarios actualizados
-            usuarioRepository.saveAll(usuarios);
-            
-            // Guardar la discoteca de nuevo para actualizar la tabla intermedia
-            discotecaGuardada = discotecaRepository.save(discotecaGuardada);
-        }
-        
-        return discotecaGuardada;
     }
 }

@@ -33,34 +33,41 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> login(@RequestBody AuthRequestDTO loginRequest) {
         try {
-            // Buscar usuario por email
             Usuario usuario = usuarioService.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-            // Verificar contraseña
             Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                     loginRequest.getEmail(),
                     loginRequest.getPassword()
                 )
             );
-            // Generar token
+
             String token = jwtTokenProvider.generateToken(authentication);
-            // Crear respuesta
+            
+            // Obtener el ID de la discoteca si es admin de discoteca
+            Integer idDiscoteca = null;
+            if ("ROLE_ADMIN_DISCOTECA".equals(usuario.getRole()) && 
+                usuario.getDiscotecaAdministrada() != null) {
+                idDiscoteca = usuario.getDiscotecaAdministrada().getIdDiscoteca();
+            }
+
             AuthResponseDTO authResponse = new AuthResponseDTO(
                 token,
                 usuario.getEmail(),
                 usuario.getNombre(),
                 usuario.getRole(),
                 usuario.getMonedero(),
-                usuario.getPuntosRecompensa()
+                usuario.getPuntosRecompensa(),
+                idDiscoteca, 
+                usuario.getIdUsuario()
             );
 
             return ResponseEntity.ok(authResponse);
 
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new AuthResponseDTO(null, null, null, null, null, null));
+                .body(new AuthResponseDTO(null, null, null, null, null, null, null,null));
         }
     }
 

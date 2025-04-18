@@ -3,6 +3,17 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
+interface AuthResponse {
+  token: string;
+  idUsuario: number; // Asegúrate de que esto esté en la interfaz
+  email: string;
+  nombre: string;
+  role: string;
+  monedero: number;
+  puntosRecompensa: number;
+  idDiscoteca: number | null;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -15,8 +26,8 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   // Método para iniciar sesión
-  login(credentials: {email: string, password: string}): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
+  login(credentials: {email: string, password: string}): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
       tap(response => {
         console.log('Respuesta del login:', response);
         this.saveUserData(response);
@@ -31,11 +42,19 @@ export class AuthService {
   }
 
   // Guardar datos del usuario
-  saveUserData(userData: any): void {
+  saveUserData(userData: AuthResponse): void {
     console.log('Guardando datos de usuario:', userData);
     if (userData && userData.token) {
       localStorage.setItem('token', userData.token);
-      localStorage.setItem('user_data', JSON.stringify(userData));
+      localStorage.setItem('user_data', JSON.stringify({
+        idUsuario: userData.idUsuario,
+        email: userData.email,
+        nombre: userData.nombre,
+        role: userData.role,
+        monedero: userData.monedero,
+        puntosRecompensa: userData.puntosRecompensa,
+        idDiscoteca: userData.idDiscoteca
+      }));
     }
   }
 
@@ -43,6 +62,12 @@ export class AuthService {
   getUserData(): any {
     const userData = localStorage.getItem('user_data');
     return userData ? JSON.parse(userData) : null;
+  }
+
+  // Obtener ID de la discoteca
+  getDiscotecaId(): number | null {
+    const userData = this.getUserData();
+    return userData?.idDiscoteca || null;
   }
 
   // Verificar si el usuario está logueado

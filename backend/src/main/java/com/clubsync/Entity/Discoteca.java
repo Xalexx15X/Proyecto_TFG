@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -40,20 +41,16 @@ public class Discoteca {
     @JoinColumn(name = "ciudad_id_ciudad", nullable = false)
     private Ciudad ciudad;
     
-    @OneToMany(mappedBy = "discoteca")
+    @OneToMany(mappedBy = "discoteca", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Evento> eventos;
     
-    @OneToMany(mappedBy = "discoteca")
+    @OneToMany(mappedBy = "discoteca", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TramoHorario> tramosHorarios;
     
-    @OneToMany(mappedBy = "discoteca")
+    @OneToMany(mappedBy = "discoteca", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Botella> botellas;
     
-    @ManyToMany
-    @JoinTable(
-        name = "usuario_tiene_discoteca",
-        joinColumns = @JoinColumn(name = "discoteca_id_discoteca", referencedColumnName = "idDiscoteca"),
-        inverseJoinColumns = @JoinColumn(name = "usuario_id_usuario", referencedColumnName = "idUsuario")
-    )
-    private List<Usuario> usuarios;
+    @OneToOne
+    @JoinColumn(name = "usuario_id_usuario", unique = true)
+    private Usuario administrador;
 }

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -40,17 +41,23 @@ public class Usuario implements org.springframework.security.core.userdetails.Us
     @Column(name = "puntos_recompensa")
     private Integer puntosRecompensa;
     
-    @OneToMany(mappedBy = "usuario")
-    private List<Entrada> entradas;
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Entrada> entradas = new ArrayList<>();
     
-    @OneToMany(mappedBy = "usuario")
-    private List<Evento> eventos;
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Evento> eventos = new ArrayList<>();
     
-    @OneToMany(mappedBy = "usuario")
-    private List<Pedido> pedidos;
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Pedido> pedidos = new ArrayList<>();
     
-    @ManyToMany(mappedBy = "usuarios")
-    private List<Discoteca> discotecas;
+    @OneToOne(mappedBy = "administrador")
+    private Discoteca discotecaAdministrada;
+
+    @ManyToMany(mappedBy = "usuarios", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<Recompensa> recompensas;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RecompensaTieneUsuario> recompensasCanjeadas = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

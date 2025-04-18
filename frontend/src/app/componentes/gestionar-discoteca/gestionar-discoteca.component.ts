@@ -42,7 +42,7 @@ export class GestionarDiscotecaComponent implements OnInit {
     capacidadTotal: '',
     imagen: '',
     idCiudad: 0,
-    idUsuarios: []
+    idAdministrador: null
   };
 
   constructor(
@@ -123,18 +123,15 @@ export class GestionarDiscotecaComponent implements OnInit {
   }
 
   agregarAdmin(idUsuario: number): void {
-    if (!this.nuevaDiscoteca.idUsuarios.includes(idUsuario)) {
-      this.nuevaDiscoteca.idUsuarios.push(idUsuario);
-    }
+    this.nuevaDiscoteca.idAdministrador = idUsuario;
   }
 
   removerAdmin(idUsuario: number): void {
-    this.nuevaDiscoteca.idUsuarios = this.nuevaDiscoteca.idUsuarios.filter(
-      id => id !== idUsuario
-    );
+    this.nuevaDiscoteca.idAdministrador = null;
   }
 
-  getAdminNombre(id: number): string {
+  getAdminNombre(id: number | null): string {
+    if (!id) return '';
     return this.adminUsuarios.find(a => a.idUsuario === id)?.nombre || '';
   }
 
@@ -213,7 +210,7 @@ export class GestionarDiscotecaComponent implements OnInit {
       capacidadTotal: '',
       imagen: '',
       idCiudad: 0,
-      idUsuarios: []
+      idAdministrador: null
     };
     this.imagenesPreview = [];
   }

@@ -17,23 +17,19 @@ public class Dj {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idDj;
     
-    @Column(nullable = false, length = 80)
+    @Column(nullable = false)
     private String nombre;
     
-    @Column(name = "nombre_real", length = 80)
     private String nombreReal;
     
-    @Column(nullable = false)
-    @Lob
+    @Column(columnDefinition = "TEXT")
     private String biografia;
     
-    @Column(name = "genero_musical", nullable = false, length = 80)
     private String generoMusical;
     
-    @Column(nullable = false, length = 80)
     private String contacto;
     
-    @Column(nullable = false)
+    @Column(columnDefinition = "LONGTEXT")
     @Lob
     private String imagen;
     

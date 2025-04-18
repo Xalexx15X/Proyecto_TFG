@@ -5,6 +5,8 @@ import { GestionarCiudadesComponent } from './componentes/gestionar-ciudades/ges
 import { GestionarUsuariosComponent } from './componentes/gestionar-usuarios/gestionar-usuarios.component';
 import { GestionarDiscotecaComponent } from './componentes/gestionar-discoteca/gestionar-discoteca.component'; 
 import { GestionarRecompensasComponent } from './componentes/gestionar-recompensas/gestionar-recompensas.component';
+import { GestionarDjComponent } from './componentes/gestionar-dj/gestionar-dj.component';
+import { GestionarEventosComponent } from './componentes/gestionar-eventos/gestionar-eventos.component';
 
 export const routes: Routes = [
     // global
@@ -17,6 +19,10 @@ export const routes: Routes = [
     { path: 'admin-usuarios', component: GestionarUsuariosComponent },
     { path: 'admin/discotecas', component: GestionarDiscotecaComponent },
     { path: 'admin/recompensas', component: GestionarRecompensasComponent },
+    
+    // Admin de discoteca
+    { path: 'admin-discoteca/djs', component: GestionarDjComponent },
+    { path: 'admin-discoteca/eventos', component: GestionarEventosComponent },
     
     { path: '**', redirectTo: '/login' }
 ];

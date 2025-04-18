@@ -105,7 +105,7 @@
                 </div>
 
                 <!-- Administradores -->
-                <div class="section-title mt-4">Administradores</div>
+                <div class="section-title mt-4">Administrador</div>
                 <div class="row">
                   <div class="col-md-6">
                     <div class="admin-search mb-3">
@@ -117,7 +117,8 @@
                     <div class="admin-list">
                       <div *ngFor="let admin of filtrarAdmins()" 
                            class="admin-item" 
-                           (click)="agregarAdmin(admin.idUsuario)">
+                           (click)="agregarAdmin(admin.idUsuario)"
+                           [class.disabled]="nuevaDiscoteca.idAdministrador !== null && nuevaDiscoteca.idAdministrador !== admin.idUsuario">
                         {{admin.nombre}}
                         <i class="bi bi-plus-circle"></i>
                       </div>
@@ -125,10 +126,9 @@
                   </div>
                   <div class="col-md-6">
                     <div class="selected-admins">
-                      <div *ngFor="let idAdmin of nuevaDiscoteca.idUsuarios" 
-                           class="admin-badge">
-                        {{getAdminNombre(idAdmin)}}
-                        <button class="btn-remove" (click)="removerAdmin(idAdmin)">
+                      <div *ngIf="nuevaDiscoteca.idAdministrador" class="admin-badge">
+                        {{getAdminNombre(nuevaDiscoteca.idAdministrador)}}
+                        <button class="btn-remove" (click)="removerAdmin(nuevaDiscoteca.idAdministrador)">
                           <i class="bi bi-x"></i>
                         </button>
                       </div>
@@ -190,7 +190,7 @@
           <th>Ciudad</th>
           <th>Dirección</th>
           <th>Capacidad</th>
-          <th>Administradores</th>
+          <th>Administrador</th>
           <th>Acciones</th>
         </tr>
       </thead>
@@ -204,10 +204,8 @@
           <td>{{discoteca.direccion}}</td>
           <td>{{discoteca.capacidadTotal}}</td>
           <td>
-            <div class="admin-badges">
-              <span class="badge" *ngFor="let adminId of discoteca.idUsuarios">
-                {{getAdminNombre(adminId)}}
-              </span>
+            <div class="admin-badge" *ngIf="discoteca.idAdministrador">
+              {{getAdminNombre(discoteca.idAdministrador)}}
             </div>
           </td>
           <td>

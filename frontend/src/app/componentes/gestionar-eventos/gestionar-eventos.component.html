@@ -1,0 +1,202 @@
+<div class="container-fluid py-5 mt-5">
+  <!-- Header con título y botón -->
+  <div class="page-header">
+    <h2 class="page-title">Gestión de Eventos</h2>
+    <button class="btn btn-create" (click)="mostrarCrear()" *ngIf="!mostrarFormulario">
+      <i class="bi bi-plus-lg"></i> Nuevo Evento
+    </button>
+  </div>
+
+  <!-- Búsqueda -->
+  <div class="search-container" *ngIf="!mostrarFormulario">
+    <div class="input-group">
+      <span class="input-group-text">
+        <i class="bi bi-search"></i>
+      </span>
+      <input type="text" 
+             class="form-control search-input" 
+             placeholder="Buscar evento..." 
+             [(ngModel)]="terminoBusqueda"
+             (input)="buscar($event)">
+    </div>
+  </div>
+
+  <!-- Formulario -->
+  <div class="row justify-content-center" *ngIf="mostrarFormulario">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-body p-4">
+          <h3 class="card-title mb-4">{{modoEdicion ? 'Editar' : 'Nuevo'}} Evento</h3>
+          
+          <form (ngSubmit)="modoEdicion ? actualizarEvento() : crearEvento()" #eventoForm="ngForm">
+            <div class="row">
+              <!-- Columna izquierda: Información básica -->
+              <div class="col-md-6 pe-md-4">
+                <div class="section-title">Información Básica</div>
+                <div class="mb-3">
+                  <label class="form-label">Nombre del Evento</label>
+                  <input type="text" 
+                         class="form-control" 
+                         [(ngModel)]="nuevoEvento.nombre" 
+                         name="nombre"
+                         [class.is-invalid]="formErrors.nombre">
+                  <div class="invalid-feedback">{{formErrors.nombre}}</div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Fecha y Hora</label>
+                  <input type="datetime-local" 
+                         class="form-control" 
+                         [(ngModel)]="nuevoEvento.fechaHora" 
+                         name="fechaHora"
+                         [class.is-invalid]="formErrors.fechaHora">
+                  <div class="invalid-feedback">{{formErrors.fechaHora}}</div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Descripción</label>
+                  <textarea class="form-control" 
+                          rows="3" 
+                          [(ngModel)]="nuevoEvento.descripcion" 
+                          name="descripcion"></textarea>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Tipo de Evento</label>
+                  <select class="form-control" 
+                          [(ngModel)]="nuevoEvento.tipoEvento" 
+                          name="tipoEvento">
+                    <option value="REGULAR">Regular</option>
+                    <option value="ESPECIAL">Especial</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Columna derecha: Precios y DJ -->
+              <div class="col-md-6 ps-md-4">
+                <div class="section-title">Detalles y DJ</div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Precio Base Entrada</label>
+                      <input type="number" 
+                             class="form-control" 
+                             [(ngModel)]="nuevoEvento.precioBaseEntrada" 
+                             name="precioBaseEntrada">
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">Precio Base Reservado</label>
+                      <input type="number" 
+                             class="form-control" 
+                             [(ngModel)]="nuevoEvento.precioBaseReservado" 
+                             name="precioBaseReservado">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Capacidad</label>
+                  <input type="text" 
+                         class="form-control" 
+                         [(ngModel)]="nuevoEvento.capacidad" 
+                         name="capacidad">
+                </div>
+
+                <!-- Selección de DJ con tarjetas -->
+                <div class="section-title mt-4">Seleccionar DJ</div>
+                <div class="dj-search mb-3">
+                  <input type="text" 
+                         class="form-control" 
+                         placeholder="Buscar DJ por nombre..."
+                         [(ngModel)]="djBusqueda"
+                         name="djBusqueda">
+                </div>
+                <div class="dj-cards">
+                  <div *ngFor="let dj of filtrarDjs()" 
+                       class="dj-card" 
+                       [class.selected]="nuevoEvento.idDj === dj.idDj"
+                       (click)="seleccionarDj(dj.idDj)">
+                    <img [src]="dj.imagen || 'assets/images/dj-placeholder.jpg'" 
+                         class="dj-image" 
+                         alt="DJ Photo">
+                    <div class="dj-info">
+                      <h5>{{dj.nombre}}</h5>
+                      <p class="genre">{{dj.generoMusical}}</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="invalid-feedback d-block" *ngIf="formErrors.idDj">
+                  {{formErrors.idDj}}
+                </div>
+              </div>
+            </div>
+
+            <!-- Botones -->
+            <div class="mt-4 text-center">
+              <button type="submit" class="btn btn-create me-2">
+                {{modoEdicion ? 'Actualizar' : 'Crear'}}
+              </button>
+              <button type="button" class="btn btn-secondary" (click)="cerrarFormulario()">
+                Cancelar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de Eventos -->
+  <div class="table-responsive" *ngIf="!mostrarFormulario">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Fecha</th>
+          <th>DJ</th>
+          <th>Tipo</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let evento of eventos">
+          <td>{{evento.nombre}}</td>
+          <td>{{evento.fechaHora | date:'dd/MM/yyyy HH:mm'}}</td>
+          <td>
+            <div class="dj-mini" *ngIf="getDj(evento.idDj)">
+              <img [src]="getDj(evento.idDj)?.imagen || 'assets/images/dj-placeholder.jpg'" 
+                   class="dj-mini-image" 
+                   alt="DJ">
+              <span>{{getDj(evento.idDj)?.nombre}}</span>
+            </div>
+            <span *ngIf="!getDj(evento.idDj)">Sin DJ asignado</span>
+          </td>
+          <td>{{evento.tipoEvento}}</td>
+          <td>
+            <select class="form-select form-select-sm" 
+                    [(ngModel)]="evento.estado" 
+                    (change)="cambiarEstadoEvento(evento)">
+              <option value="ACTIVO">Activo</option>
+              <option value="INACTIVO">Inactivo</option>
+              <option value="CANCELADO">Cancelado</option>
+            </select>
+          </td>
+          <td>
+            <button class="btn btn-icon me-2" (click)="editarEvento(evento)">
+              <i class="bi bi-pencil"></i>
+            </button>
+            <button class="btn btn-icon btn-danger" (click)="eliminarEvento(evento.idEvento!)">
+              <i class="bi bi-trash"></i>
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="eventos.length === 0">
+          <td colspan="6" class="text-center p-4">No hay eventos disponibles</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
