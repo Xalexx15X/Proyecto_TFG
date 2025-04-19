@@ -23,7 +23,7 @@ public class BotellaMapper implements GenericMapper<Botella, DtoBotella> {
         dto.setIdBotella(entity.getIdBotella());
         dto.setNombre(entity.getNombre());
         dto.setTipo(entity.getTipo());
-        dto.setTamaño(entity.getTamaño());
+        dto.setTamano(entity.getTamano());  // Usar el método correcto
         dto.setPrecio(entity.getPrecio());
         dto.setDisponibilidad(entity.getDisponibilidad());
         dto.setImagen(entity.getImagen());
@@ -50,7 +50,7 @@ public class BotellaMapper implements GenericMapper<Botella, DtoBotella> {
         entity.setIdBotella(dto.getIdBotella());
         entity.setNombre(dto.getNombre());
         entity.setTipo(dto.getTipo());
-        entity.setTamaño(dto.getTamaño());
+        entity.setTamano(dto.getTamano());  // Usar el método correcto
         entity.setPrecio(dto.getPrecio());
         entity.setDisponibilidad(dto.getDisponibilidad());
         entity.setImagen(dto.getImagen());

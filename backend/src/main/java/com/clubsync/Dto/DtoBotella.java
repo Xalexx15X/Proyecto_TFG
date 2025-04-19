@@ -8,7 +8,7 @@ public class DtoBotella {
     private Integer idBotella;
     private String nombre;
     private String tipo;
-    private String tamaño;
+    private String tamano; 
     private Double precio;
     private String disponibilidad;
     private String imagen;

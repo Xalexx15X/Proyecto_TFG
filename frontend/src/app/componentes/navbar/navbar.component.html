@@ -31,7 +31,7 @@
         <!-- Menú para administradores de discoteca -->
         <li class="nav-item dropdown" *ngIf="isAdminDiscoteca()">
           <details class="custom-dropdown">
-            <summary class="nav-link">Gestión Eventos</summary>
+            <summary class="nav-link">Gestión Eventos y Dj</summary>
             <ul class="dropdown-menu">
               <li><a class="dropdown-item" routerLink="/admin-discoteca/eventos" routerLinkActive="active">Eventos</a></li>
               <li><a class="dropdown-item" routerLink="/admin-discoteca/djs" routerLinkActive="active">DJs</a></li>
@@ -47,7 +47,7 @@
           <details class="custom-dropdown">
             <summary class="nav-link">Catálogo Reservados y Botellas</summary>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" routerLink="/admin-discoteca/reservados/inventario">Inventario Botellas</a></li>
+              <li><a class="dropdown-item" routerLink="/admin-discoteca/botellas">Gestión Botellas</a></li>
               <li><a class="dropdown-item" routerLink="/admin-discoteca/reservados/zonas">Zonas VIP</a></li>
             </ul>
           </details>

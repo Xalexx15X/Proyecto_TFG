@@ -25,7 +25,7 @@ public class Botella {
     private String tipo;
     
     @Column(nullable = false, length = 40)
-    private String tamaño;
+    private String tamano;
     
     @Column(nullable = false)
     private Double precio;
