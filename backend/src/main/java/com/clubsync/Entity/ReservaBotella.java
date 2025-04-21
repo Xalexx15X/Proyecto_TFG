@@ -31,6 +31,10 @@ public class ReservaBotella {
     @JoinColumn(name = "entrada_idEntrada", nullable = false)
     private Entrada entrada;
     
+    @ManyToOne
+    @JoinColumn(name = "zona_vip_id_zona_vip")
+    private ZonaVip zonaVip;
+    
     @OneToMany(mappedBy = "reservaBotella", cascade = CascadeType.ALL)
     private List<DetalleReservaBotella> detallesReservasBotellas;
     
