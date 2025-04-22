@@ -10,6 +10,7 @@ import { GestionarEventosComponent } from './componentes/gestionar-eventos/gesti
 import { GestionarTramoHorarioComponent } from './componentes/gestionar-tramo-horario/gestionar-tramo-horario.component';
 import { GestionarBotellaComponent } from './componentes/gestionar-botella/gestionar-botella.component';
 import { GestionarZonaVipComponent } from './componentes/gestionar-zona-vip/gestionar-zona-vip.component';
+import { DetalleDiscotecaComponent } from './componentes/detalle-discoteca/detalle-discoteca.component';
 
 export const routes: Routes = [
     // global
@@ -29,6 +30,9 @@ export const routes: Routes = [
     { path: 'admin-discoteca/tramos', component: GestionarTramoHorarioComponent },
     { path: 'admin-discoteca/botellas', component: GestionarBotellaComponent },
     { path: 'admin-discoteca/zonas-vip', component: GestionarZonaVipComponent },
+
+    // Cliente
+    { path: 'discotecas', component: DetalleDiscotecaComponent },
     
     { path: '**', redirectTo: '/login' }
 ];

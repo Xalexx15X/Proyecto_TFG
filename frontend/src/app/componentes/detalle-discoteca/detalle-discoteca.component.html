@@ -1,0 +1,113 @@
+<div class="discotecas-container py-5 mt-5">
+  <div class="container">
+    <!-- Título y descripción -->
+    <div class="header-section text-center mb-5">
+      <h1 class="main-title">Encuentra tu discoteca ideal</h1>
+      <p class="subtitle">Explora las mejores discotecas y elige la que más te guste</p>
+    </div>
+
+    <!-- Filtro por ciudad -->
+    <div class="filter-section mb-5">
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <div class="filter-card">
+            <div class="card-body">
+              <h5 class="card-title">Filtrar por ciudad</h5>
+              <select class="form-select" [(ngModel)]="ciudadSeleccionada" (change)="filtrarPorCiudad()">
+                <option [ngValue]="null">Todas las ciudades</option>
+                <option *ngFor="let ciudad of ciudades" [ngValue]="ciudad.idCiudad">
+                  {{ciudad.nombre}}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Indicador de carga -->
+    <div class="text-center py-5" *ngIf="cargando">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="mt-2">Cargando discotecas...</p>
+    </div>
+
+    <!-- Mensaje de error -->
+    <div class="alert alert-danger" *ngIf="error">
+      {{ error }}
+    </div>
+
+    <!-- Lista de discotecas -->
+    <div class="discotecas-list" *ngIf="!cargando && !error">
+      <!-- Mensaje si no hay resultados -->
+      <div class="no-results text-center py-5" *ngIf="discotecas.length === 0">
+        <i class="bi bi-emoji-frown fs-1"></i>
+        <h4 class="mt-3">No se encontraron discotecas</h4>
+        <p>Intenta con otra ciudad o vuelve más tarde.</p>
+      </div>
+
+      <!-- Tarjetas de discotecas -->
+      <div class="discoteca-card" *ngFor="let discoteca of discotecas">
+        <div class="row g-0 align-items-center">
+          <!-- Carrusel de imágenes -->
+          <div class="col-md-5">
+            <div id="carrusel-{{discoteca.idDiscoteca}}" class="carousel slide" data-bs-ride="carousel">
+              <div class="carousel-inner">
+                <!-- Si la discoteca tiene imágenes en un array (ajusta según tu estructura de datos) -->
+                <ng-container *ngIf="discoteca.imagenes?.length">
+                  <div class="carousel-item" *ngFor="let imagen of discoteca.imagenes; let i = index" [class.active]="i === 0">
+                    <img [src]="imagen" class="d-block w-100" alt="Imagen de {{discoteca.nombre}}">
+                  </div>
+                </ng-container>
+                
+                <!-- Si solo tiene una imagen principal -->
+                <ng-container *ngIf="!discoteca.imagenes?.length">
+                  <div class="carousel-item active">
+                    <img [src]="discoteca.imagen || 'assets/images/default-disco.jpg'" class="d-block w-100" alt="Imagen de {{discoteca.nombre}}">
+                  </div>
+                </ng-container>
+              </div>
+              
+              <button class="carousel-control-prev" type="button" [attr.data-bs-target]="'#carrusel-'+discoteca.idDiscoteca" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Anterior</span>
+              </button>
+              <button class="carousel-control-next" type="button" [attr.data-bs-target]="'#carrusel-'+discoteca.idDiscoteca" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Siguiente</span>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Información de la discoteca -->
+          <div class="col-md-7">
+            <div class="discoteca-info">
+              <h2 class="discoteca-name">{{discoteca.nombre}}</h2>
+              
+              <div class="discoteca-location">
+                <i class="bi bi-geo-alt-fill"></i> 
+                {{discoteca.direccion}}, {{discoteca.ciudad?.nombre}}
+              </div>
+              
+              <div class="discoteca-capacity">
+                <i class="bi bi-people-fill"></i> 
+                Capacidad: {{discoteca.capacidadTotal}} personas
+              </div>
+              
+              <div class="discoteca-description">
+                <p>{{discoteca.descripcion || 'Sin descripción disponible.'}}</p>
+              </div>
+              
+              <div class="discoteca-actions">
+                <a [routerLink]="['/discotecas', discoteca.idDiscoteca, 'eventos']" class="btn btn-primary">
+                  Ver eventos <i class="bi bi-arrow-right-circle"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

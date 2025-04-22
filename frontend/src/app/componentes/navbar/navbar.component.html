@@ -11,15 +11,8 @@
       <ul class="navbar-nav me-auto">
         <!-- Menú común solo para usuarios sin registrar y clientes -->
         <li class="nav-item" *ngIf="!isAdmin() && !isAdminDiscoteca()">
-          <a class="nav-link" routerLink="/eventos" routerLinkActive="active">Eventos</a>
-        </li>
-        <li class="nav-item" *ngIf="!isAdmin() && !isAdminDiscoteca()">
           <a class="nav-link" routerLink="/discotecas" routerLinkActive="active">Discotecas</a>
         </li>
-        <li class="nav-item" *ngIf="!isAdmin() && !isAdminDiscoteca()">
-          <a class="nav-link" routerLink="/djs" routerLinkActive="active">DJs</a>
-        </li>
-
         <!-- Menú para usuarios registrados (ROLE_CLIENTE) -->
         <li class="nav-item" *ngIf="isCliente()">
           <a class="nav-link" routerLink="/wallet" routerLinkActive="active">Mi Wallet</a>

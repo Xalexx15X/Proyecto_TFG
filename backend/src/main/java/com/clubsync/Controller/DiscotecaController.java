@@ -46,6 +46,19 @@ public class DiscotecaController {
         return ResponseEntity.ok(discotecaMapper.toDto(discoteca));
     }
 
+    @GetMapping("/por-ciudad/{idCiudad}")
+    public ResponseEntity<List<DtoDiscoteca>> getDiscotecasByCiudadId(@PathVariable Integer idCiudad) {
+        // 1. Buscamos las discotecas por id de ciudad
+        List<Discoteca> discotecas = discotecaService.findByCiudadId(idCiudad);
+        
+        // 2. Convertimos la lista de entidades a DTOs
+        List<DtoDiscoteca> dtosDiscotecas = discotecas.stream()
+            .map(discotecaMapper::toDto)
+            .collect(Collectors.toList());
+            
+        return ResponseEntity.ok(dtosDiscotecas);
+    }
+
     @PostMapping
     public ResponseEntity<DtoDiscoteca> createDiscoteca(@RequestBody DtoDiscoteca dtoDiscoteca) {
         // 1. Convertimos DTO a entidad

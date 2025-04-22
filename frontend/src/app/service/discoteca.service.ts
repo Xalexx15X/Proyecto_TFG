@@ -45,4 +45,10 @@ export class DiscotecaService extends BaseService {
   deleteDiscoteca(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
   }
+
+  getDiscotecasByIdCiudad(idCiudad: number): Observable<Discoteca[]> {
+    return this.http.get<Discoteca[]>(`${this.apiUrl}/por-ciudad/${idCiudad}`, { 
+      headers: this.getHeaders() 
+    });
+  }
 }

@@ -39,6 +39,11 @@ public class DiscotecaServiceImpl implements DiscotecaService {
     }
 
     @Override
+    public List<Discoteca> findByCiudadId(Integer idCiudad) {
+        return discotecaRepository.findByCiudadIdCiudad(idCiudad);
+    }
+
+    @Override
     @Transactional
     public Discoteca save(Discoteca discoteca) {
         // Si hay un administrador asignado
