@@ -57,46 +57,56 @@ export class EventosDiscotecaComponent implements OnInit {
 
   cargarEventos(): void {
     this.cargando = true;
+
+    // 1. Cargar los eventos de la discoteca
     this.eventosService.getEventosByDiscoteca(this.idDiscoteca).subscribe({
       next: (eventos) => {
-        // Para cada evento, obtener el DJ relacionado
-        const observables = eventos.map(evento => 
-          evento.idDj ? this.djService.getDj(evento.idDj) : null
-        );
+        // Guardamos los eventos
+        this.eventos = eventos;
         
-        if (observables.some(obs => obs !== null)) {
-          forkJoin(observables.filter(obs => obs !== null)).subscribe({
-            next: (djs) => {
-              // Asignar cada DJ a su evento correspondiente
-              let djIndex = 0;
-              this.eventos = eventos.map(evento => {
-                if (evento.idDj) {
-                  const eventoConDj = {
-                    ...evento,
-                    dj: djs[djIndex]
-                  };
-                  djIndex++;
-                  return eventoConDj;
-                }
-                return evento;
-              });
-              
-              // Filtrar eventos iniciales (sin cancelados)
-              this.filtrarEventosIniciales();
-              this.cargando = false;
-            },
-            error: (error) => {
-              console.error('Error al cargar DJs:', error);
-              this.eventos = eventos;
-              this.filtrarEventosIniciales();
-              this.cargando = false;
-            }
-          });
-        } else {
-          this.eventos = eventos;
+        // 2. Vemos qué eventos tienen DJ asignado
+        const eventosDjIds = eventos
+          .filter(e => e.idDj)
+          .map(e => e.idDj);
+        
+        // Si no hay DJs para cargar, terminamos
+        if (eventosDjIds.length === 0) {
           this.filtrarEventosIniciales();
           this.cargando = false;
+          return;
         }
+        
+        // 3. Cargar todos los DJs a la vez
+        forkJoin(
+          eventosDjIds.map(id => this.djService.getDj(id))
+        ).subscribe({
+          next: (djs) => {
+            // Creamos un mapa simple para buscar DJs por ID
+            const mapaDjs: { [key: number]: any } = {};
+            djs.forEach(dj => {
+              if (dj && dj.idDj !== undefined) {
+                mapaDjs[dj.idDj] = dj;
+              }
+            });
+            
+            // Asignamos cada DJ a su evento correspondiente
+            this.eventos.forEach(evento => {
+              if (evento.idDj && mapaDjs[evento.idDj]) {
+                evento.dj = mapaDjs[evento.idDj];
+              }
+            });
+            
+            this.filtrarEventosIniciales();
+          },
+          complete: () => {
+            this.cargando = false;
+          },
+          error: (error) => {
+            console.error('Error al cargar los DJs:', error);
+            this.filtrarEventosIniciales();
+            this.cargando = false;
+          }
+        });
       },
       error: (error) => {
         console.error('Error al cargar eventos:', error);
