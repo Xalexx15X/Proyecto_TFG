@@ -41,6 +41,11 @@ public class Evento {
     
     @Column(nullable = false, length = 80)
     private String estado;
+
+    // Nuevo campo para la imagen
+    @Column(columnDefinition = "LONGTEXT")
+    @Lob
+    private String imagen;
     
     @ManyToOne
     @JoinColumn(name = "discoteca_idDiscoteca", nullable = false)

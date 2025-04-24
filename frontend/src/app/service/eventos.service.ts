@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { map, tap, catchError } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { BaseService } from './base.service';
 
 export interface Evento {
@@ -14,9 +13,10 @@ export interface Evento {
   capacidad: string;
   tipoEvento: string;
   estado: string;
+  imagen?: string; // Nuevo campo para la imagen
   idDiscoteca: number;
   idDj: number;
-  idUsuario: number;
+  idUsuario?: number; 
 }
 
 @Injectable({
@@ -33,24 +33,30 @@ export class EventosService extends BaseService {
     return this.http.get<Evento[]>(this.apiUrl, { headers: this.getHeaders() });
   }
 
-  getEventosByDiscoteca(idDiscoteca: number): Observable<Evento[]> {
-    return this.http.get<Evento[]>(`${this.apiUrl}/discoteca/${idDiscoteca}`, { headers: this.getHeaders() });
-  }
-
   getEvento(id: number): Observable<Evento> {
     return this.http.get<Evento>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
   }
 
+  getEventosByDiscoteca(idDiscoteca: number): Observable<Evento[]> {
+    return this.http.get<Evento[]>(`${this.apiUrl}/discoteca/${idDiscoteca}`, { 
+      headers: this.getHeaders() 
+    });
+  }
+
+  getEventosActivosByDiscoteca(idDiscoteca: number): Observable<Evento[]> {
+    return this.http.get<Evento[]>(`${this.apiUrl}/discoteca/${idDiscoteca}/activos`, { 
+      headers: this.getHeaders() 
+    });
+  }
+
+  getEventosByDiscotecaYTipo(idDiscoteca: number, tipoEvento: string): Observable<Evento[]> {
+    return this.http.get<Evento[]>(`${this.apiUrl}/discoteca/${idDiscoteca}/tipo/${tipoEvento}`, {
+      headers: this.getHeaders()
+    });
+  }
+
   createEvento(evento: Evento): Observable<Evento> {
-    console.log('Enviando petición al backend:', evento);
-    return this.http.post<Evento>(this.apiUrl, evento, { headers: this.getHeaders() })
-      .pipe(
-        tap(response => console.log('Respuesta del backend:', response)),
-        catchError(error => {
-          console.error('Error en la petición HTTP:', error);
-          return throwError(() => error);
-        })
-      );
+    return this.http.post<Evento>(this.apiUrl, evento, { headers: this.getHeaders() });
   }
 
   updateEvento(id: number, evento: Evento): Observable<Evento> {

@@ -131,6 +131,25 @@
                   {{formErrors.idDj}}
                 </div>
               </div>
+
+              <!-- Imagen del Evento -->
+              <div class="col-md-12">
+                <div class="mb-3">
+                  <label class="form-label">Imagen del Evento</label>
+                  <input type="file" 
+                         class="form-control" 
+                         (change)="onFileSelected($event)" 
+                         accept="image/*">
+                  <small class="text-white-50">La imagen será mostrada en las tarjetas del evento</small>
+                </div>
+                
+                <div class="image-preview-section mt-2" *ngIf="imagenPreview">
+                  <h5 class="text-white mb-3">Previsualización</h5>
+                  <div class="single-image-preview">
+                    <img [src]="imagenPreview" class="preview-image" alt="Imagen del evento">
+                  </div>
+                </div>
+              </div>
             </div>
 
             <!-- Botones -->
@@ -153,6 +172,7 @@
     <table class="table">
       <thead>
         <tr>
+          <th>Imagen</th>
           <th>Nombre</th>
           <th>Fecha</th>
           <th>DJ</th>
@@ -163,6 +183,9 @@
       </thead>
       <tbody>
         <tr *ngFor="let evento of eventos">
+          <td>
+            <img [src]="evento.imagen || 'assets/images/event-placeholder.jpg'" class="table-thumbnail" alt="Evento">
+          </td>
           <td>{{evento.nombre}}</td>
           <td>{{evento.fechaHora | date:'dd/MM/yyyy HH:mm'}}</td>
           <td>
@@ -194,7 +217,7 @@
           </td>
         </tr>
         <tr *ngIf="eventos.length === 0">
-          <td colspan="6" class="text-center p-4">No hay eventos disponibles</td>
+          <td colspan="7" class="text-center p-4">No hay eventos disponibles</td>
         </tr>
       </tbody>
     </table>

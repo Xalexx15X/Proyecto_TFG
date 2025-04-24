@@ -37,6 +37,7 @@ public class EventoMapper implements GenericMapper<Evento, DtoEvento> {
         dto.setCapacidad(entity.getCapacidad());
         dto.setTipoEvento(entity.getTipoEvento());
         dto.setEstado(entity.getEstado());
+        dto.setImagen(entity.getImagen()); 
         
         // Relaciones
         dto.setIdDiscoteca(entity.getDiscoteca() != null ? entity.getDiscoteca().getIdDiscoteca() : null);
@@ -68,6 +69,7 @@ public class EventoMapper implements GenericMapper<Evento, DtoEvento> {
         entity.setCapacidad(dto.getCapacidad());
         entity.setTipoEvento(dto.getTipoEvento());
         entity.setEstado(dto.getEstado());
+        entity.setImagen(dto.getImagen()); 
         
         // Establecer relaciones
         if (dto.getIdDiscoteca() != null) {

@@ -64,4 +64,14 @@ public class EventoServiceImpl implements EventoService {
     public List<Evento> findByEstado(String estado) {
         return eventoRepository.findByEstado(estado);
     }
+
+    @Override
+    public List<Evento> findByDiscotecaIdAndEstado(Integer discotecaId, String estado) {
+        return eventoRepository.findByDiscotecaIdDiscotecaAndEstado(discotecaId, estado);
+    }
+
+    @Override
+    public List<Evento> findByDiscotecaIdAndTipoEvento(Integer discotecaId, String tipoEvento) {
+        return eventoRepository.findByDiscotecaIdDiscotecaAndTipoEvento(discotecaId, tipoEvento);
+    }
 }

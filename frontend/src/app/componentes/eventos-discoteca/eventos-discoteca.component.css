@@ -1,0 +1,416 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #673ab7 0%, #9c27b0 100%);
+  color: #fff;
+  padding-top: 76px;
+}
+
+.eventos-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Encabezado */
+.main-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #ffd740;
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  text-align: center;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.8);
+  max-width: 700px;
+  margin: 0 auto 2rem;
+  text-align: center;
+}
+
+/* Sección de filtros */
+.filter-section {
+  padding: 1rem 0 1.5rem;
+}
+
+.filter-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin: 0 auto;
+  max-width: 600px;
+}
+
+.filter-button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 0.6rem 1.5rem;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  flex: 1;
+  text-align: center;
+}
+
+.filter-button.active {
+  background: rgba(255, 215, 64, 0.2);
+  border-color: #ffd740;
+  color: #ffd740;
+  box-shadow: 0 0 10px rgba(255, 215, 64, 0.3);
+}
+
+.filter-button:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Tarjetas de eventos */
+.eventos-list {
+  margin-top: 2rem;
+}
+
+.evento-card {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.evento-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.3);
+  border-color: rgba(255, 215, 64, 0.3);
+}
+
+/* Actualizar sección de imagen para que sea como en detalle-discoteca */
+.evento-image-container {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.evento-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+  transition: transform 0.3s ease;
+}
+
+.evento-card:hover .evento-image {
+  transform: scale(1.05);
+}
+
+/* Badge para tipo de evento */
+.evento-badge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+}
+
+.evento-badge .badge {
+  background: linear-gradient(135deg, #ff9800 0%, #ff5722 100%);
+  color: white;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  border-radius: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  text-transform: uppercase;
+}
+
+/* Información del evento */
+.evento-info {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.evento-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.evento-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffd740;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+  flex: 1;
+}
+
+.evento-date {
+  display: flex;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+}
+
+.evento-date i {
+  margin-right: 0.5rem;
+  color: #ffd740;
+}
+
+/* Mini título para la sección del DJ */
+.section-title {
+  display: flex;
+  align-items: center;
+  margin: 0.75rem 0 0.5rem;
+  color: #ffd740;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.section-title i {
+  margin-right: 0.5rem;
+  font-size: 1rem;
+}
+
+/* Sección del DJ */
+.dj-info {
+  display: flex;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.dj-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 0.75rem;
+  border: 2px solid #ffd740;
+}
+
+.dj-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dj-details {
+  flex: 1;
+}
+
+.dj-name {
+  color: #ffd740;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.dj-genre {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.8rem;
+}
+
+/* Descripción compacta */
+.evento-description {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 0.75rem;
+  max-height: 2.8rem; /* 2 líneas */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* Precios */
+.price-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.price-box {
+  text-align: center;
+  flex: 1;
+}
+
+.price-label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.8rem;
+  margin-bottom: 0.2rem;
+}
+
+.price-value {
+  color: #ffd740;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+/* Botones */
+.evento-actions {
+  display: flex;
+  margin-top: 1rem;
+  gap: 10px;
+}
+
+.btn-primary {
+  background-color: #ffd740;
+  border: none;
+  color: #000;
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  flex: 1;
+}
+
+.btn-primary i {
+  margin-left: 0.5rem;
+}
+
+.btn-outline-primary {
+  background-color: transparent;
+  border: 1px solid #ffd740;
+  color: #ffd740;
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  flex: 1;
+}
+
+.btn-outline-primary i {
+  margin-left: 0.5rem;
+}
+
+.btn-outline-primary:hover {
+  background-color: rgba(255, 215, 64, 0.2);
+  transform: translateY(-2px);
+}
+
+.btn-primary:hover {
+  background-color: #ffec8b;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+
+/* Mensaje sin resultados */
+.no-results {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 3rem;
+  text-align: center;
+}
+
+.no-results i {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.no-results h4 {
+  color: #ffd740;
+  margin-bottom: 1rem;
+}
+
+.no-results p {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Spinner de carga */
+.spinner-border {
+  color: #ffd740;
+}
+
+/* Estilos para eventos cancelados */
+.evento-cancelado {
+  border: 1px solid rgba(255, 100, 100, 0.3);
+  opacity: 0.85;
+}
+
+.evento-cancelado-img {
+  filter: grayscale(50%);
+}
+
+.evento-cancelado-msg {
+  background-color: rgba(255, 100, 100, 0.2);
+  color: #ff6464;
+  padding: 0.75rem;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: 600;
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.evento-cancelado-msg i {
+  margin-right: 0.5rem;
+  font-size: 1.1rem;
+}
+
+/* Responsive */
+@media (max-width: 767px) {
+  .main-title {
+    font-size: 1.8rem;
+  }
+  
+  .evento-image {
+    height: 180px;
+  }
+  
+  .evento-actions {
+    flex-direction: column;
+  }
+  
+  .btn-primary, .btn-outline-primary {
+    margin-bottom: 0.5rem;
+  }
+  
+  .filter-buttons {
+    flex-direction: column;
+  }
+}
+
+@media (min-width: 768px) {
+  .row-cols-md-2 > * {
+    flex: 0 0 auto;
+    width: 50%;
+  }
+}
+
+@media (min-width: 992px) {
+  .row-cols-lg-3 > * {
+    flex: 0 0 auto;
+    width: 33.33333%;
+  }
+}

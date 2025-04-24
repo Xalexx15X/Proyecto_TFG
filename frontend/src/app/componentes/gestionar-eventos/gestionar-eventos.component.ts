@@ -32,10 +32,13 @@ export class GestionarEventosComponent implements OnInit {
     capacidad: '',
     tipoEvento: '',
     estado: 'ACTIVO',
+    imagen: '', // Inicializamos el nuevo campo
     idDiscoteca: 0,
     idDj: 0,
     idUsuario: 0
   };
+
+  imagenPreview: string = ''; // Agregamos una propiedad para vista previa
 
   formErrors = {
     nombre: '',
@@ -213,6 +216,29 @@ export class GestionarEventosComponent implements OnInit {
     }
   }
 
+  async onFileSelected(event: Event): Promise<void> {
+    const element = event.target as HTMLInputElement;
+    const file = element.files?.[0];
+    
+    if (file) {
+      try {
+        const base64 = await this.convertirABase64(file);
+        this.imagenPreview = base64;
+        this.nuevoEvento.imagen = base64;
+      } catch (error) {
+        this.handleError('Error al cargar la imagen');
+      }
+    }
+  }
+
+  private convertirABase64(file: File): Promise<string> {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.readAsDataURL(file);
+    });
+  }
+
   private limpiarFormulario(): void {
     this.nuevoEvento = {
       nombre: '',
@@ -223,10 +249,12 @@ export class GestionarEventosComponent implements OnInit {
       capacidad: '',
       tipoEvento: 'REGULAR', // Asignar un valor por defecto
       estado: 'ACTIVO',
+      imagen: '', // Limpiamos el campo de imagen
       idDiscoteca: this.idDiscoteca || 0,
       idDj: 0,
       idUsuario: 0
     };
+    this.imagenPreview = ''; // Limpiamos la vista previa
   }
 
   private validarFormulario(): boolean {

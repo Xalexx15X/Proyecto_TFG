@@ -16,4 +16,8 @@ public interface EventoRepository extends JpaRepository<Evento, Integer> {
     List<Evento> findByFechaHoraBetween(LocalDateTime inicio, LocalDateTime fin);
 
     List<Evento> findByEstado(String estado);
+
+    List<Evento> findByDiscotecaIdDiscotecaAndEstado(Integer discotecaId, String estado);
+
+    List<Evento> findByDiscotecaIdDiscotecaAndTipoEvento(Integer discotecaId, String tipoEvento);
 }

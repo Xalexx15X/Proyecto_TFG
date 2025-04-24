@@ -15,11 +15,10 @@ public class DtoEvento {
     private String capacidad;
     private String tipoEvento;
     private String estado;
-    
+    private String imagen; 
     private Integer idDiscoteca;
     private Integer idDj;
     private Integer idUsuario;
-    
     private List<Integer> idEntradas;
     private List<Integer> idRecompensas;
 }

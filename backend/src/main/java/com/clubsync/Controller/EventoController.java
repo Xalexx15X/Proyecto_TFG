@@ -8,6 +8,7 @@ import com.clubsync.Error.ResourceNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -48,6 +49,37 @@ public class EventoController {
             .map(eventoMapper::toDto)
             .collect(Collectors.toList());
         return ResponseEntity.ok(dtosEventos);
+    }
+
+    @GetMapping("/discoteca/{discotecaId}/activos")
+    public ResponseEntity<List<DtoEvento>> getEventosActivosByDiscotecaId(
+            @PathVariable Integer discotecaId) {
+        try {
+            List<Evento> eventos = eventoService.findByDiscotecaIdAndEstado(discotecaId, "ACTIVO");
+            List<DtoEvento> dtosEventos = eventos.stream()
+                .map(eventoMapper::toDto)
+                .collect(Collectors.toList());
+            return ResponseEntity.ok(dtosEventos);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("/discoteca/{discotecaId}/tipo/{tipoEvento}")
+    public ResponseEntity<List<DtoEvento>> getEventosByDiscotecaAndTipo(
+            @PathVariable Integer discotecaId,
+            @PathVariable String tipoEvento) {
+        try {
+            List<Evento> eventos = eventoService.findByDiscotecaIdAndTipoEvento(discotecaId, tipoEvento);
+            List<DtoEvento> dtosEventos = eventos.stream()
+                .map(eventoMapper::toDto)
+                .collect(Collectors.toList());
+            return ResponseEntity.ok(dtosEventos);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
     @GetMapping("/dj/{djId}")
