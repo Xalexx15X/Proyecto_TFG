@@ -24,7 +24,7 @@ public class ReservaBotella {
     @Column(name = "precio_total", nullable = false)
     private Double precioTotal;
     
-    @Column(name = "tipo_reserrva", nullable = false, length = 80)
+    @Column(name = "tipo_reserva", nullable = false, length = 80)
     private String tipoReserva;
     
     @ManyToOne

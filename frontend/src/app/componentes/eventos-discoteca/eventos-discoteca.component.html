@@ -96,11 +96,8 @@
               
               <!-- Botones solo si el evento NO está cancelado -->
               <div class="evento-actions" *ngIf="evento.estado !== 'CANCELADO'">
-                <a [routerLink]="['/eventos', evento.idEvento, 'comprar']" class="btn btn-primary">
-                  Comprar <i class="bi bi-ticket-perforated"></i>
-                </a>
-                <a [routerLink]="['/eventos', evento.idEvento, 'zona-vip']" class="btn btn-outline-primary">
-                  VIP <i class="bi bi-star"></i>
+                <a [routerLink]="['/eventos', evento.idEvento, 'comprar']" class="btn btn-primary btn-comprar">
+                  Comprar entrada <i class="bi bi-ticket-perforated"></i>
                 </a>
               </div>
             </div>

@@ -12,6 +12,10 @@ import { GestionarBotellaComponent } from './componentes/gestionar-botella/gesti
 import { GestionarZonaVipComponent } from './componentes/gestionar-zona-vip/gestionar-zona-vip.component';
 import { DetalleDiscotecaComponent } from './componentes/detalle-discoteca/detalle-discoteca.component';
 import { EventosDiscotecaComponent } from './componentes/eventos-discoteca/eventos-discoteca.component';
+import { ComprarEntradaComponent } from './componentes/comprar-entrada/comprar-entrada.component';
+import { CarritoComponent } from './componentes/carrito/carrito.component';
+import { MonederoComponent } from './componentes/monedero/monedero.component';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
     // global
@@ -35,6 +39,9 @@ export const routes: Routes = [
     // Cliente
     { path: 'discotecas', component: DetalleDiscotecaComponent },
     { path: 'discotecas/:id/eventos', component: EventosDiscotecaComponent },
+    { path: 'eventos/:id/comprar', component: ComprarEntradaComponent, canActivate: [authGuard] },
+    { path: 'carrito', component: CarritoComponent, canActivate: [authGuard] },
+    { path: 'wallet', component: MonederoComponent, canActivate: [authGuard] },
     
     { path: '**', redirectTo: '/login' }
 ];

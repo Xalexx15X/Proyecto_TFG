@@ -100,7 +100,7 @@
         <!-- Usuario autenticado -->
         <li class="nav-item dropdown" *ngIf="isLoggedIn()">
           <details class="custom-dropdown">
-            <summary class="nav-link">{{ userData?.nombre || 'Usuario' }}</summary>
+            <summary class="nav-link">{{ userData?.nombre}}</summary>
             <ul class="dropdown-menu">
               <li><a class="dropdown-item" routerLink="/perfil">Mi Perfil</a></li>
               <li><hr class="dropdown-divider"></li>

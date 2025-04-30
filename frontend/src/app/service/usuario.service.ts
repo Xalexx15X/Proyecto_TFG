@@ -53,4 +53,19 @@ export class UsuarioService extends BaseService {
       map(usuarios => usuarios.sort((a, b) => (b.idUsuario || 0) - (a.idUsuario || 0)))
     );
   }
+
+  actualizarMonedero(id: number, nuevoSaldo: number): Observable<any> {
+    return this.http.put(
+      `${this.apiUrl}/${id}/monedero`, 
+      { monedero: nuevoSaldo }, 
+      { headers: this.getHeaders() }
+    );
+  }
+
+  actualizarPuntosRecompensa(idUsuario: number, puntos: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${idUsuario}/puntos`, 
+      { puntosRecompensa: puntos }, 
+      { headers: this.getHeaders() }
+    );
+  }
 }

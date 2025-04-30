@@ -91,6 +91,12 @@ public class PedidoController {
         Pedido pedidoActualizado = pedidoService.save(pedido);
         return ResponseEntity.ok(pedidoMapper.toDto(pedidoActualizado));
     }
+    
+    @PutMapping("/{id}/completar")
+    public ResponseEntity<DtoPedido> completarPedido(@PathVariable Integer id) {
+        Pedido pedidoCompletado = pedidoService.completarPedido(id);
+        return ResponseEntity.ok(pedidoMapper.toDto(pedidoCompletado));
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePedido(@PathVariable Integer id) {

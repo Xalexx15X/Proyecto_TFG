@@ -12,7 +12,10 @@ import org.springframework.security.crypto.password.PasswordEncoder; // Añadir 
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -123,6 +126,27 @@ public class UsuarioController {
         Usuario usuarioActualizado = usuarioService.save(usuario);
         
         // 3. Convertimos la entidad actualizada a DTO
+        return ResponseEntity.ok(usuarioMapper.toDto(usuarioActualizado));
+    }
+
+    @PutMapping("/{id}/monedero")
+    public ResponseEntity<DtoUsuario> actualizarMonedero(
+            @PathVariable Integer id,
+            @Valid @RequestBody Map<String, Double> requestBody) {
+        
+        Double monedero = requestBody.get("monedero");
+        
+        if (monedero == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        
+        Usuario usuario = usuarioService.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario", "id", id));
+        
+        usuario.setMonedero(monedero);
+        
+        Usuario usuarioActualizado = usuarioService.save(usuario);
+        
         return ResponseEntity.ok(usuarioMapper.toDto(usuarioActualizado));
     }
 

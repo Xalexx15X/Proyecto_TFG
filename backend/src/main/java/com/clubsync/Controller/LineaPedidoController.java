@@ -72,11 +72,16 @@ public class LineaPedidoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLineaPedido(@PathVariable Integer id) {
+    public ResponseEntity<Void> eliminarLineaPedido(@PathVariable Integer id) {
         if (!lineaPedidoService.existsById(id)) {
-            throw new ResourceNotFoundException("Línea de Pedido", "id", id);
+            return ResponseEntity.notFound().build();
         }
+        
         lineaPedidoService.deleteById(id);
+        
+        // Log para verificar que la línea se eliminó correctamente
+        System.out.println("Línea de pedido eliminada: " + id);
+        
         return ResponseEntity.noContent().build();
     }
 }

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -31,6 +32,6 @@ public class Pedido {
     @JoinColumn(name = "usuario_idUsuario", nullable = false)
     private Usuario usuario;
     
-    @OneToMany(mappedBy = "pedido")
-    private List<LineaPedido> lineasPedido;
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LineaPedido> lineasPedido = new ArrayList<>();
 }

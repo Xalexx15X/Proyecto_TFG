@@ -321,6 +321,12 @@
   box-shadow: 0 6px 12px rgba(0,0,0,0.3);
 }
 
+.btn-comprar {
+  width: 100%;
+  padding: 12px;
+  font-size: 1.1rem;
+}
+
 /* Mensaje sin resultados */
 .no-results {
   background: rgba(255, 255, 255, 0.05);

@@ -8,12 +8,16 @@ import java.util.ArrayList;
 import com.clubsync.Dto.DtoReservaBotella;
 import com.clubsync.Entity.ReservaBotella;
 import com.clubsync.Repository.EntradaRepository;
+import com.clubsync.Repository.ZonaVipRepository;
 
 @Component
 public class ReservaBotellaMapper implements GenericMapper<ReservaBotella, DtoReservaBotella> {
 
     @Autowired
     private EntradaRepository entradaRepository;
+    
+    @Autowired
+    private ZonaVipRepository zonaVipRepository;
 
     @Override
     public DtoReservaBotella toDto(ReservaBotella entity) {
@@ -27,6 +31,9 @@ public class ReservaBotellaMapper implements GenericMapper<ReservaBotella, DtoRe
         
         // Relaciones
         dto.setIdEntrada(entity.getEntrada() != null ? entity.getEntrada().getIdEntrada() : null);
+        
+        // Añadir esta línea para el idZonaVip
+        dto.setIdZonaVip(entity.getZonaVip() != null ? entity.getZonaVip().getIdZonaVip() : null);
         
         dto.setIdDetallesReservasBotella(entity.getDetallesReservasBotellas() != null ? 
                 entity.getDetallesReservasBotellas().stream().map(drb -> drb.getIdDetalleReservaBotella()).collect(Collectors.toList()) : 
@@ -52,6 +59,11 @@ public class ReservaBotellaMapper implements GenericMapper<ReservaBotella, DtoRe
         // Establecer relación con Entrada
         if (dto.getIdEntrada() != null) {
             entity.setEntrada(entradaRepository.findById(dto.getIdEntrada()).orElse(null));
+        }
+        
+        // Establecer relación con ZonaVip
+        if (dto.getIdZonaVip() != null) {
+            entity.setZonaVip(zonaVipRepository.findById(dto.getIdZonaVip()).orElse(null));
         }
         
         return entity;

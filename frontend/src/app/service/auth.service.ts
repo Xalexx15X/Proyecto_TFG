@@ -20,6 +20,7 @@ interface AuthResponse {
 export class AuthService {
   private apiUrl = 'http://localhost:9000/api/auth';
   private loginSubject = new Subject<void>();
+  private userChangedSubject = new Subject<void>();
   
   login$ = this.loginSubject.asObservable();
 
@@ -32,6 +33,9 @@ export class AuthService {
         console.log('Respuesta del login:', response);
         this.saveUserData(response);
         this.loginSubject.next();
+        
+        // Notificar que el usuario ha cambiado
+        this.userChangedSubject.next();
       })
     );
   }
@@ -60,8 +64,25 @@ export class AuthService {
 
   // Obtener datos del usuario
   getUserData(): any {
+    return this.getCurrentUser();
+  }
+
+  // Obtener datos del usuario actual
+  getCurrentUser(): any {
     const userData = localStorage.getItem('user_data');
     return userData ? JSON.parse(userData) : null;
+  }
+
+  // Actualizar datos del usuario
+  updateUserData(userData: any): void {
+    const currentData = this.getUserData();
+    if (currentData && userData) {
+      const updatedData = { ...currentData, ...userData };
+      localStorage.setItem('user_data', JSON.stringify(updatedData));
+      
+      // Notificar que el usuario ha cambiado
+      this.userChangedSubject.next();
+    }
   }
 
   // Obtener ID de la discoteca
@@ -93,10 +114,23 @@ export class AuthService {
     return userData?.role === 'ROLE_ADMIN_DISCOTECA';
   }
 
+  getUserId(): number | null {
+    const userData = this.getUserData();
+    return userData?.idUsuario || null;
+  }
+
   // Cerrar sesión
   logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('user_data');
     this.loginSubject.next();
+    
+    // Notificar que el usuario ha cambiado (o se ha ido)
+    this.userChangedSubject.next();
+  }
+
+  // Método para obtener notificaciones de cambios en el usuario
+  getUserChanges(): Observable<void> {
+    return this.userChangedSubject.asObservable();
   }
 }

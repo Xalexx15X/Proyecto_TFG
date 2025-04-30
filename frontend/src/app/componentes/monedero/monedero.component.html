@@ -1,0 +1,99 @@
+<div class="monedero-container">
+    <div class="card wallet-card">
+      <div class="card-header">
+        <h2>Mi Monedero</h2>
+        <button class="btn btn-outline-secondary" (click)="volverAtras()">
+          <i class="bi bi-arrow-left"></i> Volver
+        </button>
+      </div>
+      <div class="card-body">
+        <!-- Mensajes de error/éxito -->
+        <div *ngIf="errorMensaje" class="alert alert-danger mb-3">
+          {{ errorMensaje }}
+        </div>
+        <div *ngIf="exitoMensaje" class="alert alert-success mb-3">
+          {{ exitoMensaje }}
+        </div>
+  
+        <!-- Saldo actual -->
+        <div class="saldo-actual mb-4">
+          <h3>Saldo actual</h3>
+          <div class="saldo-display">
+            {{ userData?.monedero | currency:'EUR':'symbol':'1.2-2' }}
+          </div>
+        </div>
+  
+        <!-- Añadir fondos -->
+        <div class="añadir-fondos">
+          <h3>Añadir fondos</h3>
+          <div class="mb-3">
+            <label for="cantidadSaldo" class="form-label">Cantidad a añadir:</label>
+            <div class="input-group">
+              <span class="input-group-text">€</span>
+              <input 
+                type="number" 
+                class="form-control" 
+                id="cantidadSaldo" 
+                [(ngModel)]="cantidadSaldo" 
+                min="5" 
+                max="1000" 
+                step="5">
+            </div>
+            <div class="form-text">Puedes añadir entre 5€ y 1000€ a tu monedero.</div>
+          </div>
+  
+          <!-- Opciones rápidas -->
+          <div class="opciones-rapidas mb-4">
+            <label class="form-label d-block">O selecciona una cantidad:</label>
+            <div class="btn-group" role="group" aria-label="Opciones de cantidad">
+              <button 
+                *ngFor="let opcion of opcionesRapidas" 
+                type="button" 
+                class="btn btn-outline-primary" 
+                [class.active]="cantidadSaldo === opcion"
+                (click)="seleccionarCantidad(opcion)">
+                {{ opcion }}€
+              </button>
+            </div>
+          </div>
+  
+          <!-- Botón añadir fondos -->
+          <button 
+            type="button" 
+            class="btn btn-primary btn-lg w-100"
+            [disabled]="!esCantidadValida() || cargando" 
+            (click)="agregarFondos()">
+            <span *ngIf="cargando" class="spinner-border spinner-border-sm me-2"></span>
+            Añadir fondos
+          </button>
+        </div>
+        
+        <!-- Opcional: Historial de transacciones -->
+        <div class="historial mt-5" *ngIf="historialTransacciones && historialTransacciones.length > 0">
+          <h3>Historial de transacciones</h3>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Tipo</th>
+                  <th>Cantidad</th>
+                  <th>Saldo resultante</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let transaccion of historialTransacciones">
+                  <td>{{ transaccion.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
+                  <td>{{ transaccion.tipo }}</td>
+                  <td [class.text-danger]="transaccion.tipo === 'COMPRA'" [class.text-success]="transaccion.tipo === 'RECARGA'">
+                    {{ transaccion.cantidad | currency:'EUR':'symbol':'1.2-2' }}
+                  </td>
+                  <td>{{ transaccion.saldoFinal | currency:'EUR':'symbol':'1.2-2' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
