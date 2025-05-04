@@ -15,7 +15,9 @@ import { EventosDiscotecaComponent } from './componentes/eventos-discoteca/event
 import { ComprarEntradaComponent } from './componentes/comprar-entrada/comprar-entrada.component';
 import { CarritoComponent } from './componentes/carrito/carrito.component';
 import { MonederoComponent } from './componentes/monedero/monedero.component';
+import { PerfilComponent } from './componentes/perfil/perfil.component';
 import { authGuard } from './guards/auth.guard';
+import { WalletComponent } from './componentes/wallet/wallet.component';
 
 export const routes: Routes = [
     // global
@@ -41,7 +43,9 @@ export const routes: Routes = [
     { path: 'discotecas/:id/eventos', component: EventosDiscotecaComponent },
     { path: 'eventos/:id/comprar', component: ComprarEntradaComponent, canActivate: [authGuard] },
     { path: 'carrito', component: CarritoComponent, canActivate: [authGuard] },
-    { path: 'wallet', component: MonederoComponent, canActivate: [authGuard] },
+    { path: 'monedero', component: MonederoComponent, canActivate: [authGuard] },
+    { path: 'perfil', component: PerfilComponent, canActivate: [authGuard] },
+    { path: 'wallet', component: WalletComponent, canActivate: [authGuard] }, 
     
     { path: '**', redirectTo: '/login' }
 ];

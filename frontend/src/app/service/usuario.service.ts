@@ -68,4 +68,30 @@ export class UsuarioService extends BaseService {
       { headers: this.getHeaders() }
     );
   }
+
+  // Método para cambiar contraseña - Ruta actualizada
+  cambiarPassword(id: number, datos: { passwordActual: string, nuevaPassword: string }): Observable<any> {
+    return this.http.post<any>(
+      `${this.apiUrl}/${id}/password`, 
+      datos, 
+      { headers: this.getHeaders() }
+    );
+  }
+
+  getUsuario(id: number): Observable<Usuario> {
+    return this.http.get<Usuario>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
+  }
+
+  /**
+   * Actualiza solo la información básica del usuario (nombre y email)
+   * Cambiado de PATCH a PUT porque el backend no soporta PATCH
+   */
+  updateInfoBasica(id: number, nombre: string, email: string): Observable<any> {
+    // Usando PUT en lugar de PATCH y cambiando la ruta para que coincida con el endpoint del backend
+    return this.http.put<any>(
+      `${this.apiUrl}/${id}/info-basica`, 
+      { nombre, email }, 
+      { headers: this.getHeaders() }
+    );
+  }
 }

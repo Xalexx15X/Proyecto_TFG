@@ -157,6 +157,7 @@
   .quantity {
     font-weight: 600;
     padding: 0 0.5rem;
+    color: white;
   }
   
   .item-price {
@@ -217,6 +218,7 @@
   
   .bottle-name {
     flex-grow: 1;
+    color: rgb(255, 255, 255);
   }
   
   .bottle-quantity {
@@ -233,7 +235,7 @@
   
   .bottles-total {
     text-align: right;
-    color: white;
+    color: #ffd740;
     font-weight: 600;
     margin-top: 0.5rem;
     padding-top: 0.5rem;
@@ -264,6 +266,7 @@
     justify-content: space-between;
     padding: 1rem 0;
     font-weight: 700;
+    color: white;
   }
   
   .summary-total span:last-child {

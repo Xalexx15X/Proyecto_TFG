@@ -150,6 +150,37 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioMapper.toDto(usuarioActualizado));
     }
 
+    @PutMapping("/{id}/info-basica")
+    public ResponseEntity<DtoUsuario> updateInfoBasica(
+            @PathVariable Integer id,
+            @Valid @RequestBody Map<String, String> requestBody) {
+        
+        String nombre = requestBody.get("nombre");
+        String email = requestBody.get("email");
+        
+        if (nombre == null || email == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        
+        // Verificar si el email ya existe y pertenece a otro usuario
+        usuarioService.findByEmail(email)
+            .ifPresent(usuarioExistente -> {
+                if (!usuarioExistente.getIdUsuario().equals(id)) {
+                    throw new IllegalArgumentException("El email ya está registrado");
+                }
+            });
+        
+        Usuario usuario = usuarioService.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario", "id", id));
+        
+        usuario.setNombre(nombre);
+        usuario.setEmail(email);
+        
+        Usuario usuarioActualizado = usuarioService.save(usuario);
+        
+        return ResponseEntity.ok(usuarioMapper.toDto(usuarioActualizado));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUsuario(@PathVariable Integer id) {
         // 1. Verificamos que existe

@@ -75,8 +75,7 @@ export class CarritoService {
         // Guardar el ID del pedido encontrado
         this.pedidoActualId = pedidoEnProceso.idPedido;
         
-        // Cargar líneas del pedido
-        this.lineaPedidoService.getLineasByPedido(this.pedidoActualId).subscribe({
+        this.lineaPedidoService.getLineasByPedido(this.pedidoActualId!).subscribe({
           next: (lineas) => {
             const items: ItemCarrito[] = [];
             

@@ -76,12 +76,7 @@ public class LineaPedidoController {
         if (!lineaPedidoService.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
-        
         lineaPedidoService.deleteById(id);
-        
-        // Log para verificar que la línea se eliminó correctamente
-        System.out.println("Línea de pedido eliminada: " + id);
-        
         return ResponseEntity.noContent().build();
     }
 }

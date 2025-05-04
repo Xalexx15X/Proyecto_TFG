@@ -11,6 +11,9 @@ export interface Entrada {
   idUsuario: number;
   idEvento: number;
   idTramoHorario: number;
+  estado?: string;
+  fechaReservada?: string;
+  idPedido?: number; // Añadido este campo
 }
 
 @Injectable({
@@ -45,9 +48,5 @@ export class EntradaService extends BaseService {
 
   updateEntrada(id: number, entrada: Entrada): Observable<Entrada> {
     return this.http.put<Entrada>(`${this.apiUrl}/${id}`, entrada, { headers: this.getHeaders() });
-  }
-
-  deleteEntrada(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
   }
 }

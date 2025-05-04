@@ -90,8 +90,4 @@ export class MonederoComponent implements OnInit {
       }
     });
   }
-
-  volverAtras(): void {
-    this.router.navigate(['/']);
-  }
 }
