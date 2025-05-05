@@ -28,7 +28,6 @@ export class GestionarRecompensasComponent implements OnInit {
 
   tiposRecompensa = [
     { id: 'BOTELLA', nombre: 'Botella' },
-    { id: 'ENTRADA', nombre: 'Entrada' },
     { id: 'EVENTO', nombre: 'Evento' },
     { id: 'RESERVA', nombre: 'Reserva de botella' }
   ];

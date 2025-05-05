@@ -129,6 +129,10 @@
                 <span>Total a pagar</span>
                 <span>{{total | currency:'EUR':'symbol':'1.2-2'}}</span>
               </div>
+              <div class="summary-item puntos-ganados" *ngIf="puntosGanados > 0">
+                <span>Puntos a ganar</span>
+                <span class="puntos-valor">+{{puntosGanados}} pts</span>
+              </div>
   
               <button class="btn btn-primary btn-block mt-4" (click)="finalizarCompra()">
                 <i class="bi bi-credit-card"></i> Finalizar compra

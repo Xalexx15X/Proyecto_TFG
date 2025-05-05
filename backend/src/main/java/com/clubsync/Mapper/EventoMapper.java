@@ -48,9 +48,6 @@ public class EventoMapper implements GenericMapper<Evento, DtoEvento> {
                 entity.getEntradas().stream().map(e -> e.getIdEntrada()).collect(Collectors.toList()) : 
                 new ArrayList<>());
                 
-        dto.setIdRecompensas(entity.getRecompensas() != null ? 
-                entity.getRecompensas().stream().map(r -> r.getIdRecompensa()).collect(Collectors.toList()) : 
-                new ArrayList<>());
         
         return dto;
     }

@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "Evento")
+@Table(name = "evento")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -51,6 +51,7 @@ public class Evento {
     @JoinColumn(name = "discoteca_idDiscoteca", nullable = false)
     private Discoteca discoteca;
     
+    // Aquí está faltando esta relación que causa el error
     @ManyToOne
     @JoinColumn(name = "dj_idDj", nullable = false)
     private Dj dj;
@@ -61,7 +62,4 @@ public class Evento {
     
     @OneToMany(mappedBy = "evento")
     private List<Entrada> entradas;
-    
-    @OneToMany(mappedBy = "evento")
-    private List<Recompensa> recompensas;
 }

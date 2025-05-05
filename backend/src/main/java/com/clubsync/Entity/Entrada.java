@@ -41,7 +41,4 @@ public class Entrada {
     
     @OneToMany(mappedBy = "entrada")
     private List<ReservaBotella> reservasBotellas;
-    
-    @OneToMany(mappedBy = "entrada")
-    private List<Recompensa> recompensas;
 }

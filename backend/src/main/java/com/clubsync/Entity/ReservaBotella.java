@@ -37,7 +37,4 @@ public class ReservaBotella {
     
     @OneToMany(mappedBy = "reservaBotella", cascade = CascadeType.ALL)
     private List<DetalleReservaBotella> detallesReservasBotellas;
-    
-    @OneToMany(mappedBy = "reservaBotella")
-    private List<Recompensa> recompensas;
 }

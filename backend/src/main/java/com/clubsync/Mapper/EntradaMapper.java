@@ -42,9 +42,6 @@ public class EntradaMapper implements GenericMapper<Entrada, DtoEntrada> {
                 entity.getReservasBotellas().stream().map(rb -> rb.getIdReservaBotella()).collect(Collectors.toList()) : 
                 new ArrayList<>());
                 
-        dto.setIdRecompensas(entity.getRecompensas() != null ? 
-                entity.getRecompensas().stream().map(r -> r.getIdRecompensa()).collect(Collectors.toList()) : 
-                new ArrayList<>());
         
         return dto;
     }

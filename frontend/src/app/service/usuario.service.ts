@@ -62,11 +62,9 @@ export class UsuarioService extends BaseService {
     );
   }
 
+  // Método para actualizar puntos de recompensa
   actualizarPuntosRecompensa(idUsuario: number, puntos: number): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/${idUsuario}/puntos`, 
-      { puntosRecompensa: puntos }, 
-      { headers: this.getHeaders() }
-    );
+    return this.http.put<any>(`${this.apiUrl}/${idUsuario}/puntos-recompensa`, { puntosRecompensa: puntos });
   }
 
   // Método para cambiar contraseña - Ruta actualizada

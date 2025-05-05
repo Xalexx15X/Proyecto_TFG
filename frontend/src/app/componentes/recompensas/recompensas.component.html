@@ -1,0 +1,297 @@
+<div class="recompensas-container">
+  <div class="container py-5">
+    <!-- Título y sección de puntos -->
+    <div class="header-section text-center mb-4">
+      <h1 class="main-title">Recompensas</h1>
+      <p class="subtitle">Canjea tus puntos por experiencias exclusivas</p>
+      
+      <div class="puntos-disponibles mb-4">
+        <div class="puntos-badge">
+          <i class="bi bi-star-fill"></i>
+          <span>{{puntosDisponibles}} puntos disponibles</span>
+        </div>
+      </div>
+      
+      <div class="toggle-section mb-4">
+        <button class="btn btn-outline-light btn-toggle" (click)="toggleHistorial()">
+          {{ mostrarHistorial ? 'Canjear puntos' : 'Ver historial' }}
+          <i class="bi" [ngClass]="mostrarHistorial ? 'bi-arrow-left' : 'bi-clock-history'"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mensajes de error y éxito -->
+    <div class="alert alert-danger" *ngIf="error">
+      <i class="bi bi-exclamation-triangle-fill"></i> {{error}}
+    </div>
+
+    <div class="alert alert-success" *ngIf="exito">
+      <i class="bi bi-check-circle-fill"></i> {{exito}}
+    </div>
+
+    <!-- Indicador de carga -->
+    <div class="text-center py-4" *ngIf="cargando">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="mt-2">Procesando...</p>
+    </div>
+
+    <!-- HISTORIAL DE RECOMPENSAS -->
+    <div class="historial-section" *ngIf="mostrarHistorial && !cargando">
+      <h2 class="section-title mb-4">Historial de recompensas canjeadas</h2>
+      
+      <div class="row" *ngIf="recompensasCanjeadas.length > 0; else sinHistorial">
+        <div class="col-md-6 col-lg-4 mb-4" *ngFor="let recompensa of recompensasCanjeadas">
+          <div class="recompensa-card">
+            <div class="recompensa-header">
+              <h3>{{recompensa.recompensa?.nombre || 'Recompensa'}}</h3>
+              <span class="puntos-badge">-{{recompensa.puntosUtilizados}} pts</span>
+            </div>
+            
+            <div class="recompensa-body">
+              <div class="detail-item">
+                <span class="detail-label">Fecha:</span>
+                <span>{{formatearFecha(recompensa.fechaCanjeado)}}</span>
+              </div>
+              
+              <div class="detail-item" *ngIf="recompensa.detalle">
+                <span class="detail-label">Producto:</span>
+                <span>{{recompensa.detalle.nombre}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <ng-template #sinHistorial>
+        <div class="empty-state">
+          <i class="bi bi-calendar-x"></i>
+          <p>No has canjeado ninguna recompensa todavía.</p>
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- CANJEAR RECOMPENSAS -->
+    <div class="canjear-section" *ngIf="!mostrarHistorial && !cargando">
+      <!-- PASO 1: Seleccionar recompensa disponible -->
+      <div *ngIf="paso === 1">
+        <h2 class="section-title mb-4">Recompensas disponibles</h2>
+        
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+          <div class="col" *ngFor="let recompensa of recompensas">
+            <div class="recompensa-card" [class.disabled-card]="!recompensa.esCanjeable">
+              <div class="recompensa-header">
+                <h3>{{recompensa.nombre}}</h3>
+                <span class="tipo-badge">{{getNombreTipo(recompensa.tipo)}}</span>
+              </div>
+              
+              <div class="recompensa-body">
+                <p class="recompensa-descripcion">{{recompensa.descripcion}}</p>
+                
+                <div class="puntos-required" [class.insufficient]="!recompensa.esCanjeable">
+                  <i class="bi bi-star-fill"></i>
+                  <span>{{recompensa.puntosNecesarios}} puntos</span>
+                  <span *ngIf="!recompensa.esCanjeable" class="puntos-faltantes">
+                    (Te faltan {{recompensa.puntosNecesarios - puntosDisponibles}} puntos)
+                  </span>
+                </div>
+              </div>
+              
+              <div class="recompensa-footer">
+                <button class="btn btn-outline-light" 
+                        (click)="seleccionarRecompensa(recompensa)"
+                        [disabled]="!recompensa.esCanjeable">
+                  {{ recompensa.esCanjeable ? 'Canjear' : 'Puntos insuficientes' }}
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Si no hay recompensas disponibles -->
+          <div class="col-12" *ngIf="recompensasFiltradas.length === 0">
+            <div class="empty-state">
+              <i class="bi bi-emoji-frown"></i>
+              <p>No hay recompensas disponibles para canjear con tus puntos actuales.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- PASO 2: Seleccionar discoteca -->
+      <div *ngIf="paso === 2">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h2 class="section-title mb-0">
+            Selecciona una discoteca para {{recompensaSeleccionada?.nombre}}
+          </h2>
+          <button class="btn btn-outline-secondary" (click)="volverAlPaso(1)">
+            <i class="bi bi-arrow-left"></i> Volver
+          </button>
+        </div>
+        
+        <div class="row">
+          <div class="col-lg-6 mx-auto">
+            <div class="select-container mb-4">
+              <select class="form-select" [(ngModel)]="discotecaSeleccionada">
+                <option [ngValue]="null">-- Selecciona una discoteca --</option>
+                <option *ngFor="let discoteca of discotecas" [ngValue]="discoteca.idDiscoteca">
+                  {{discoteca.nombre}} - {{discoteca.direccion}}
+                </option>
+              </select>
+            </div>
+            
+            <div class="text-center mt-4">
+              <button class="btn btn-primary btn-lg" 
+                      [disabled]="!discotecaSeleccionada" 
+                      (click)="seleccionarDiscoteca()">
+                Continuar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- PASO 3: Seleccionar item específico basado en el tipo de recompensa -->
+      <div *ngIf="paso === 3">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h2 class="section-title mb-0">
+            {{recompensaSeleccionada?.tipo === 'BOTELLA' ? 'Botellas disponibles' : 
+              recompensaSeleccionada?.tipo === 'EVENTO' ? 'Eventos disponibles' : 'Zonas VIP disponibles'}}
+          </h2>
+          <button class="btn btn-outline-secondary" (click)="volverAlPaso(2)">
+            <i class="bi bi-arrow-left"></i> Volver
+          </button>
+        </div>
+        
+        <!-- Lista de Botellas -->
+        <div class="row row-cols-1 row-cols-md-3 g-4" *ngIf="recompensaSeleccionada?.tipo === 'BOTELLA'">
+          <div class="col" *ngFor="let botella of botellas">
+            <div class="item-card">
+              <div class="item-image" *ngIf="botella.imagen">
+                <img [src]="botella.imagen" alt="{{botella.nombre}}">
+              </div>
+              <div class="item-content">
+                <h3>{{botella.nombre}}</h3>
+                <p>{{botella.tipo}} - {{botella.tamano}}</p>
+                <div class="item-price">{{botella.precio}} €</div>
+                <button class="btn btn-outline-primary mt-3" (click)="seleccionarItem(botella)">
+                  Canjear
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="col-12" *ngIf="botellas.length === 0">
+            <div class="empty-state">
+              <i class="bi bi-cup-straw"></i>
+              <p>No hay botellas disponibles en esta discoteca.</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Lista de Eventos -->
+        <div class="row row-cols-1 row-cols-md-2 g-4" *ngIf="recompensaSeleccionada?.tipo === 'EVENTO'">
+          <div class="col" *ngFor="let evento of eventos">
+            <div class="item-card">
+              <div class="item-image" *ngIf="evento.imagen">
+                <img [src]="evento.imagen" alt="{{evento.nombre}}">
+              </div>
+              <div class="item-content">
+                <h3>{{evento.nombre}}</h3>
+                <p>{{evento.descripcion}}</p>
+                <p><i class="bi bi-calendar"></i> {{formatearFecha(evento.fechaHora)}}</p>
+                <div class="item-price">{{evento.precioBaseEntrada}} €</div>
+                <button class="btn btn-outline-primary mt-3" (click)="seleccionarItem(evento)">
+                  Canjear
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="col-12" *ngIf="eventos.length === 0">
+            <div class="empty-state">
+              <i class="bi bi-calendar-x"></i>
+              <p>No hay eventos disponibles en esta discoteca.</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Lista de Zonas VIP -->
+        <div class="row row-cols-1 row-cols-md-2 g-4" *ngIf="recompensaSeleccionada?.tipo === 'ZONA_VIP'">
+          <div class="col" *ngFor="let zona of zonasVip">
+            <div class="item-card">
+              <div class="item-content">
+                <h3>{{zona.nombre}}</h3>
+                <p>{{zona.descripcion}}</p>
+                <p><i class="bi bi-people"></i> Capacidad: {{zona.aforoMaximo}} personas</p>
+                <button class="btn btn-outline-primary mt-3" (click)="seleccionarItem(zona)">
+                  Canjear
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="col-12" *ngIf="zonasVip.length === 0">
+            <div class="empty-state">
+              <i class="bi bi-star"></i>
+              <p>No hay zonas VIP disponibles en esta discoteca.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- PASO 4: Confirmación -->
+      <div *ngIf="paso === 4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h2 class="section-title mb-0">Confirmar la recompensa</h2>
+          <button class="btn btn-outline-secondary" (click)="volverAlPaso(3)">
+            <i class="bi bi-arrow-left"></i> Volver
+          </button>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-8 mx-auto">
+            <div class="confirm-card">
+              <h3>Resumen de la recompensa</h3>
+              
+              <div class="confirm-details">
+                <div class="detail-row">
+                  <span class="label">Recompensa:</span>
+                  <span class="value">{{recompensaSeleccionada?.nombre}}</span>
+                </div>
+                
+                <div class="detail-row">
+                  <span class="label">Tipo:</span>
+                  <span class="value">{{getNombreTipo(recompensaSeleccionada?.tipo)}}</span>
+                </div>
+                
+                <div class="detail-row">
+                  <span class="label">Item seleccionado:</span>
+                  <span class="value">{{itemSeleccionado?.nombre}}</span>
+                </div>
+                
+                <div class="detail-row">
+                  <span class="label">Discoteca:</span>
+                  <span class="value">{{getNombreDiscoteca(discotecaSeleccionada!)}}</span>
+                </div>
+                
+                <div class="detail-row">
+                  <span class="label">Puntos necesarios:</span>
+                  <span class="value points">{{recompensaSeleccionada?.puntosNecesarios}} pts</span>
+                </div>
+                
+                <div class="detail-row total">
+                  <span class="label">Puntos restantes:</span>
+                  <span class="value">{{puntosDisponibles - (recompensaSeleccionada?.puntosNecesarios || 0)}} pts</span>
+                </div>
+              </div>
+              
+              <div class="text-center mt-4">
+                <button class="btn btn-success btn-lg" (click)="canjearRecompensa()">
+                  <i class="bi bi-check2"></i> Confirmar recompensa
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

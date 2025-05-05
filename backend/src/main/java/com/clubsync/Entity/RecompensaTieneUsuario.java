@@ -30,4 +30,13 @@ public class RecompensaTieneUsuario {
     
     @Column(name = "puntos_utilizados", nullable = false)
     private Integer puntosUtilizados;
+    
+    @Column(name = "botella_id")
+    private Integer botellaId;
+    
+    @Column(name = "evento_id")  // Usamos evento directamente como entrada
+    private Integer eventoId;
+    
+    @Column(name = "zona_vip_id")
+    private Integer zonaVipId;
 }

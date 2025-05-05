@@ -18,14 +18,12 @@ import { MonederoComponent } from './componentes/monedero/monedero.component';
 import { PerfilComponent } from './componentes/perfil/perfil.component';
 import { authGuard } from './guards/auth.guard';
 import { WalletComponent } from './componentes/wallet/wallet.component';
+import { RecompensasComponent } from './componentes/recompensas/recompensas.component';
 
 export const routes: Routes = [
-    // global
     { path: '', redirectTo: '/login', pathMatch: 'full' },
     { path: 'login', component: LoginComponent },
     { path: 'registro', component: RegisterComponent },
-    
-    // Admin del sistema
     { path: 'admin/ciudades', component: GestionarCiudadesComponent },
     { path: 'admin-usuarios', component: GestionarUsuariosComponent },
     { path: 'admin/discotecas', component: GestionarDiscotecaComponent },
@@ -46,6 +44,7 @@ export const routes: Routes = [
     { path: 'monedero', component: MonederoComponent, canActivate: [authGuard] },
     { path: 'perfil', component: PerfilComponent, canActivate: [authGuard] },
     { path: 'wallet', component: WalletComponent, canActivate: [authGuard] }, 
+    { path: 'recompensas', component: RecompensasComponent, canActivate: [authGuard] },
     
     { path: '**', redirectTo: '/login' }
 ];

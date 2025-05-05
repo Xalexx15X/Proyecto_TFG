@@ -37,7 +37,7 @@ export class EventosService extends BaseService {
     return this.http.get<Evento>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
   }
 
-  getEventosByDiscoteca(idDiscoteca: number): Observable<Evento[]> {
+  getEventosByDiscoteca(idDiscoteca: number, p0: string): Observable<Evento[]> {
     return this.http.get<Evento[]>(`${this.apiUrl}/discoteca/${idDiscoteca}`, { 
       headers: this.getHeaders() 
     });
@@ -53,6 +53,11 @@ export class EventosService extends BaseService {
     return this.http.get<Evento[]>(`${this.apiUrl}/discoteca/${idDiscoteca}/tipo/${tipoEvento}`, {
       headers: this.getHeaders()
     });
+  }
+
+  getEventosActivos(): Observable<any[]> {
+    // Obtiene los eventos activos/futuros
+    return this.http.get<any[]>(`${this.apiUrl}/activos`);
   }
 
   createEvento(evento: Evento): Observable<Evento> {

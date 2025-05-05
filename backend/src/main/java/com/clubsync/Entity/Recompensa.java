@@ -39,23 +39,6 @@ public class Recompensa {
     @Column(nullable = false)
     private String tipo;
 
-    // Relaciones opcionales
-    @ManyToOne
-    @JoinColumn(name = "botella_id_botella", nullable = true)
-    private Botella botella;
-
-    @ManyToOne
-    @JoinColumn(name = "entrada_id_entrada", nullable = true)
-    private Entrada entrada;
-
-    @ManyToOne
-    @JoinColumn(name = "evento_id_evento", nullable = true)
-    private Evento evento;
-
-    @ManyToOne
-    @JoinColumn(name = "reserva_botella_id_reserva_botella", nullable = true)
-    private ReservaBotella reservaBotella;
-
     @ManyToMany
     @JoinTable(
         name = "recompensa_tiene_usuario",

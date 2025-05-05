@@ -420,3 +420,14 @@
       right: 1rem;
     }
   }
+
+  .puntos-ganados {
+    margin-top: 0.5rem;
+    color: #4caf50;
+    font-weight: 500;
+  }
+
+  .puntos-valor {
+    color: #4caf50;
+    font-weight: 700;
+  }

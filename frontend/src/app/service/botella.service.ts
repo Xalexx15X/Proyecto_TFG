@@ -29,6 +29,10 @@ export class BotellaService extends BaseService {
     return this.http.get<Botella[]>(this.apiUrl, { headers: this.getHeaders() });
   }
 
+  getAllBotellas(): Observable<any[]> {
+    return this.http.get<any[]>(this.apiUrl);
+  }
+
   getBotellasByDiscoteca(idDiscoteca: number): Observable<Botella[]> {
     return this.http.get<Botella[]>(`${this.apiUrl}/discoteca/${idDiscoteca}`, { 
       headers: this.getHeaders() 

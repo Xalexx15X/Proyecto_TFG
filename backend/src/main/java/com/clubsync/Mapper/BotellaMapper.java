@@ -30,10 +30,6 @@ public class BotellaMapper implements GenericMapper<Botella, DtoBotella> {
         
         // Relaciones
         dto.setIdDiscoteca(entity.getDiscoteca() != null ? entity.getDiscoteca().getIdDiscoteca() : null);
-        
-        dto.setIdRecompensas(entity.getRecompensas() != null ? 
-                entity.getRecompensas().stream().map(r -> r.getIdRecompensa()).collect(Collectors.toList()) : 
-                new ArrayList<>());
                 
         dto.setIdDetallesReservasBotellas(entity.getDetallesReservasBotellas() != null ? 
                 entity.getDetallesReservasBotellas().stream().map(drb -> drb.getIdDetalleReservaBotella()).collect(Collectors.toList()) : 

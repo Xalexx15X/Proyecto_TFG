@@ -59,7 +59,7 @@ export class EventosDiscotecaComponent implements OnInit {
     this.cargando = true;
 
     // 1. Cargar los eventos de la discoteca
-    this.eventosService.getEventosByDiscoteca(this.idDiscoteca).subscribe({
+    this.eventosService.getEventosByDiscoteca(this.idDiscoteca, 'TODOS').subscribe({
       next: (eventos) => {
         // Guardamos los eventos
         this.eventos = eventos;

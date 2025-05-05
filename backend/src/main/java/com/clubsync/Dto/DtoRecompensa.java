@@ -16,13 +16,6 @@ public class DtoRecompensa {
     private Integer puntosNecesarios;
     private LocalDateTime fechaInicio;
     private LocalDateTime fechaFin;
-    private String tipo;
-    
-    // IDs de relaciones opcionales
-    private Integer botellaIdBotella;
-    private Integer entradaIdEntrada;
-    private Integer eventoIdEvento;
-    private Integer reservaBotellaIdReservaBotella;
-    
+    private String tipo;    
     private List<Integer> idUsuarios;
 }

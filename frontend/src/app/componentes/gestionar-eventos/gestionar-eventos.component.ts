@@ -79,7 +79,7 @@ export class GestionarEventosComponent implements OnInit {
 
   private cargarEventos(): void {
     if (this.idDiscoteca) {
-      this.eventosService.getEventosByDiscoteca(this.idDiscoteca).subscribe({
+      this.eventosService.getEventosByDiscoteca(this.idDiscoteca, 'TODOS').subscribe({
         next: eventos => this.eventos = eventos,
         error: error => this.handleError(error)
       });

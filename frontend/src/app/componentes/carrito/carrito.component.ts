@@ -32,6 +32,10 @@ export class CarritoComponent implements OnInit {
   // Saldo del usuario
   saldoActual: number = 0;
   saldoSuficiente: boolean = true;
+  
+  // Puntos de recompensa
+  puntosActuales: number = 0;
+  puntosGanados: number = 0;
 
   constructor(
     private carritoService: CarritoService,
@@ -47,24 +51,33 @@ export class CarritoComponent implements OnInit {
     this.cargando = true;
     
     // Cargar saldo del usuario
-    this.cargarSaldoUsuario();
+    this.cargarDatosUsuario();
     
     // Suscribirse a cambios en el carrito
     this.carritoService.items$.subscribe(items => {
       this.itemsCarrito = items;
       this.total = this.carritoService.obtenerTotal();
+      this.calcularPuntosGanados();
       this.verificarSaldo();
       this.cargando = false;
     });
   }
   
-  // Cargar el saldo del usuario del monedero
-  cargarSaldoUsuario(): void {
+  // Cargar el saldo y puntos del usuario
+  cargarDatosUsuario(): void {
     const usuario = this.authService.getCurrentUser();
     if (usuario) {
       this.saldoActual = usuario.monedero || 0;
+      this.puntosActuales = usuario.puntosRecompensa || 0;
+      this.calcularPuntosGanados();
       this.verificarSaldo();
     }
+  }
+  
+  // Calcular puntos que se ganarán con esta compra
+  calcularPuntosGanados(): void {
+    // Fórmula: 0.5 puntos por cada euro gastado
+    this.puntosGanados = Math.floor(this.total * 0.5);
   }
   
   // Verificar si el saldo es suficiente para la compra
@@ -182,7 +195,10 @@ export class CarritoComponent implements OnInit {
     // Calcular el nuevo saldo
     const nuevoSaldo = this.saldoActual - this.total;
     
-    // Flujo de compra: actualizar saldo -> finalizar pedido -> crear entradas/reservas
+    // Calcular los nuevos puntos de recompensa
+    const nuevosPuntos = this.puntosActuales + this.puntosGanados;
+    
+    // Flujo de compra: actualizar saldo -> actualizar puntos -> finalizar pedido -> crear entradas/reservas
     this.usuarioService.actualizarMonedero(idUsuario, nuevoSaldo)
       .pipe(
         // 1. Actualizar datos usuario en localStorage
@@ -191,16 +207,25 @@ export class CarritoComponent implements OnInit {
           this.saldoActual = usuarioActualizado.monedero;
         }),
         
-        // 2. Finalizar el pedido (marcar como COMPLETADO sin borrar líneas)
+        // 2. Actualizar puntos de recompensa
+        switchMap(() => this.usuarioService.actualizarPuntosRecompensa(idUsuario, nuevosPuntos)),
+        
+        // Actualizar datos de usuario en localStorage con los nuevos puntos
+        tap(usuarioActualizado => {
+          this.authService.updateUserData(usuarioActualizado);
+          this.puntosActuales = usuarioActualizado.puntosRecompensa;
+        }),
+        
+        // 3. Finalizar el pedido (marcar como COMPLETADO sin borrar líneas)
         switchMap(() => this.carritoService.finalizarCompra()),
         
-        // 3. Crear entradas y reservas para cada item
+        // 4. Crear entradas y reservas para cada item
         switchMap(() => this.crearEntradasYReservas(itemsParaProcesar, idUsuario)),
         
         // Manejar errores
         catchError(error => {
-          // Devolver el dinero en caso de error
-          this.devolverDinero(idUsuario);
+          // Devolver el dinero y los puntos en caso de error
+          this.revertirTransaccion(idUsuario);
           console.error('Error en la compra:', error);
           return of({ error: true, message: error.message || 'Error en la compra' });
         }),
@@ -215,6 +240,25 @@ export class CarritoComponent implements OnInit {
         next: (resultados) => this.procesarResultadosCompra(resultados),
         error: (error) => this.finalizarError('Error al procesar la compra. Por favor, inténtalo de nuevo.')
       });
+  }
+
+  // Revertir transacción en caso de error
+  private revertirTransaccion(idUsuario: number): void {
+    // Revertir saldo
+    this.usuarioService.actualizarMonedero(idUsuario, this.saldoActual).subscribe({
+      next: (usuario) => {
+        // Revertir puntos si fueron actualizados
+        if (usuario.puntosRecompensa !== this.puntosActuales) {
+          this.usuarioService.actualizarPuntosRecompensa(idUsuario, this.puntosActuales).subscribe({
+            next: (usuarioFinal) => this.authService.updateUserData(usuarioFinal),
+            error: (err) => console.error('Error al reembolsar puntos:', err)
+          });
+        } else {
+          this.authService.updateUserData(usuario);
+        }
+      },
+      error: (err) => console.error('Error al reembolsar saldo:', err)
+    });
   }
 
   // Crear entradas y reservas para todos los items
@@ -301,14 +345,6 @@ export class CarritoComponent implements OnInit {
     return forkJoin(tareasDetalles);
   }
   
-  // Devolver el dinero en caso de error
-  private devolverDinero(idUsuario: number): void {
-    this.usuarioService.actualizarMonedero(idUsuario, this.saldoActual).subscribe({
-      next: (usuario) => this.authService.updateUserData(usuario),
-      error: (err) => console.error('Error al reembolsar:', err)
-    });
-  }
-  
   // Procesar los resultados de la compra
   private procesarResultadosCompra(resultados: any): void {
     // Si hay un error directo
@@ -324,7 +360,7 @@ export class CarritoComponent implements OnInit {
     if (hayErrores) {
       this.finalizarError('Hubo errores al procesar algunas entradas. Contacte a soporte.');
     } else {
-      this.exito = '¡Compra realizada con éxito! Se han creado tus entradas y reservas.';
+      this.exito = `¡Compra realizada con éxito! Has ganado ${this.puntosGanados} puntos de recompensa.`;
       
       // Redirigir a la página de entradas en 2 segundos
       setTimeout(() => {

@@ -26,6 +26,10 @@ export class ZonaVipService extends BaseService {
     return this.http.get<ZonaVip[]>(this.apiUrl, { headers: this.getHeaders() });
   }
 
+  getAllZonasVip(): Observable<any[]> {
+    return this.http.get<any[]>(this.apiUrl);
+  }
+
   getZonasVipByDiscoteca(idDiscoteca: number): Observable<ZonaVip[]> {
     return this.http.get<ZonaVip[]>(`${this.apiUrl}/discoteca/${idDiscoteca}`, { 
       headers: this.getHeaders() 

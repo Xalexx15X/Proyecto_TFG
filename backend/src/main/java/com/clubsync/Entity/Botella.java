@@ -33,16 +33,12 @@ public class Botella {
     @Column(nullable = false, length = 80)
     private String disponibilidad;
     
-    @Column(nullable = false)
-    @Lob
+    @Column(name = "imagen", nullable = false, columnDefinition = "TEXT")
     private String imagen;
     
     @ManyToOne
     @JoinColumn(name = "discoteca_idDiscoteca", nullable = false)
     private Discoteca discoteca;
-    
-    @OneToMany(mappedBy = "botella")
-    private List<Recompensa> recompensas;
     
     @OneToMany(mappedBy = "botella", cascade = CascadeType.ALL)
     private List<DetalleReservaBotella> detallesReservasBotellas;

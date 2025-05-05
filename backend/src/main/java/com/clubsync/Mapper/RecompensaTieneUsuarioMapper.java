@@ -26,9 +26,14 @@ public class RecompensaTieneUsuarioMapper implements GenericMapper<RecompensaTie
         dto.setFechaCanjeado(entity.getFechaCanjeado());
         dto.setPuntosUtilizados(entity.getPuntosUtilizados());
         
-        // Relaciones
+        // Relaciones principales
         dto.setIdRecompensa(entity.getRecompensa() != null ? entity.getRecompensa().getIdRecompensa() : null);
         dto.setIdUsuario(entity.getUsuario() != null ? entity.getUsuario().getIdUsuario() : null);
+        
+        // Campos específicos para cada tipo de recompensa
+        dto.setBotellaId(entity.getBotellaId());
+        dto.setEventoId(entity.getEventoId());
+        dto.setZonaVipId(entity.getZonaVipId());
         
         return dto;
     }
@@ -42,7 +47,7 @@ public class RecompensaTieneUsuarioMapper implements GenericMapper<RecompensaTie
         entity.setFechaCanjeado(dto.getFechaCanjeado());
         entity.setPuntosUtilizados(dto.getPuntosUtilizados());
         
-        // Establecer relaciones
+        // Establecer relaciones principales
         if (dto.getIdRecompensa() != null) {
             entity.setRecompensa(recompensaRepository.findById(dto.getIdRecompensa()).orElse(null));
         }
@@ -50,6 +55,11 @@ public class RecompensaTieneUsuarioMapper implements GenericMapper<RecompensaTie
         if (dto.getIdUsuario() != null) {
             entity.setUsuario(usuarioRepository.findById(dto.getIdUsuario()).orElse(null));
         }
+        
+        // Establecer campos específicos para cada tipo de recompensa
+        entity.setBotellaId(dto.getBotellaId());
+        entity.setEventoId(dto.getEventoId());
+        entity.setZonaVipId(dto.getZonaVipId());
         
         return entity;
     }

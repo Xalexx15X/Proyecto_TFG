@@ -181,6 +181,27 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioMapper.toDto(usuarioActualizado));
     }
 
+    @PutMapping("/{id}/puntos-recompensa")
+    public ResponseEntity<DtoUsuario> actualizarPuntosRecompensa(
+            @PathVariable Integer id,
+            @Valid @RequestBody Map<String, Integer> requestBody) {
+        
+        Integer puntosRecompensa = requestBody.get("puntosRecompensa");
+        
+        if (puntosRecompensa == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        
+        Usuario usuario = usuarioService.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario", "id", id));
+        
+        usuario.setPuntosRecompensa(puntosRecompensa);
+        
+        Usuario usuarioActualizado = usuarioService.save(usuario);
+        
+        return ResponseEntity.ok(usuarioMapper.toDto(usuarioActualizado));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUsuario(@PathVariable Integer id) {
         // 1. Verificamos que existe
