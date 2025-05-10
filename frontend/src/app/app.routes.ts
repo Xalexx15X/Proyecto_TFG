@@ -19,6 +19,7 @@ import { PerfilComponent } from './componentes/perfil/perfil.component';
 import { authGuard } from './guards/auth.guard';
 import { WalletComponent } from './componentes/wallet/wallet.component';
 import { RecompensasComponent } from './componentes/recompensas/recompensas.component';
+import { EstadisticasComponent } from './componentes/estadisticas/estadisticas.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -35,6 +36,8 @@ export const routes: Routes = [
     { path: 'admin-discoteca/tramos', component: GestionarTramoHorarioComponent },
     { path: 'admin-discoteca/botellas', component: GestionarBotellaComponent },
     { path: 'admin-discoteca/zonas-vip', component: GestionarZonaVipComponent },
+    { path: 'admin-discoteca/estadisticas', component: EstadisticasComponent },
+    { path: 'admin-discoteca/estadisticas/:tipo', component: EstadisticasComponent },
 
     // Cliente
     { path: 'discotecas', component: DetalleDiscotecaComponent },

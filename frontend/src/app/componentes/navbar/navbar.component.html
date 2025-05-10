@@ -45,16 +45,10 @@
             </ul>
           </details>
         </li>
-
-        <li class="nav-item dropdown" *ngIf="isAdminDiscoteca()">
-          <details class="custom-dropdown">
-            <summary class="nav-link">Estadísticas</summary>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" routerLink="/admin-discoteca/estadisticas/eventos">Por Eventos</a></li>
-              <li><a class="dropdown-item" routerLink="/admin-discoteca/estadisticas/horarios">Por Horarios</a></li>
-              <li><a class="dropdown-item" routerLink="/admin-discoteca/estadisticas/reservas">Por Reservas</a></li>
-            </ul>
-          </details>
+        <li class="nav-item" *ngIf="isAdminDiscoteca()">
+          <a class="nav-link" routerLink="/admin-discoteca/estadisticas" routerLinkActive="active">
+            <i class="bi bi-graph-up"></i> Estadísticas
+          </a>
         </li>
 
         <!-- Menú para administradores del sistema -->

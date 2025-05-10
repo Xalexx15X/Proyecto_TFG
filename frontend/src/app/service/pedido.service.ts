@@ -3,6 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { BaseService } from './base.service';
 
+// Definición de la interfaz para estadísticas de ingresos
+export interface EstadisticasIngresos {
+  meses: string[];
+  ingresos: number[];
+  totalIngresos: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -48,5 +55,11 @@ export class PedidoService extends BaseService {
   
   getLineaPedido(lineaId: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/lineas/${lineaId}`, { headers: this.getHeaders() });
+  }
+
+  getEstadisticasIngresos(idDiscoteca: number): Observable<EstadisticasIngresos> {
+    return this.http.get<EstadisticasIngresos>(`${this.apiUrl}/estadisticas/ingresos/${idDiscoteca}`, { 
+      headers: this.getHeaders() 
+    });
   }
 }

@@ -5,13 +5,17 @@ import com.clubsync.Entity.Entrada;
 import com.clubsync.Service.EntradaService;
 import com.clubsync.Mapper.EntradaMapper;
 import com.clubsync.Error.ResourceNotFoundException;
+import com.clubsync.Repository.EntradaRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -24,6 +28,9 @@ public class EntradaController {
     
     @Autowired
     private EntradaMapper entradaMapper;
+
+    @Autowired
+    private EntradaRepository entradaRepository;
 
     @GetMapping
     public ResponseEntity<List<DtoEntrada>> getAllEntradas() {
@@ -66,6 +73,25 @@ public class EntradaController {
             .collect(Collectors.toList()));
     }
 
+    @GetMapping("/estadisticas/asistencia/{idDiscoteca}")
+    public ResponseEntity<?> getEstadisticasAsistencia(@PathVariable Integer idDiscoteca) {
+        try {
+            // Utilizamos los métodos simplificados
+            List<Map<String, Object>> eventos = entradaRepository.getEstadisticasAsistencia();
+            Integer totalEntradasVendidas = entradaRepository.getTotalEntradasVendidas();
+            
+            // Usamos Map.of para crear un mapa inmutable más limpio
+            return ResponseEntity.ok(Map.of(
+                "eventos", eventos,
+                "totalEntradasVendidas", totalEntradasVendidas != null ? totalEntradasVendidas : 0
+            ));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error al obtener estadísticas de asistencia: " + e.getMessage());
+        }
+    }
+
     @PostMapping
     public ResponseEntity<DtoEntrada> createEntrada(@RequestBody DtoEntrada dtoEntrada) {
         Entrada entrada = entradaMapper.toEntity(dtoEntrada);
@@ -93,4 +119,5 @@ public class EntradaController {
         entradaService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
 }

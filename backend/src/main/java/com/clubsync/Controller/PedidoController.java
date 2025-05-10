@@ -5,14 +5,18 @@ import com.clubsync.Entity.Pedido;
 import com.clubsync.Service.PedidoService;
 import com.clubsync.Mapper.PedidoMapper;
 import com.clubsync.Error.ResourceNotFoundException;
+import com.clubsync.Repository.PedidoRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Map;
+
 
 @RestController
 @RequestMapping("/api/pedidos")
@@ -23,6 +27,9 @@ public class PedidoController {
     
     @Autowired
     private PedidoMapper pedidoMapper;
+
+    @Autowired
+    private PedidoRepository pedidoRepository;
 
     @GetMapping
     public ResponseEntity<List<DtoPedido>> getAllPedidos() {
@@ -71,6 +78,35 @@ public class PedidoController {
         return ResponseEntity.ok(dtosPedidos);
     }
 
+    @GetMapping("/estadisticas/ingresos/{idDiscoteca}")
+    public ResponseEntity<?> getEstadisticasIngresos(@PathVariable Integer idDiscoteca) {
+        try {
+            // Utilizamos los métodos simplificados
+            List<Map<String, Object>> datosIngresos = pedidoRepository.getEstadisticasIngresos();
+            Double totalIngresos = pedidoRepository.getTotalIngresos();
+            
+            // Construimos el resultado usando streams para mejorar la legibilidad
+            List<String> meses = datosIngresos.stream()
+                .map(dato -> (String) dato.get("mes"))
+                .collect(Collectors.toList());
+                
+            List<Double> ingresos = datosIngresos.stream()
+                .map(dato -> dato.get("total") != null ? ((Number) dato.get("total")).doubleValue() : 0.0)
+                .collect(Collectors.toList());
+            
+            // Usamos Map.of para crear un mapa inmutable más limpio
+            return ResponseEntity.ok(Map.of(
+                "meses", meses,
+                "ingresos", ingresos,
+                "totalIngresos", totalIngresos != null ? totalIngresos : 0.0
+            ));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error al obtener estadísticas de ingresos: " + e.getMessage());
+        }
+    }
+
     @PostMapping
     public ResponseEntity<DtoPedido> createPedido(@RequestBody DtoPedido dtoPedido) {
         Pedido pedido = pedidoMapper.toEntity(dtoPedido);
@@ -106,4 +142,5 @@ public class PedidoController {
         pedidoService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
 }

@@ -13,7 +13,22 @@ export interface Entrada {
   idTramoHorario: number;
   estado?: string;
   fechaReservada?: string;
-  idPedido?: number; // Añadido este campo
+  idPedido?: number;
+}
+
+// Definición de la interfaz para estadísticas de asistencia
+export interface EventoEstadisticas {
+  nombre: string;
+  fechaHora: string;
+  entradasEstandar: number;
+  entradasVIP: number;
+  totalEntradas: number;
+  porcentajeOcupacion: number;
+}
+
+export interface EstadisticasAsistencia {
+  eventos: EventoEstadisticas[];
+  totalEntradasVendidas: number;
 }
 
 @Injectable({
@@ -48,5 +63,11 @@ export class EntradaService extends BaseService {
 
   updateEntrada(id: number, entrada: Entrada): Observable<Entrada> {
     return this.http.put<Entrada>(`${this.apiUrl}/${id}`, entrada, { headers: this.getHeaders() });
+  }
+
+  getEstadisticasAsistencia(idDiscoteca: number): Observable<EstadisticasAsistencia> {
+    return this.http.get<EstadisticasAsistencia>(`${this.apiUrl}/estadisticas/asistencia/${idDiscoteca}`, { 
+      headers: this.getHeaders() 
+    });
   }
 }
