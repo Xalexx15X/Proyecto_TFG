@@ -64,7 +64,7 @@
   color: white;
   border-radius: 10px;
   overflow: hidden;
-  font-size: 1.1rem; /* Aumentado el tamaño de fuente general de la tabla */
+  font-size: 0.95rem; /* Aumentado el tamaño de fuente general de la tabla */
 }
 
 .table thead th {
@@ -130,12 +130,28 @@
   font-weight: 500;
   transition: all 0.3s ease;
   margin-right: 1rem;
+  min-width: 120px;
 }
 
 .btn-create:hover {
   background-color: #ffec8b;
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.btn-secondary {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  min-width: 120px;
+}
+
+.btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 /* Estilos para los botones de acción en la tabla */
@@ -185,7 +201,7 @@
 .form-control:focus {
   background-color: rgba(255, 255, 255, 0.15);
   border-color: #ffd740;
-  box-shadow: none;
+  box-shadow: 0 0 0 0.2rem rgba(255, 215, 64, 0.25);
   color: white;
 }
 
@@ -196,6 +212,7 @@
   border: none;
   border-radius: 15px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  margin-top: 4rem;
 }
 
 .card-body {
@@ -206,6 +223,10 @@
   color: white;
   font-size: 1.5rem;
   margin-bottom: 1.5rem;
+}
+
+.form-group {
+  position: relative;
 }
 
 .form-label {
@@ -219,6 +240,8 @@
   color: white;
   border-radius: 8px;
   padding: 0.75rem 1rem;
+  height: auto;
+  transition: all 0.3s ease;
 }
 
 .form-select {
@@ -236,9 +259,19 @@
 
 /* Validación */
 .invalid-feedback {
-  color: #ff8a8a;
+  color: #ffd740;
   font-size: 0.875rem;
-  margin-top: 0.25rem;
+  margin-top: 0.5rem;
+  display: block;
+}
+
+.form-control.is-invalid {
+  border-color: #ffd740;
+  box-shadow: none;
+}
+
+.form-control.is-invalid:focus {
+  box-shadow: 0 0 0 0.2rem rgba(255, 215, 64, 0.25);
 }
 
 /* Responsive */

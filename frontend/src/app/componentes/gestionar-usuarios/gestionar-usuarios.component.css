@@ -64,7 +64,7 @@
   color: white;
   border-radius: 10px;
   overflow: hidden;
-  font-size: 1.1rem;
+  font-size: 1.1em;
 }
 
 .table thead th {
@@ -195,11 +195,48 @@
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   border: none;
-  border-radius: 10px;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.card-body {
+  padding: 2rem;
 }
 
 .card-title {
+  color: #ffd740;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.section-title {
+  color: #ffd740;
+  font-size: 1.1rem;
+  margin: 1.5rem 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Ajuste de botones en el formulario */
+.form-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+/* Ajuste del tamaño del botón secundario para que coincida con el botón principal */
+.btn-secondary {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: none;
   color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .form-label {
@@ -212,15 +249,35 @@
   color: white;
 }
 
-/* Estilo para el select */
+/* Estilo para el select ajustado como en gestionar-botella */
 .form-select {
   background-color: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: white;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  padding-right: 2.5rem;
+  background-position: right 1rem center;
+}
+
+.form-select:focus {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: #ffd740;
+  box-shadow: 0 0 0 0.2rem rgba(255, 215, 64, 0.25);
+  color: white;
 }
 
 .form-select option {
-  background-color: #673ab7;
+  background-color: #2b2b2b; /* Color de fondo oscuro */
+  color: white;
+}
+
+/* Personalización del dropdown cuando está abierto */
+.form-select option:hover,
+.form-select option:focus,
+.form-select option:active,
+.form-select option:checked {
+  background-color: #673ab7; /* Color azul/púrpura para las selecciones */
   color: white;
 }
 

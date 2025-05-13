@@ -1,4 +1,4 @@
-<div class="container-fluid py-5 mt-5"> <!-- Cambiado a container-fluid y ajustado el padding -->
+<div class="container-fluid py-5 mt-5">
   <!-- Header con título y botón -->
   <div class="page-header">
     <h2 class="page-title">Gestión de Ciudades</h2>
@@ -22,94 +22,123 @@
   </div>
 
   <!-- Formulario de creación/edición -->
-  <div class="card mb-4" *ngIf="mostrarFormulario || modoEdicion">
-    <div class="card-body">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="card-title m-0">{{modoEdicion ? 'Editar Ciudad' : 'Nueva Ciudad'}}</h3>
-        <button class="btn btn-close-form" (click)="cancelar()">
-          <i class="bi bi-x-lg"></i>
-        </button>
-      </div>
-      
-      <!-- Mensaje de error general -->
-      <div *ngIf="formErrors.general" class="alert alert-warning mb-3">
-        {{formErrors.general}}
-      </div>
-
-      <form (ngSubmit)="modoEdicion ? actualizarCiudad() : crearCiudad()" #ciudadForm="ngForm">
-        <div class="mb-3">
-          <label for="nombre" class="form-label">Nombre</label>
-          <input 
-            type="text" 
-            class="form-control"
-            [class.is-invalid]="formErrors.nombre"
-            id="nombre"
-            name="nombre"
-            [ngModel]="modoEdicion ? ciudadSeleccionada!.nombre : nuevaCiudad.nombre"
-            (ngModelChange)="modoEdicion ? (ciudadSeleccionada!.nombre = $event) : (nuevaCiudad.nombre = $event)"
-            required>
-          <div class="invalid-feedback" *ngIf="formErrors.nombre">
-            {{formErrors.nombre}}
+  <div class="row justify-content-center" *ngIf="mostrarFormulario || modoEdicion">
+    <div class="col-md-8 col-lg-6">
+      <div class="card mb-4">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="card-title m-0">{{modoEdicion ? 'Editar Ciudad' : 'Nueva Ciudad'}}</h3>
+            <button class="btn btn-close-form" (click)="cancelar()">
+              <i class="bi bi-x-lg"></i>
+            </button>
           </div>
-        </div>
+          
+          <!-- Mensaje de error general -->
+          <div *ngIf="formErrors.general" class="alert alert-warning mb-3">
+            {{formErrors.general}}
+          </div>
 
-        <div class="mb-3">
-          <label for="provincia" class="form-label">Provincia</label>
-          <input 
-            type="text" 
-            class="form-control" 
-            id="provincia"
-            name="provincia"
-            [ngModel]="modoEdicion ? ciudadSeleccionada!.provincia : nuevaCiudad.provincia"
-            (ngModelChange)="modoEdicion ? (ciudadSeleccionada!.provincia = $event) : (nuevaCiudad.provincia = $event)"
-            required
-            minlength="3"
-            (keypress)="validarInput($event)">
-        </div>
+          <form (ngSubmit)="modoEdicion ? actualizarCiudad() : crearCiudad()" #ciudadForm="ngForm">
+            <div class="row g-3">
+              <!-- Nombre -->
+              <div class="col-md-6">
+                <div class="form-group mb-3">
+                  <label for="nombre" class="form-label">Nombre</label>
+                  <input 
+                    type="text" 
+                    class="form-control"
+                    [class.is-invalid]="formErrors.nombre"
+                    id="nombre"
+                    name="nombre"
+                    [ngModel]="modoEdicion ? ciudadSeleccionada!.nombre : nuevaCiudad.nombre"
+                    (ngModelChange)="modoEdicion ? (ciudadSeleccionada!.nombre = $event) : (nuevaCiudad.nombre = $event)"
+                    required>
+                  <div class="invalid-feedback" *ngIf="formErrors.nombre">
+                    {{formErrors.nombre}}
+                  </div>
+                </div>
+              </div>
 
-        <div class="mb-3">
-          <label for="pais" class="form-label">País</label>
-          <input 
-            type="text" 
-            class="form-control" 
-            id="pais"
-            name="pais"
-            [ngModel]="modoEdicion ? ciudadSeleccionada!.pais : nuevaCiudad.pais"
-            (ngModelChange)="modoEdicion ? (ciudadSeleccionada!.pais = $event) : (nuevaCiudad.pais = $event)"
-            required
-            minlength="3"
-            (keypress)="validarInput($event)">
-        </div>
+              <!-- Provincia -->
+              <div class="col-md-6">
+                <div class="form-group mb-3">
+                  <label for="provincia" class="form-label">Provincia</label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    [class.is-invalid]="formErrors.provincia"
+                    id="provincia"
+                    name="provincia"
+                    [ngModel]="modoEdicion ? ciudadSeleccionada!.provincia : nuevaCiudad.provincia"
+                    (ngModelChange)="modoEdicion ? (ciudadSeleccionada!.provincia = $event) : (nuevaCiudad.provincia = $event)"
+                    required
+                    minlength="3"
+                    (keypress)="validarInput($event)">
+                  <div class="invalid-feedback" *ngIf="formErrors.provincia">
+                    {{formErrors.provincia}}
+                  </div>
+                </div>
+              </div>
 
-        <div class="mb-3">
-          <label for="codigoPostal" class="form-label">Código Postal</label>
-          <input 
-            type="text" 
-            class="form-control" 
-            id="codigoPostal"
-            name="codigoPostal"
-            [ngModel]="modoEdicion ? ciudadSeleccionada!.codigoPostal : nuevaCiudad.codigoPostal"
-            (ngModelChange)="modoEdicion ? (ciudadSeleccionada!.codigoPostal = $event) : (nuevaCiudad.codigoPostal = $event)"
-            required
-            pattern="[0-9]{5}"
-            maxlength="5">
-        </div>
+              <!-- País -->
+              <div class="col-md-6">
+                <div class="form-group mb-3">
+                  <label for="pais" class="form-label">País</label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    [class.is-invalid]="formErrors.pais"
+                    id="pais"
+                    name="pais"
+                    [ngModel]="modoEdicion ? ciudadSeleccionada!.pais : nuevaCiudad.pais"
+                    (ngModelChange)="modoEdicion ? (ciudadSeleccionada!.pais = $event) : (nuevaCiudad.pais = $event)"
+                    required
+                    minlength="3"
+                    (keypress)="validarInput($event)">
+                  <div class="invalid-feedback" *ngIf="formErrors.pais">
+                    {{formErrors.pais}}
+                  </div>
+                </div>
+              </div>
 
-        <div class="d-flex gap-2">
-          <button 
-            type="submit" 
-            class="btn btn-create"
-            [disabled]="!ciudadForm.form.valid">
-            {{modoEdicion ? 'Actualizar' : 'Crear'}}
-          </button>
-          <button 
-            type="button" 
-            class="btn btn-secondary" 
-            (click)="cancelar()">
-            Cancelar
-          </button>
+              <!-- Código Postal -->
+              <div class="col-md-6">
+                <div class="form-group mb-3">
+                  <label for="codigoPostal" class="form-label">Código Postal</label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    [class.is-invalid]="formErrors.codigoPostal"
+                    id="codigoPostal"
+                    name="codigoPostal"
+                    [ngModel]="modoEdicion ? ciudadSeleccionada!.codigoPostal : nuevaCiudad.codigoPostal"
+                    (ngModelChange)="modoEdicion ? (ciudadSeleccionada!.codigoPostal = $event) : (nuevaCiudad.codigoPostal = $event)"
+                    required
+                    pattern="[0-9]{5}"
+                    maxlength="5">
+                  <div class="invalid-feedback" *ngIf="formErrors.codigoPostal">
+                    {{formErrors.codigoPostal}}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex gap-2 justify-content-center mt-4">
+              <button 
+                type="submit" 
+                class="btn btn-create">
+                {{modoEdicion ? 'Actualizar' : 'Crear'}}
+              </button>
+              <button 
+                type="button" 
+                class="btn btn-secondary" 
+                (click)="cancelar()">
+                Cancelar
+              </button>
+            </div>
+          </form>
         </div>
-      </form>
+      </div>
     </div>
   </div>
 

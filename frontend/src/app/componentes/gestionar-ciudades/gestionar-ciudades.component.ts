@@ -65,15 +65,19 @@ export class GestionarCiudadesComponent implements OnInit {
 
   // Crear ciudad
   crearCiudad(): void {
-    if (!this.validarFormulario()) return;
+    if (!this.validarFormulario()) {
+      return;
+    }
     
     this.ciudadService.createCiudad(this.nuevaCiudad).subscribe({
       next: (ciudad) => {
-        this.ciudades.unshift(ciudad); // esto es para crearla al principio del array 
+        this.ciudades.unshift(ciudad);
         this.mostrarFormulario = false;
         this.limpiarFormulario();
+        this.limpiarErrores(); // Añadido para asegurar que se limpian los errores
       },
       error: (error) => {
+        console.error('Error al crear ciudad:', error);
         this.formErrors.general = 'Error al crear la ciudad';
       }
     });
@@ -88,12 +92,13 @@ export class GestionarCiudadesComponent implements OnInit {
 
   // Actualizar ciudad
   actualizarCiudad(): void {
-    if (!this.validarFormulario()) return;
+    if (!this.validarFormulario()) {
+      return;
+    }
     
     if (this.ciudadSeleccionada?.idCiudad) {
-      this.ciudadService.updateCiudad(this.ciudadSeleccionada.idCiudad, this.ciudadSeleccionada).subscribe({ // aqui primero le pasamos el id de la ciudad a actualizar y luego la ciudad entera con todos sus datos
+      this.ciudadService.updateCiudad(this.ciudadSeleccionada.idCiudad, this.ciudadSeleccionada).subscribe({
         next: (ciudadActualizada) => {
-          // Actualiza la ciudad en el array
           const index = this.ciudades.findIndex(c => c.idCiudad === ciudadActualizada.idCiudad);
           if (index !== -1) {
             this.ciudades[index] = ciudadActualizada;
@@ -101,8 +106,10 @@ export class GestionarCiudadesComponent implements OnInit {
           this.mostrarFormulario = false;
           this.modoEdicion = false;
           this.ciudadSeleccionada = null;
+          this.limpiarErrores(); // Añadido para asegurar que se limpian los errores
         },
         error: (error) => {
+          console.error('Error al actualizar ciudad:', error);
           this.formErrors.general = 'Error al actualizar la ciudad';
         }
       });
@@ -157,23 +164,30 @@ export class GestionarCiudadesComponent implements OnInit {
   validarFormulario(): boolean {
     this.limpiarErrores();
     let isValid = true;
+
+    // Establece el objeto a validar basado en el modo
+    const ciudadAValidar = this.modoEdicion ? this.ciudadSeleccionada! : this.nuevaCiudad;
     
-    if (!this.nuevaCiudad.nombre || this.nuevaCiudad.nombre.length < 3) {
+    // Validación del nombre
+    if (!ciudadAValidar.nombre || ciudadAValidar.nombre.length < 3) {
       this.formErrors.nombre = 'El nombre debe tener al menos 3 caracteres';
       isValid = false;
     }
 
-    if (!this.nuevaCiudad.provincia || this.nuevaCiudad.provincia.length < 3) {
+    // Validación de la provincia
+    if (!ciudadAValidar.provincia || ciudadAValidar.provincia.length < 3) {
       this.formErrors.provincia = 'La provincia debe tener al menos 3 caracteres';
       isValid = false;
     }
 
-    if (!this.nuevaCiudad.pais || this.nuevaCiudad.pais.length < 3) {
+    // Validación del país
+    if (!ciudadAValidar.pais || ciudadAValidar.pais.length < 3) {
       this.formErrors.pais = 'El país debe tener al menos 3 caracteres';
       isValid = false;
     }
 
-    if (!this.nuevaCiudad.codigoPostal || !/^\d{5}$/.test(this.nuevaCiudad.codigoPostal)) {
+    // Validación del código postal
+    if (!ciudadAValidar.codigoPostal || !/^\d{5}$/.test(ciudadAValidar.codigoPostal)) {
       this.formErrors.codigoPostal = 'El código postal debe tener 5 dígitos';
       isValid = false;
     }

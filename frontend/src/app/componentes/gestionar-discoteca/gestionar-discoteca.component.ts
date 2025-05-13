@@ -63,21 +63,24 @@ export class GestionarDiscotecaComponent implements OnInit {
   }
 
   private cargarDiscotecas(): void {
-    this.discotecaService.getDiscotecas().subscribe(
-      discotecas => this.discotecas = discotecas
-    );
+    this.discotecaService.getDiscotecas().subscribe({
+      next: discotecas => this.discotecas = discotecas,
+      error: error => this.handleError(error)
+    });
   }
 
   private cargarCiudades(): void {
-    this.ciudadService.getCiudades().subscribe(
-      ciudades => this.ciudades = ciudades
-    );
+    this.ciudadService.getCiudades().subscribe({
+      next: ciudades => this.ciudades = ciudades,
+      error: error => this.handleError(error)
+    });
   }
 
   private cargarAdminDiscotecas(): void {
-    this.usuarioService.getUsuariosByRole('ROLE_ADMIN_DISCOTECA').subscribe(
-      admins => this.adminUsuarios = admins
-    );
+    this.usuarioService.getUsuariosByRole('ROLE_ADMIN_DISCOTECA').subscribe({
+      next: admins => this.adminUsuarios = admins,
+      error: error => this.handleError(error)
+    });
   }
 
   // Gestión de formulario
@@ -154,22 +157,47 @@ export class GestionarDiscotecaComponent implements OnInit {
 
   editarDiscoteca(discoteca: Discoteca): void {
     this.limpiarErrores();
-    this.discotecaSeleccionada = {...discoteca};
-    this.nuevaDiscoteca = {...discoteca};
+    // Hacer una copia profunda para evitar problemas de referencias
+    this.discotecaSeleccionada = JSON.parse(JSON.stringify(discoteca));
+    this.nuevaDiscoteca = JSON.parse(JSON.stringify(discoteca));
+    
+    // Asegurar que los tipos sean correctos
+    if (this.nuevaDiscoteca.idCiudad) {
+      this.nuevaDiscoteca.idCiudad = Number(this.nuevaDiscoteca.idCiudad);
+    }
+    if (this.nuevaDiscoteca.idAdministrador) {
+      this.nuevaDiscoteca.idAdministrador = Number(this.nuevaDiscoteca.idAdministrador);
+    }
+    
     this.modoEdicion = true;
     this.mostrarFormulario = true;
     if (discoteca.imagen) {
       this.imagenesPreview = discoteca.imagen.split('|');
+    } else {
+      this.imagenesPreview = [];
     }
   }
 
   actualizarDiscoteca(): void {
     if (!this.discotecaSeleccionada?.idDiscoteca) return;
     if (!this.validarFormulario()) return;
+
+    // Crear una copia simple del objeto para evitar referencias circulares
+    const discotecaActualizar: Discoteca = {
+      idDiscoteca: this.discotecaSeleccionada.idDiscoteca,
+      nombre: this.nuevaDiscoteca.nombre,
+      direccion: this.nuevaDiscoteca.direccion,
+      descripcion: this.nuevaDiscoteca.descripcion,
+      contacto: this.nuevaDiscoteca.contacto,
+      capacidadTotal: this.nuevaDiscoteca.capacidadTotal,
+      imagen: this.nuevaDiscoteca.imagen,
+      idCiudad: Number(this.nuevaDiscoteca.idCiudad),
+      idAdministrador: this.nuevaDiscoteca.idAdministrador ? Number(this.nuevaDiscoteca.idAdministrador) : null
+    };
     
     this.discotecaService.updateDiscoteca(
       this.discotecaSeleccionada.idDiscoteca,
-      this.nuevaDiscoteca
+      discotecaActualizar
     ).subscribe({
       next: discotecaActualizada => {
         const index = this.discotecas.findIndex(d => d.idDiscoteca === discotecaActualizada.idDiscoteca);
@@ -213,6 +241,7 @@ export class GestionarDiscotecaComponent implements OnInit {
       idAdministrador: null
     };
     this.imagenesPreview = [];
+    this.limpiarErrores();
   }
 
   buscar(event: any): void {
@@ -249,18 +278,49 @@ export class GestionarDiscotecaComponent implements OnInit {
     this.limpiarErrores();
     let isValid = true;
 
+    // Validación del nombre
     if (!this.nuevaDiscoteca.nombre) {
       this.formErrors.nombre = 'El nombre es requerido';
       isValid = false;
     }
 
+    // Validación de la dirección
     if (!this.nuevaDiscoteca.direccion) {
       this.formErrors.direccion = 'La dirección es requerida';
       isValid = false;
     }
 
+    // Validación de la ciudad
     if (!this.nuevaDiscoteca.idCiudad) {
       this.formErrors.idCiudad = 'Debe seleccionar una ciudad';
+      isValid = false;
+    }
+
+    // Validación del contacto (teléfono o email)
+    if (this.nuevaDiscoteca.contacto) {
+      // Validar formato de teléfono (9 dígitos y empieza por 6 o 7)
+      const telefonoRegex = /^[67]\d{8}$/;
+      // Validar formato de email (contiene @ y termina en .com, .es, etc.)
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      
+      if (!telefonoRegex.test(this.nuevaDiscoteca.contacto) && !emailRegex.test(this.nuevaDiscoteca.contacto)) {
+        this.formErrors.contacto = 'Debe ser un teléfono válido (9 dígitos que empiece por 6 o 7) o un email válido (formato: ejemplo@dominio.com)';
+        isValid = false;
+      }
+    } else {
+      this.formErrors.contacto = 'El contacto es requerido';
+      isValid = false;
+    }
+
+    // Validación de la capacidad total como número
+    if (this.nuevaDiscoteca.capacidadTotal) {
+      const capacidadNumero = parseInt(this.nuevaDiscoteca.capacidadTotal);
+      if (isNaN(capacidadNumero) || capacidadNumero <= 0) {
+        this.formErrors.capacidadTotal = 'La capacidad debe ser un número positivo';
+        isValid = false;
+      }
+    } else {
+      this.formErrors.capacidadTotal = 'La capacidad es requerida';
       isValid = false;
     }
 
@@ -270,6 +330,10 @@ export class GestionarDiscotecaComponent implements OnInit {
   // Método para manejar errores generales
   private handleError(error: any): void {
     console.error('Error:', error);
-    this.formErrors.general = 'Ha ocurrido un error. Por favor, inténtelo de nuevo.';
+    if (error.status === 500) {
+      this.formErrors.general = 'Error del servidor: Podría haber un problema con las relaciones entre entidades. Por favor, verifique que los datos sean correctos.';
+    } else {
+      this.formErrors.general = 'Ha ocurrido un error. Por favor, inténtelo de nuevo.';
+    }
   }
 }

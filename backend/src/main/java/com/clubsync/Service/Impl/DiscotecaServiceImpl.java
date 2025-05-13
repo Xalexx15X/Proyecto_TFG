@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.clubsync.Entity.Discoteca;
+import com.clubsync.Entity.Evento;
 import com.clubsync.Entity.Usuario;
 import com.clubsync.Repository.DiscotecaRepository;
 import com.clubsync.Repository.UsuarioRepository;
@@ -58,6 +59,24 @@ public class DiscotecaServiceImpl implements DiscotecaService {
                 (discoteca.getIdDiscoteca() == null || 
                 !discotecaExistente.get().getIdDiscoteca().equals(discoteca.getIdDiscoteca()))) {
                 throw new RuntimeException("El administrador ya tiene una discoteca asignada");
+            }
+        }
+        
+        // Si es una actualización, cargar la entidad actual para mantener las relaciones
+        if (discoteca.getIdDiscoteca() != null) {
+            Discoteca discotecaActual = discotecaRepository.findById(discoteca.getIdDiscoteca())
+                .orElseThrow(() -> new ResourceNotFoundException("Discoteca", "id", discoteca.getIdDiscoteca()));
+            
+            // Mantener las relaciones con eventos, zonas VIP, etc.
+            discoteca.setEventos(discotecaActual.getEventos());
+            discoteca.setTramosHorarios(discotecaActual.getTramosHorarios());
+            discoteca.setBotellas(discotecaActual.getBotellas());
+            
+            // Si la discoteca tiene eventos, actualizar la relación
+            if (discoteca.getEventos() != null) {
+                for (Evento evento : discoteca.getEventos()) {
+                    evento.setDiscoteca(discoteca);
+                }
             }
         }
         
