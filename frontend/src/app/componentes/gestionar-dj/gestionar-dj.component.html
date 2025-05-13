@@ -53,8 +53,12 @@
                         <label class="form-label">Nombre Real</label>
                         <input type="text" 
                                class="form-control"
+                               [class.is-invalid]="formErrors.nombreReal"
                                [(ngModel)]="nuevoDj.nombreReal" 
                                name="nombreReal">
+                        <div class="invalid-feedback" *ngIf="formErrors.nombreReal">
+                          {{formErrors.nombreReal}}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -64,7 +68,7 @@
                   <div class="row">
                     <div class="col-md-12">
                       <div class="mb-3">
-                        <label>Biografía</label>
+                        <label class="form-label">Biografía</label>
                         <textarea class="form-control" 
                                   rows="3" 
                                   [(ngModel)]="nuevoDj.biografia" 
@@ -77,7 +81,7 @@
                     </div>
                     <div class="col-md-6">
                       <div class="mb-3">
-                        <label>Género Musical</label>
+                        <label class="form-label">Género Musical</label>
                         <input type="text" 
                                class="form-control"
                                [class.is-invalid]="formErrors.generoMusical"
@@ -90,11 +94,15 @@
                     </div>
                     <div class="col-md-6">
                       <div class="mb-3">
-                        <label>Contacto</label>
+                        <label class="form-label">Contacto</label>
                         <input type="text" 
                                class="form-control" 
+                               [class.is-invalid]="formErrors.contacto"
                                [(ngModel)]="nuevoDj.contacto" 
                                name="contacto">
+                        <div class="invalid-feedback" *ngIf="formErrors.contacto">
+                          {{formErrors.contacto}}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -112,6 +120,18 @@
                              accept="image/*">
                     </div>
                     
+                    <div class="mb-3">
+                      <label class="form-label">Imagen</label>
+                      <input type="file" 
+                             class="form-control" 
+                             [class.is-invalid]="formErrors.imagen"
+                             (change)="onFileSelected($event)" 
+                             accept="image/*">
+                      <div class="invalid-feedback" *ngIf="formErrors.imagen">
+                        {{formErrors.imagen}}
+                      </div>
+                    </div>
+
                     <div class="image-preview-section">
                       <h5 class="text-white mb-3">Previsualización</h5>
                       <div class="image-preview-container">

@@ -261,21 +261,61 @@ export class GestionarEventosComponent implements OnInit {
     this.limpiarErrores();
     let isValid = true;
 
+    // Validación del nombre
     if (!this.nuevoEvento.nombre) {
       this.formErrors.nombre = 'El nombre es requerido';
       isValid = false;
     }
 
+    // Validación de la fecha y hora
     if (!this.nuevoEvento.fechaHora) {
       this.formErrors.fechaHora = 'La fecha y hora son requeridas';
       isValid = false;
     }
 
+    // Validación de la descripción (nueva)
+    if (!this.nuevoEvento.descripcion) {
+      this.formErrors.descripcion = 'La descripción es requerida';
+      isValid = false;
+    }
+
+    // Validación del precio base entrada (nueva)
+    if (!this.nuevoEvento.precioBaseEntrada || this.nuevoEvento.precioBaseEntrada <= 0) {
+      this.formErrors.precioBaseEntrada = 'El precio base de entrada debe ser mayor que 0';
+      isValid = false;
+    }
+
+    // Validación del precio base reservado (nueva)
+    if (!this.nuevoEvento.precioBaseReservado || this.nuevoEvento.precioBaseReservado <= 0) {
+      this.formErrors.precioBaseReservado = 'El precio base para reservas debe ser mayor que 0';
+      isValid = false;
+    }
+
+    // Validación de la capacidad (nueva)
+    if (!this.nuevoEvento.capacidad) {
+      this.formErrors.capacidad = 'La capacidad es requerida';
+      isValid = false;
+    }
+
+    // Validación del tipo de evento (nueva)
+    if (!this.nuevoEvento.tipoEvento) {
+      this.formErrors.tipoEvento = 'Debe seleccionar un tipo de evento';
+      isValid = false;
+    }
+
+    // Validación del DJ
     if (!this.nuevoEvento.idDj) {
       this.formErrors.idDj = 'Debe seleccionar un DJ';
       isValid = false;
     }
+
+    // Validación de la imagen (nueva)
+    if (!this.nuevoEvento.imagen || !this.imagenPreview) {
+      this.formErrors.general = 'Debe cargar una imagen para el evento';
+      isValid = false;
+    }
     
+    // Validación de la discoteca
     if (!this.idDiscoteca) {
       this.formErrors.general = 'No se pudo identificar la discoteca';
       isValid = false;

@@ -202,6 +202,12 @@ export class GestionarBotellaComponent implements OnInit {
       this.formErrors.disponibilidad = 'Debe seleccionar la disponibilidad';
       isValid = false;
     }
+    
+    // Validación para imagen obligatoria
+    if (!this.nuevaBotella.imagen || !this.imagenPreview) {
+      this.formErrors.imagen = 'Debe subir una imagen para la botella';
+      isValid = false;
+    }
 
     return isValid;
   }

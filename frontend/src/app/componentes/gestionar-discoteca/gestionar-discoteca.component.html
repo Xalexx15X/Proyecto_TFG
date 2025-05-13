@@ -97,9 +97,13 @@
                       <label for="descripcion" class="form-label">Descripción</label>
                       <textarea class="form-control" 
                                 id="descripcion"
+                                [class.is-invalid]="formErrors.descripcion"
                                 [(ngModel)]="nuevaDiscoteca.descripcion" 
                                 name="descripcion"
                                 rows="4"></textarea>
+                      <div class="invalid-feedback" *ngIf="formErrors.descripcion">
+                        {{formErrors.descripcion}}
+                      </div>
                     </div>
                   </div>
                   <div class="col-md-6">
@@ -172,10 +176,14 @@
                 <div class="mb-4">
                   <input type="file" 
                          class="form-control" 
+                         [class.is-invalid]="formErrors.imagen"
                          (change)="onFileSelected($event)" 
                          accept="image/*" 
                          multiple>
-                  <small class="text-white-50">Puedes seleccionar múltiples imágenes</small>
+                  <small class="text-white-50">Puedes seleccionar múltiples imágenes (mín. 1, máx. 10)</small>
+                  <div class="invalid-feedback" *ngIf="formErrors.imagen">
+                    {{formErrors.imagen}}
+                  </div>
                 </div>
 
                 <div class="image-preview-container">

@@ -93,6 +93,32 @@
     box-shadow: 0 0 0 0.2rem rgba(255, 215, 64, 0.25);
     color: white;
   }
+
+  .form-select {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    height: auto;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' class='bi bi-chevron-down' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 16px;
+  }
+
+  .form-select:focus {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: #ffd740;
+    box-shadow: 0 0 0 0.2rem rgba(255, 215, 64, 0.25);
+    color: white;
+  }
+
+  .form-select option {
+    background-color: #2b2b2b;
+    color: white;
+  }
   
   /* Tabla */
   .table-responsive {
@@ -279,9 +305,16 @@
   
   /* Mensajes de error */
   .invalid-feedback {
-    color: #ff8a8a;
+    display: block;
+    color: #ffc107;
     font-size: 0.875rem;
     margin-top: 0.25rem;
+  }
+
+  .form-control.is-invalid,
+  .form-select.is-invalid {
+    border-color: #ffc107;
+    background-image: none;
   }
   
   /* Añadir estos estilos para el selector de estados */

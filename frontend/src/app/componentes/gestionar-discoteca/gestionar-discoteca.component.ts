@@ -282,6 +282,9 @@ export class GestionarDiscotecaComponent implements OnInit {
     if (!this.nuevaDiscoteca.nombre) {
       this.formErrors.nombre = 'El nombre es requerido';
       isValid = false;
+    } else if (this.nuevaDiscoteca.nombre.length < 3) {
+      this.formErrors.nombre = 'El nombre debe tener al menos 3 caracteres';
+      isValid = false;
     }
 
     // Validación de la dirección
@@ -290,10 +293,28 @@ export class GestionarDiscotecaComponent implements OnInit {
       isValid = false;
     }
 
+    // Validación de la descripción (nueva)
+    if (!this.nuevaDiscoteca.descripcion) {
+      this.formErrors.descripcion = 'La descripción es requerida';
+      isValid = false;
+    }
+
     // Validación de la ciudad
-    if (!this.nuevaDiscoteca.idCiudad) {
+    if (!this.nuevaDiscoteca.idCiudad || this.nuevaDiscoteca.idCiudad === 0) {
       this.formErrors.idCiudad = 'Debe seleccionar una ciudad';
       isValid = false;
+    }
+
+    // Validación de imágenes (nueva)
+    if (!this.nuevaDiscoteca.imagen || this.imagenesPreview.length === 0) {
+      this.formErrors.imagen = 'Debe subir al menos una imagen';
+      isValid = false;
+    } else {
+      const numImagenes = this.imagenesPreview.length;
+      if (numImagenes > 10) {
+        this.formErrors.imagen = 'Máximo 10 imágenes permitidas. Actualmente tiene ' + numImagenes;
+        isValid = false;
+      }
     }
 
     // Validación del contacto (teléfono o email)

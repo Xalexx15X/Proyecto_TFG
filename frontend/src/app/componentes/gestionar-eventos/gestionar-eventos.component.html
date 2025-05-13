@@ -53,22 +53,29 @@
                   <div class="invalid-feedback">{{formErrors.fechaHora}}</div>
                 </div>
 
+                <!-- Descripción con mensaje de error -->
                 <div class="mb-3">
                   <label class="form-label">Descripción</label>
-                  <textarea class="form-control" 
-                          rows="3" 
+                  <textarea class="form-control"
+                          rows="3"
+                          [class.is-invalid]="formErrors.descripcion" 
                           [(ngModel)]="nuevoEvento.descripcion" 
                           name="descripcion"></textarea>
+                  <div class="invalid-feedback" *ngIf="formErrors.descripcion">{{formErrors.descripcion}}</div>
                 </div>
 
+                <!-- Tipo de Evento con estilo mejorado -->
                 <div class="mb-3">
                   <label class="form-label">Tipo de Evento</label>
-                  <select class="form-control" 
+                  <select class="form-select" 
+                          [class.is-invalid]="formErrors.tipoEvento"
                           [(ngModel)]="nuevoEvento.tipoEvento" 
                           name="tipoEvento">
+                    <option value="">Seleccionar tipo</option>
                     <option value="REGULAR">Regular</option>
                     <option value="ESPECIAL">Especial</option>
                   </select>
+                  <div class="invalid-feedback" *ngIf="formErrors.tipoEvento">{{formErrors.tipoEvento}}</div>
                 </div>
               </div>
 
@@ -76,32 +83,45 @@
               <div class="col-md-6 ps-md-4">
                 <div class="section-title">Detalles y DJ</div>
                 <div class="row">
+                  <!-- Precio Base Entrada con mensaje de error -->
                   <div class="col-md-6">
                     <div class="mb-3">
                       <label class="form-label">Precio Base Entrada</label>
                       <input type="number" 
-                             class="form-control" 
+                             class="form-control"
+                             [class.is-invalid]="formErrors.precioBaseEntrada" 
                              [(ngModel)]="nuevoEvento.precioBaseEntrada" 
-                             name="precioBaseEntrada">
+                             name="precioBaseEntrada"
+                             min="0.01"
+                             step="0.01">
+                      <div class="invalid-feedback" *ngIf="formErrors.precioBaseEntrada">{{formErrors.precioBaseEntrada}}</div>
                     </div>
                   </div>
+                  <!-- Precio Base Reservado con mensaje de error -->
                   <div class="col-md-6">
                     <div class="mb-3">
                       <label class="form-label">Precio Base Reservado</label>
                       <input type="number" 
-                             class="form-control" 
+                             class="form-control"
+                             [class.is-invalid]="formErrors.precioBaseReservado" 
                              [(ngModel)]="nuevoEvento.precioBaseReservado" 
-                             name="precioBaseReservado">
+                             name="precioBaseReservado"
+                             min="0.01"
+                             step="0.01">
+                      <div class="invalid-feedback" *ngIf="formErrors.precioBaseReservado">{{formErrors.precioBaseReservado}}</div>
                     </div>
                   </div>
                 </div>
 
+                <!-- Capacidad con mensaje de error -->
                 <div class="mb-3">
                   <label class="form-label">Capacidad</label>
                   <input type="text" 
-                         class="form-control" 
+                         class="form-control"
+                         [class.is-invalid]="formErrors.capacidad" 
                          [(ngModel)]="nuevoEvento.capacidad" 
                          name="capacidad">
+                  <div class="invalid-feedback" *ngIf="formErrors.capacidad">{{formErrors.capacidad}}</div>
                 </div>
 
                 <!-- Selección de DJ con tarjetas -->
@@ -132,15 +152,17 @@
                 </div>
               </div>
 
-              <!-- Imagen del Evento -->
+              <!-- Imagen del Evento con mensaje de error -->
               <div class="col-md-12">
                 <div class="mb-3">
                   <label class="form-label">Imagen del Evento</label>
                   <input type="file" 
-                         class="form-control" 
+                         class="form-control"
+                         [class.is-invalid]="!imagenPreview && formErrors.general" 
                          (change)="onFileSelected($event)" 
                          accept="image/*">
                   <small class="text-white-50">La imagen será mostrada en las tarjetas del evento</small>
+                  <div class="invalid-feedback" *ngIf="!imagenPreview && formErrors.general">Debe cargar una imagen para el evento</div>
                 </div>
                 
                 <div class="image-preview-section mt-2" *ngIf="imagenPreview">

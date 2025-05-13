@@ -165,18 +165,49 @@ export class GestionarDjComponent implements OnInit {
     this.limpiarErrores();
     let isValid = true;
 
+    // Validación del nombre artístico
     if (!this.nuevoDj.nombre) {
-      this.formErrors.nombre = 'El nombre es requerido';
+      this.formErrors.nombre = 'El nombre artístico es requerido';
       isValid = false;
     }
 
+    // Validación del nombre real (nueva)
+    if (!this.nuevoDj.nombreReal) {
+      this.formErrors.nombreReal = 'El nombre real es requerido';
+      isValid = false;
+    }
+
+    // Validación del género musical
     if (!this.nuevoDj.generoMusical) {
       this.formErrors.generoMusical = 'El género musical es requerido';
       isValid = false;
     }
 
+    // Validación de la biografía
     if (!this.nuevoDj.biografia) {
       this.formErrors.biografia = 'La biografía es requerida';
+      isValid = false;
+    }
+
+    // Validación de la imagen (nueva)
+    if (!this.nuevoDj.imagen || !this.imagenPreview) {
+      this.formErrors.imagen = 'Debe subir una imagen';
+      isValid = false;
+    }
+
+    // Validación del contacto (nueva)
+    if (this.nuevoDj.contacto) {
+      // Validar formato de teléfono (9 dígitos y empieza por 6 o 7)
+      const telefonoRegex = /^[67]\d{8}$/;
+      // Validar formato de email (contiene @ y termina en .com, .es, etc.)
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      
+      if (!telefonoRegex.test(this.nuevoDj.contacto) && !emailRegex.test(this.nuevoDj.contacto)) {
+        this.formErrors.contacto = 'Debe ser un teléfono válido (9 dígitos que empiece por 6 o 7) o un email válido (formato: ejemplo@dominio.com)';
+        isValid = false;
+      }
+    } else {
+      this.formErrors.contacto = 'El contacto es requerido';
       isValid = false;
     }
 

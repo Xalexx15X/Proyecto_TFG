@@ -123,7 +123,7 @@ export class GestionarTramoHorarioComponent implements OnInit {
     this.nuevoTramoHorario = {
       horaInicio: '',
       horaFin: '',
-      multiplicadorPrecio: '',
+      multiplicadorPrecio: '1.0', // Valor predeterminado para evitar que esté vacío
       idDiscoteca: this.idDiscoteca || 0
     };
   }
@@ -148,16 +148,23 @@ export class GestionarTramoHorarioComponent implements OnInit {
       isValid = false;
     }
 
+    // Validación del multiplicador de precio
     if (!this.nuevoTramoHorario.multiplicadorPrecio) {
       this.formErrors.multiplicadorPrecio = 'El multiplicador de precio es requerido';
       isValid = false;
-    }
-    
-    // Validar que el multiplicador sea un número válido
-    const multiplicador = parseFloat(this.nuevoTramoHorario.multiplicadorPrecio);
-    if (isNaN(multiplicador) || multiplicador <= 0 || multiplicador > 5) {
-      this.formErrors.multiplicadorPrecio = 'El multiplicador debe ser un valor entre 0.1 y 5';
-      isValid = false;
+    } else {
+      // Validar que el multiplicador sea un número válido
+      const multiplicador = parseFloat(this.nuevoTramoHorario.multiplicadorPrecio);
+      if (isNaN(multiplicador)) {
+        this.formErrors.multiplicadorPrecio = 'El multiplicador debe ser un número válido';
+        isValid = false;
+      } else if (multiplicador <= 0) {
+        this.formErrors.multiplicadorPrecio = 'El multiplicador debe ser mayor que 0';
+        isValid = false;
+      } else if (multiplicador > 5) {
+        this.formErrors.multiplicadorPrecio = 'El multiplicador no puede ser mayor que 5';
+        isValid = false;
+      }
     }
 
     return isValid;
