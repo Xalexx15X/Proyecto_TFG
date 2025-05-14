@@ -17,7 +17,8 @@
   
       <!-- Mensaje de error -->
       <div class="alert alert-danger" *ngIf="error">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ error }}
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <span [innerHTML]="formatErrorMessage()"></span>
       </div>
   
       <!-- Mensaje de éxito -->

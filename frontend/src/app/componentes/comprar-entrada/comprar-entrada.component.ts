@@ -74,6 +74,19 @@ export class ComprarEntradaComponent implements OnInit {
     this.eventosService.getEvento(this.idEvento).subscribe({
       next: (data) => {
         this.evento = data;
+        
+        // Verificar si el evento está activo
+        if (!this.verificarEventoActivo(this.evento)) {
+          if (this.evento.estado !== 'ACTIVO') {
+            this.error = 'Este evento no está disponible para compra porque está inactivo.';
+          } else {
+            this.error = 'Este evento ya ha finalizado y no está disponible para compra.';
+          }
+          this.cargando = false;
+          return;
+        }
+        
+        // Si está activo, continuar cargando los datos
         this.cargarTramos();
       },
       error: (error) => {
@@ -304,5 +317,27 @@ export class ComprarEntradaComponent implements OnInit {
       hour: '2-digit',
       minute: '2-digit'
     });
+  }
+
+  private verificarEventoActivo(evento: any): boolean {
+    // Verificar que el evento existe y tiene fecha asignada
+    if (!evento || !evento.fechaHora) {
+      return false;
+    }
+    
+    // Verificar el estado del evento - solo mostrar si está ACTIVO
+    if (evento.estado !== 'ACTIVO') {
+      return false;
+    }
+    
+    // Verificar la fecha/hora del evento
+    const fechaEvento = new Date(evento.fechaHora);
+    const ahora = new Date();
+    
+    // Añadir 7 horas a la fecha del evento (duración máxima)
+    fechaEvento.setHours(fechaEvento.getHours() + 7);
+    
+    // El evento está activo si la fecha actual es anterior a la fecha del evento + 7 horas
+    return ahora < fechaEvento;
   }
 }

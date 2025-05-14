@@ -8,6 +8,7 @@ import { UsuarioService } from '../../service/usuario.service';
 import { EntradaService } from '../../service/entrada.service';
 import { ReservaBotellaService } from '../../service/reserva-botella.service';
 import { DetalleReservaBotellaService } from '../../service/detalle-reserva-botella.service';
+import { EventosService } from '../../service/eventos.service';
 import { forkJoin, of, Observable } from 'rxjs';
 import { finalize, switchMap, map, tap, catchError } from 'rxjs/operators';
 
@@ -44,6 +45,7 @@ export class CarritoComponent implements OnInit {
     private entradaService: EntradaService,
     private reservaBotellaService: ReservaBotellaService,
     private detalleReservaBotellaService: DetalleReservaBotellaService,
+    private eventosService: EventosService,
     private router: Router
   ) {}
 
@@ -182,6 +184,73 @@ export class CarritoComponent implements OnInit {
     this.error = '';
     this.exito = '';
     
+    // Verificar eventos antes de procesar el pago
+    this.verificarEventosActivos();
+  }
+
+  // Verificar eventos activos
+  private verificarEventosActivos(): void {
+    // Obtener IDs únicos de eventos en el carrito
+    const idsEventos = [...new Set(this.itemsCarrito.map(item => item.idEvento))];
+    let eventosVerificados = 0;
+    let eventosInvalidos: {id: number, nombre: string}[] = [];
+    
+    // Verificar cada evento
+    idsEventos.forEach(idEvento => {
+      this.eventosService.getEvento(idEvento).subscribe({
+        next: (evento) => {
+          // Si el evento no está activo o ya pasó, agregarlo a la lista de inválidos
+          if (evento.estado !== 'ACTIVO') {
+            eventosInvalidos.push({id: idEvento, nombre: evento.nombre});
+          } else {
+            // Verificar si ya pasó (7 horas desde inicio)
+            const fechaEvento = new Date(evento.fechaHora);
+            fechaEvento.setHours(fechaEvento.getHours() + 7);
+            if (new Date() > fechaEvento) {
+              eventosInvalidos.push({id: idEvento, nombre: evento.nombre});
+            }
+          }
+          
+          // Contar eventos verificados
+          eventosVerificados++;
+          
+          // Si completamos la verificación de todos los eventos
+          if (eventosVerificados === idsEventos.length) {
+            this.procesarResultadoVerificacion(eventosInvalidos);
+          }
+        },
+        error: () => {
+          // Si hay error al verificar un evento, considerarlo inválido
+          eventosInvalidos.push({id: idEvento, nombre: `Evento #${idEvento}`});
+          eventosVerificados++;
+          
+          if (eventosVerificados === idsEventos.length) {
+            this.procesarResultadoVerificacion(eventosInvalidos);
+          }
+        }
+      });
+    });
+  }
+
+  // Procesar el resultado de la verificación de eventos
+  private procesarResultadoVerificacion(eventosInvalidos: {id: number, nombre: string}[]): void {
+    if (eventosInvalidos.length > 0) {
+      // Hay eventos inválidos, mostrar error
+      let mensaje = 'No puedes completar la compra porque los siguientes eventos ya no están disponibles:';
+      eventosInvalidos.forEach(e => {
+        mensaje += `\n- ${e.nombre}`;
+      });
+      mensaje += '\n\nPor favor, elimínalos del carrito para continuar.';
+      
+      this.finalizarError(mensaje);
+      return;
+    }
+    
+    this.procesarPago();
+  }
+
+  // Procesar el pago
+  private procesarPago(): void {
     // Obtener el ID del usuario
     const idUsuario = this.authService.getUserId();
     if (!idUsuario) {
@@ -374,5 +443,10 @@ export class CarritoComponent implements OnInit {
     this.error = mensaje;
     this.cargando = false;
     this.procesandoPago = false;
+  }
+
+  // Formatear mensaje de error para la vista
+  formatErrorMessage(): string {
+    return this.error.replace(/\n/g, '<br>');
   }
 }
