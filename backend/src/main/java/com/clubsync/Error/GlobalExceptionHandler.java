@@ -13,23 +13,17 @@ import java.util.stream.Collectors;
  * Manejador global de excepciones para toda la aplicación
  * Esta clase intercepta las excepciones y las convierte en respuestas HTTP estructuradas
  */
-@RestControllerAdvice
+@RestControllerAdvice // Indica que esta clase proporciona consejos centralizados para excepciones en todos los controladores
 public class GlobalExceptionHandler {
 
     /**
      * Maneja las excepciones de recurso no encontrado
      * Se activa cuando se lanza ResourceNotFoundException
-     * @ExceptionHandler(ResourceNotFoundException.class):
-
-    @ExceptionHandler(ResourceNotFoundException.class): Esta anotación le dice a Spring que 
-    este método manejará las excepciones de tipo ResourceNotFoundException
-
-    El .class es una referencia a la clase de la excepción. 
-    En Java, cada clase tiene un objeto Class asociado que representa su tipo
-    Es como decir "cuando ocurra un error de tipo ResourceNotFoundException, 
-    usa este método para manejarlo"
+     * 
+     * @param ex La excepción capturada con detalles del recurso no encontrado
+     * @param request La solicitud web que generó la excepción
+     * @return ResponseEntity con detalles estructurados del error 404
      */
-
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiError> handleResourceNotFoundException(
             ResourceNotFoundException ex, 
@@ -49,6 +43,10 @@ public class GlobalExceptionHandler {
     /**
      * Maneja errores de validación de datos de entrada
      * Se activa cuando los datos enviados no cumplen con las validaciones (@Valid)
+     * 
+     * @param ex La excepción con detalles de los errores de validación
+     * @param request La solicitud web que generó la excepción
+     * @return ResponseEntity con detalles estructurados de todos los errores de validación
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleValidationErrors(
@@ -75,6 +73,10 @@ public class GlobalExceptionHandler {
     /**
      * Maneja violaciones de restricciones
      * Se activa cuando se violan restricciones de base de datos o validaciones
+     * 
+     * @param ex La excepción con detalles de las violaciones de restricciones
+     * @param request La solicitud web que generó la excepción
+     * @return ResponseEntity con detalles estructurados de todas las violaciones
      */
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ApiError> handleConstraintViolation(
@@ -100,6 +102,10 @@ public class GlobalExceptionHandler {
     /**
      * Maneja cualquier otra excepción no controlada
      * Actúa como último recurso para excepciones no manejadas específicamente
+     * 
+     * @param ex La excepción genérica no manejada por otros métodos
+     * @param request La solicitud web que generó la excepción
+     * @return ResponseEntity con detalles básicos del error interno
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleAllUncaughtException(

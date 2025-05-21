@@ -59,6 +59,13 @@
                 <span class="detail-label">Producto:</span>
                 <span>{{recompensa.detalle.nombre}}</span>
               </div>
+              
+              <!-- Nueva sección para el botón de descarga -->
+              <div class="mt-3">
+                <button (click)="descargarComprobante(recompensa)" class="btn btn-primary w-100" [disabled]="!recompensa.detalle">
+                  <i class="bi bi-download me-2"></i> Descargar comprobante
+                </button>
+              </div>
             </div>
           </div>
         </div>

@@ -6,6 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.List;
 
+/**
+ * Entidad que representa las ciudades donde se ubican las discotecas
+ */
 @Entity
 @Table(name = "ciudad")
 @Data
@@ -29,6 +32,7 @@ public class Ciudad {
     @Column(name = "codigo_postal", nullable = false, length = 45)
     private String codigoPostal;
     
+    // Relación: Una ciudad puede tener múltiples discotecas
     @OneToMany(mappedBy = "ciudad")
     private List<Discoteca> discotecas;
 }

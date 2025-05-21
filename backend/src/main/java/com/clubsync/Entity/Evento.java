@@ -7,6 +7,10 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Entidad que representa eventos realizados en discotecas
+ * Centraliza toda la información sobre fiestas, conciertos y eventos especiales
+ */
 @Entity
 @Table(name = "evento")
 @Data
@@ -42,24 +46,38 @@ public class Evento {
     @Column(nullable = false, length = 80)
     private String estado;
 
-    // Nuevo campo para la imagen
     @Column(columnDefinition = "LONGTEXT")
     @Lob
     private String imagen;
     
+    /**
+     * Relación con Discoteca: Cada evento se realiza en una discoteca específica
+     * Relación obligatoria que establece dónde se celebra el evento
+     */
     @ManyToOne
     @JoinColumn(name = "discoteca_idDiscoteca", nullable = false)
     private Discoteca discoteca;
     
-    // Aquí está faltando esta relación que causa el error
+    /**
+     * Relación con DJ: Cada evento tiene un DJ principal que actúa
+     * Define el artista destacado que participará en el evento
+     */
     @ManyToOne
     @JoinColumn(name = "dj_idDj", nullable = false)
     private Dj dj;
     
+    /**
+     * Relación con Usuario: Cada evento tiene un usuario creador/organizador
+     * Establece quién tiene permisos para modificar y gestionar este evento
+     */
     @ManyToOne
     @JoinColumn(name = "usuario_idUsuario", nullable = false)
     private Usuario usuario;
     
+    /**
+     * Relación con Entrada: Un evento puede tener múltiples entradas vendidas
+     * Permite acceder a todas las entradas asociadas a este evento
+     */
     @OneToMany(mappedBy = "evento")
     private List<Entrada> entradas;
 }

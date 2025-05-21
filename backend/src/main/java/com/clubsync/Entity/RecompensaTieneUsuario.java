@@ -6,6 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
+/**
+ * Entidad que representa la tabla de unión entre recompensas y usuarios
+ * Almacena información adicional sobre cada canje de recompensa realizado
+ */
 @Entity
 @Table(name = "recompensa_tiene_usuario")
 @Data
@@ -17,10 +21,18 @@ public class RecompensaTieneUsuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     
+    /**
+     * Relación con Recompensa: Cada registro se asocia a una recompensa específica
+     * Identifica qué recompensa fue canjeada
+     */
     @ManyToOne
     @JoinColumn(name = "recompensa_idRecompensa", nullable = false)
     private Recompensa recompensa;
     
+    /**
+     * Relación con Usuario: Cada registro se asocia a un usuario específico
+     * Identifica quién canjeó la recompensa
+     */
     @ManyToOne
     @JoinColumn(name = "usuario_idUsuario", nullable = false) 
     private Usuario usuario;

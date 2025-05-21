@@ -3,6 +3,10 @@ package com.clubsync.Entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+/**
+ * Entidad que representa los detalles de botellas incluidas en una reserva VIP
+ * Actúa como tabla intermedia muchos muchos con atributos adicionales
+ */
 @Entity
 @Table(name = "detalle_reserva_botella")
 @Data

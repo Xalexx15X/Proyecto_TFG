@@ -1,62 +1,76 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { EventosService, Evento } from '../../service/eventos.service';
-import { DjService, Dj } from '../../service/dj.service';
-import { AuthService } from '../../service/auth.service';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core'; 
+import { CommonModule } from '@angular/common'; 
+import { FormsModule } from '@angular/forms'; 
+import { EventosService, Evento } from '../../service/eventos.service'; // Servicio y modelo de Eventos
+import { DjService, Dj } from '../../service/dj.service'; // Servicio y modelo de DJs
+import { AuthService } from '../../service/auth.service'; // Servicio de autenticación
+import { HttpClient, HttpHeaders } from '@angular/common/http'; // Cliente HTTP para peticiones adicionales
 
+/**
+ * Componente para la gestión de eventos de una discoteca
+ * Permite a administradores de discoteca crear, editar, eliminar y listar eventos
+ */
 @Component({
-  selector: 'app-gestionar-eventos',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './gestionar-eventos.component.html',
-  styleUrls: ['./gestionar-eventos.component.css']
+  selector: 'app-gestionar-eventos', // Selector CSS para usar este componente
+  standalone: true, // Indica que es un componente independiente
+  imports: [CommonModule, FormsModule], // Módulos necesarios importados
+  templateUrl: './gestionar-eventos.component.html', // Ruta al archivo HTML asociado
+  styleUrls: ['./gestionar-eventos.component.css'] // Ruta al archivo CSS asociado
 })
 export class GestionarEventosComponent implements OnInit {
-  eventos: Evento[] = [];
-  djs: Dj[] = [];
-  eventoSeleccionado: Evento | null = null;
-  modoEdicion = false;
-  mostrarFormulario = false;
-  terminoBusqueda = '';
-  idDiscoteca: number | null = null;
-  djBusqueda = '';
+  // Propiedades para almacenar y gestionar datos
+  eventos: Evento[] = []; // Lista completa de eventos de la discoteca
+  djs: Dj[] = []; // Lista de DJs disponibles para asignar
+  eventoSeleccionado: Evento | null = null; // Evento seleccionado para edición
+  modoEdicion = false; // Bandera para controlar si estamos editando o creando
+  mostrarFormulario = false; // Controla la visibilidad del formulario
+  terminoBusqueda = ''; // Término para filtrar eventos
+  idDiscoteca: number | null = null; // ID de la discoteca del administrador actual
+  djBusqueda = ''; // Término para filtrar DJs en el selector
 
+  // Modelo para nuevo evento (valores por defecto)
   nuevoEvento: Evento = {
-    nombre: '',
-    fechaHora: '',
-    descripcion: '',
-    precioBaseEntrada: 0,
-    precioBaseReservado: 0,
-    capacidad: '',
-    tipoEvento: '',
-    estado: 'ACTIVO',
-    imagen: '', // Inicializamos el nuevo campo
-    idDiscoteca: 0,
-    idDj: 0,
-    idUsuario: 0
+    nombre: '', // Nombre del evento
+    fechaHora: '', // Fecha y hora del evento
+    descripcion: '', // Descripción detallada
+    precioBaseEntrada: 0, // Precio base de entrada
+    precioBaseReservado: 0, // Precio base para reservados
+    capacidad: '', // Capacidad máxima del evento
+    tipoEvento: '', // Tipo de evento (REGULAR, ESPECIAL, etc.)
+    estado: 'ACTIVO', // Estado inicial (ACTIVO por defecto)
+    imagen: '', // Imagen del evento en Base64
+    idDiscoteca: 0, // ID de la discoteca (se asigna automáticamente)
+    idDj: 0, // ID del DJ asignado al evento
+    idUsuario: 0 // ID del usuario que crea el evento
   };
 
-  imagenPreview: string = ''; // Agregamos una propiedad para vista previa
+  imagenPreview: string = ''; // URL para vista previa de la imagen
 
+  // Objeto para almacenar errores de validación por campo
   formErrors = {
-    nombre: '',
-    fechaHora: '',
-    descripcion: '',
-    precioBaseEntrada: '',
-    precioBaseReservado: '',
-    capacidad: '',
-    tipoEvento: '',
-    idDj: '',
-    general: ''
+    nombre: '', // Error específico para el campo nombre
+    fechaHora: '', // Error específico para el campo fecha y hora
+    descripcion: '', // Error específico para el campo descripción
+    precioBaseEntrada: '', // Error específico para el precio base de entrada
+    precioBaseReservado: '', // Error específico para el precio base de reservado
+    capacidad: '', // Error específico para el campo capacidad
+    tipoEvento: '', // Error específico para el campo tipo de evento
+    idDj: '', // Error específico para la selección del DJ
+    general: '' // Error general del formulario
   };
 
+  /**
+   * Constructor con inyección de dependencias
+   * @param eventosService Servicio para gestionar eventos
+   * @param djService Servicio para gestionar DJs
+   * @param authService Servicio de autenticación para identificar la discoteca
+   * @param http Cliente HTTP para peticiones adicionales
+   */
   constructor(
-    private eventosService: EventosService,
-    private djService: DjService,
-    private authService: AuthService,
-    private http: HttpClient
+    private eventosService: EventosService, // Inyecta el servicio de eventos
+    private djService: DjService, // Inyecta el servicio de DJs
+    private authService: AuthService, // Inyecta el servicio de autenticación
+    private http: HttpClient // Inyecta el cliente HTTP
   ) {
     // Intentar obtener el ID de la discoteca del localStorage
     const userData = JSON.parse(localStorage.getItem('user_data') || '{}');
@@ -70,22 +84,34 @@ export class GestionarEventosComponent implements OnInit {
     }
   }
 
+  /**
+   * Método del ciclo de vida que se ejecuta al inicializar el componente
+   * Carga los eventos de la discoteca y los DJs disponibles
+   */
   ngOnInit(): void {
     if (this.idDiscoteca) {
-      this.cargarEventos();
+      this.cargarEventos(); // Carga los eventos si hay discoteca identificada
     }
-    this.cargarDjsDirectamente();
+    this.cargarDjsDirectamente(); // Carga la lista de DJs disponibles
   }
 
+  /**
+   * Carga los eventos de la discoteca desde el servidor
+   * Se ejecuta al iniciar el componente y cuando se necesita refrescar datos
+   */
   private cargarEventos(): void {
     if (this.idDiscoteca) {
       this.eventosService.getEventosByDiscoteca(this.idDiscoteca, 'TODOS').subscribe({
-        next: eventos => this.eventos = eventos,
-        error: error => this.handleError(error)
+        next: eventos => this.eventos = eventos, // Almacena los eventos recibidos
+        error: error => this.handleError(error) // Maneja cualquier error
       });
     }
   }
 
+  /**
+   * Carga la lista de DJs disponibles directamente mediante petición HTTP
+   * Utiliza token de autenticación para acceder a la API
+   */
   cargarDjsDirectamente(): void {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders({
@@ -96,34 +122,46 @@ export class GestionarEventosComponent implements OnInit {
     this.http.get('http://localhost:9000/api/djs', { headers })
       .subscribe({
         next: (response) => {
-          this.djs = response as any[];
+          this.djs = response as any[]; // Almacena los DJs recibidos
         },
         error: (error) => {
-          this.handleError(error);
+          this.handleError(error); // Maneja cualquier error
         }
       });
   }
 
+  /**
+   * Prepara el formulario para crear un nuevo evento
+   * Resetea el formulario y muestra la interfaz de creación
+   */
   mostrarCrear(): void {
-    this.mostrarFormulario = true;
-    this.modoEdicion = false;
-    this.limpiarFormulario();
+    this.mostrarFormulario = true; // Muestra el formulario
+    this.modoEdicion = false; // No estamos en modo edición (creación)
+    this.limpiarFormulario(); // Limpia cualquier dato previo del formulario
   }
 
+  /**
+   * Cierra el formulario y resetea todos los estados
+   * Se usa para cancelar operaciones o después de completarlas
+   */
   cerrarFormulario(): void {
-    this.mostrarFormulario = false;
-    this.modoEdicion = false;
-    this.eventoSeleccionado = null;
-    this.limpiarFormulario();
+    this.mostrarFormulario = false; // Oculta el formulario
+    this.modoEdicion = false; // Desactiva modo edición
+    this.eventoSeleccionado = null; // Quita selección actual
+    this.limpiarFormulario(); // Limpia datos del formulario
   }
 
+  /**
+   * Crea un nuevo evento con los datos del formulario
+   * Valida los datos y envía petición al servidor
+   */
   crearEvento(): void {
     if (!this.validarFormulario()) {
-      return;
+      return; // Detiene el proceso si la validación falla
     }
     
     if (!this.idDiscoteca) {
-      return;
+      return; // Detiene si no hay ID de discoteca
     }
 
     // Asegurarse de que se asigna la discoteca
@@ -145,15 +183,18 @@ export class GestionarEventosComponent implements OnInit {
       this.nuevoEvento.idUsuario = userData.idUsuario;
     } else {
       this.formErrors.general = 'Error: No se pudo identificar al usuario actual';
-      return;
+      return; // Detiene si no hay ID de usuario
     }
     
+    // Envía solicitud de creación al servidor
     this.eventosService.createEvento(this.nuevoEvento).subscribe({
       next: evento => {
+        // Si la creación es exitosa, añade al principio de la lista
         this.eventos.unshift(evento);
-        this.cerrarFormulario();
+        this.cerrarFormulario(); // Cierra el formulario
       },
       error: error => {
+        // Manejo específico de errores por código HTTP
         if (error.status === 400) {
           this.formErrors.general = 'Datos incorrectos. Verifique la información del evento.';
         } else if (error.status === 403) {
@@ -162,60 +203,100 @@ export class GestionarEventosComponent implements OnInit {
           this.formErrors.general = `Error al crear el evento: ${error.message || 'Error desconocido'}`;
         }
         
-        this.handleError(error);
+        this.handleError(error); // Registro adicional del error
       }
     });
   }
 
+  /**
+   * Prepara el formulario para editar un evento existente
+   * @param evento Evento a editar
+   */
   editarEvento(evento: Evento): void {
+    // Crea una copia del objeto para no modificar la lista original directamente
     this.eventoSeleccionado = {...evento};
-    this.nuevoEvento = {...evento};
-    this.modoEdicion = true;
-    this.mostrarFormulario = true;
+    this.nuevoEvento = {...evento}; // Copia datos al modelo del formulario
+    this.modoEdicion = true; // Activa modo edición
+    this.mostrarFormulario = true; // Muestra el formulario
+    
+    // Si hay imagen, establecer también la vista previa
+    if (this.nuevoEvento.imagen) {
+      this.imagenPreview = this.nuevoEvento.imagen;
+    }
   }
 
+  /**
+   * Actualiza un evento existente con los nuevos datos
+   * Valida y envía la solicitud de actualización al servidor
+   */
   actualizarEvento(): void {
+    // Verifica que exista un evento seleccionado con ID válido
     if (!this.eventoSeleccionado?.idEvento) return;
+    // Valida el formulario antes de enviar
     if (!this.validarFormulario()) return;
 
+    // Envía solicitud de actualización al servidor
     this.eventosService.updateEvento(
-      this.eventoSeleccionado.idEvento,
-      this.nuevoEvento
+      this.eventoSeleccionado.idEvento, // ID del evento a actualizar
+      this.nuevoEvento // Nuevos datos
     ).subscribe({
       next: eventoActualizado => {
+        // Busca el evento en la lista actual y lo reemplaza
         const index = this.eventos.findIndex(e => e.idEvento === eventoActualizado.idEvento);
         if (index !== -1) {
-          this.eventos[index] = eventoActualizado;
+          this.eventos[index] = eventoActualizado; // Actualiza en la lista
         }
-        this.cerrarFormulario();
+        this.cerrarFormulario(); // Cierra el formulario
       },
-      error: error => this.handleError(error)
+      error: error => this.handleError(error) // Maneja errores
     });
   }
 
+  /**
+   * Elimina un evento del sistema
+   * Solicita confirmación antes de proceder
+   * @param id ID del evento a eliminar
+   */
   eliminarEvento(id: number): void {
+    // Solicita confirmación al usuario antes de eliminar
     if (confirm('¿Seguro que desea eliminar este evento?')) {
+      // Envía solicitud de eliminación al servidor
       this.eventosService.deleteEvento(id).subscribe({
         next: () => {
+          // Elimina el evento de la lista local (filtrado)
           this.eventos = this.eventos.filter(e => e.idEvento !== id);
         },
-        error: error => this.handleError(error)
+        error: error => this.handleError(error) // Maneja errores
       });
     }
   }
 
+  /**
+   * Busca y devuelve un DJ por su ID
+   * @param idDj ID del DJ a buscar
+   * @returns Objeto DJ o undefined si no se encuentra
+   */
   getDj(idDj: number): Dj | undefined {
     return this.djs.find(dj => dj.idDj === idDj);
   }
 
+  /**
+   * Selecciona o deselecciona un DJ para el evento
+   * @param idDj ID del DJ a seleccionar
+   */
   seleccionarDj(idDj: number): void {
     if (this.nuevoEvento.idDj === idDj) {
-      this.nuevoEvento.idDj = 0; 
+      this.nuevoEvento.idDj = 0; // Deselecciona si ya estaba seleccionado
     } else {
-      this.nuevoEvento.idDj = idDj;
+      this.nuevoEvento.idDj = idDj; // Selecciona el nuevo DJ
     }
   }
 
+  /**
+   * Maneja la selección de una imagen para el evento
+   * Convierte la imagen a Base64 para almacenamiento
+   * @param event Evento del input de tipo file
+   */
   async onFileSelected(event: Event): Promise<void> {
     const element = event.target as HTMLInputElement;
     const file = element.files?.[0];
@@ -223,14 +304,19 @@ export class GestionarEventosComponent implements OnInit {
     if (file) {
       try {
         const base64 = await this.convertirABase64(file);
-        this.imagenPreview = base64;
-        this.nuevoEvento.imagen = base64;
+        this.imagenPreview = base64; // Establece la vista previa
+        this.nuevoEvento.imagen = base64; // Guarda la imagen en Base64
       } catch (error) {
         this.handleError('Error al cargar la imagen');
       }
     }
   }
 
+  /**
+   * Convierte un archivo a formato Base64
+   * @param file Archivo a convertir
+   * @returns Promesa con la cadena Base64
+   */
   private convertirABase64(file: File): Promise<string> {
     return new Promise((resolve) => {
       const reader = new FileReader();
@@ -239,6 +325,10 @@ export class GestionarEventosComponent implements OnInit {
     });
   }
 
+  /**
+   * Reinicia el formulario a sus valores predeterminados
+   * Mantiene el ID de discoteca actual
+   */
   private limpiarFormulario(): void {
     this.nuevoEvento = {
       nombre: '',
@@ -255,11 +345,16 @@ export class GestionarEventosComponent implements OnInit {
       idUsuario: 0
     };
     this.imagenPreview = ''; // Limpiamos la vista previa
+    this.limpiarErrores(); // Limpiamos los errores
   }
 
+  /**
+   * Valida todos los campos del formulario
+   * @returns booleano indicando si el formulario es válido
+   */
   private validarFormulario(): boolean {
-    this.limpiarErrores();
-    let isValid = true;
+    this.limpiarErrores(); // Limpia errores previos
+    let isValid = true; // Asume que el formulario es válido inicialmente
 
     // Validación del nombre
     if (!this.nuevoEvento.nombre) {
@@ -273,31 +368,31 @@ export class GestionarEventosComponent implements OnInit {
       isValid = false;
     }
 
-    // Validación de la descripción (nueva)
+    // Validación de la descripción
     if (!this.nuevoEvento.descripcion) {
       this.formErrors.descripcion = 'La descripción es requerida';
       isValid = false;
     }
 
-    // Validación del precio base entrada (nueva)
+    // Validación del precio base entrada
     if (!this.nuevoEvento.precioBaseEntrada || this.nuevoEvento.precioBaseEntrada <= 0) {
       this.formErrors.precioBaseEntrada = 'El precio base de entrada debe ser mayor que 0';
       isValid = false;
     }
 
-    // Validación del precio base reservado (nueva)
+    // Validación del precio base reservado
     if (!this.nuevoEvento.precioBaseReservado || this.nuevoEvento.precioBaseReservado <= 0) {
       this.formErrors.precioBaseReservado = 'El precio base para reservas debe ser mayor que 0';
       isValid = false;
     }
 
-    // Validación de la capacidad (nueva)
+    // Validación de la capacidad
     if (!this.nuevoEvento.capacidad) {
       this.formErrors.capacidad = 'La capacidad es requerida';
       isValid = false;
     }
 
-    // Validación del tipo de evento (nueva)
+    // Validación del tipo de evento
     if (!this.nuevoEvento.tipoEvento) {
       this.formErrors.tipoEvento = 'Debe seleccionar un tipo de evento';
       isValid = false;
@@ -309,7 +404,7 @@ export class GestionarEventosComponent implements OnInit {
       isValid = false;
     }
 
-    // Validación de la imagen (nueva)
+    // Validación de la imagen
     if (!this.nuevoEvento.imagen || !this.imagenPreview) {
       this.formErrors.general = 'Debe cargar una imagen para el evento';
       isValid = false;
@@ -321,9 +416,12 @@ export class GestionarEventosComponent implements OnInit {
       isValid = false;
     }
     
-    return isValid;
+    return isValid; // Retorna resultado de validación
   }
 
+  /**
+   * Reinicia todos los mensajes de error
+   */
   private limpiarErrores(): void {
     this.formErrors = {
       nombre: '',
@@ -338,18 +436,31 @@ export class GestionarEventosComponent implements OnInit {
     };
   }
 
+  /**
+   * Maneja errores de las peticiones al servidor
+   * @param error Error recibido de la API
+   */
   private handleError(error: any): void {
-    console.error('Error:', error);
+    console.error('Error:', error); // Log para depuración
     this.formErrors.general = 'Ha ocurrido un error. Por favor, inténtelo de nuevo.';
   }
 
+  /**
+   * Filtra eventos según el término de búsqueda
+   * @param event Evento del input de búsqueda
+   */
   buscar(event: any): void {
     const termino = event.target.value.toLowerCase();
+    
+    // Si no hay término, recarga todos los eventos
     if (!termino) {
       this.cargarEventos();
       return;
     }
+    
+    // Solo filtra si el término tiene al menos 3 caracteres
     if (termino.length >= 3) {
+      // Filtra los eventos que contienen el término en nombre o tipo
       this.eventos = this.eventos.filter(evento => 
         evento.nombre.toLowerCase().includes(termino) ||
         evento.tipoEvento.toLowerCase().includes(termino)
@@ -357,30 +468,40 @@ export class GestionarEventosComponent implements OnInit {
     }
   }
 
+  /**
+   * Filtra la lista de DJs según el término de búsqueda
+   * @returns Array de DJs filtrado
+   */
   filtrarDjs(): any[] {
     if (!this.djs || this.djs.length === 0) {
-      return [];
+      return []; // Retorna lista vacía si no hay DJs
     }
     
     if (!this.djBusqueda) {
-      return this.djs;
+      return this.djs; // Retorna todos los DJs si no hay término de búsqueda
     }
     
     const termino = this.djBusqueda.toLowerCase();
+    // Filtra DJs por nombre o género musical
     return this.djs.filter(dj => 
       dj.nombre.toLowerCase().includes(termino) ||
       dj.generoMusical.toLowerCase().includes(termino)
     );
   }
 
+  /**
+   * Actualiza el estado de un evento (ACTIVO/CANCELADO)
+   * @param evento Evento cuyo estado se va a cambiar
+   */
   cambiarEstadoEvento(evento: Evento): void {
     if (!evento.idEvento) return;
     
+    // Envía la actualización al servidor
     this.eventosService.updateEvento(evento.idEvento, evento).subscribe({
       next: () => {
         console.log('Estado del evento actualizado correctamente');
       },
-      error: error => this.handleError(error)
+      error: error => this.handleError(error) // Maneja errores
     });
   }
 }

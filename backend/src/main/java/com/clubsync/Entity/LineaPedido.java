@@ -7,6 +7,10 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+/**
+ * Entidad que representa cada línea individual dentro de un pedido
+ * Almacena los detalles de cada item comprado o reservado
+ */
 @Entity
 @Table(name = "linea_pedido")
 @Data
@@ -28,6 +32,10 @@ public class LineaPedido {
     @Column(name = "linea_pedido", columnDefinition = "json")
     private String lineaPedidoJson;
     
+    /**
+     * Relación con Pedido: Cada línea pertenece a un único pedido
+     * Establece la pertenencia de esta línea a su pedido contenedor
+     */
     @ManyToOne
     @JoinColumn(name = "pedido_idPedido", nullable = false)
     private Pedido pedido;

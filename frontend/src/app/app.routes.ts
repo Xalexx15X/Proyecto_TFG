@@ -22,7 +22,7 @@ import { RecompensasComponent } from './componentes/recompensas/recompensas.comp
 import { EstadisticasComponent } from './componentes/estadisticas/estadisticas.component';
 
 export const routes: Routes = [
-    { path: '', redirectTo: '/login', pathMatch: 'full' },
+    { path: '', redirectTo: '/discotecas', pathMatch: 'full' },
     { path: 'login', component: LoginComponent },
     { path: 'registro', component: RegisterComponent },
     { path: 'admin/ciudades', component: GestionarCiudadesComponent },

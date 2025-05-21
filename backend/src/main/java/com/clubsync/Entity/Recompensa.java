@@ -9,6 +9,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ArrayList;
 
+/**
+ * Entidad que representa las recompensas disponibles en el sistema de fidelización
+ * Permite a los usuarios canjear puntos por beneficios como descuentos o entradas
+ */
 @Entity
 @Table(name = "recompensa")
 @Data
@@ -39,6 +43,11 @@ public class Recompensa {
     @Column(nullable = false)
     private String tipo;
 
+    /**
+     * Relación con Usuario: Relación muchos a muchos entre recompensas y usuarios
+     * Representa qué usuarios han canjeado cada recompensa
+     * Se implementa mediante tabla intermedia recompensa_tiene_usuario
+     */
     @ManyToMany
     @JoinTable(
         name = "recompensa_tiene_usuario",

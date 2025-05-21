@@ -6,6 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.List;
 
+/**
+ * Entidad que representa las botellas disponibles para reservas VIP en discotecas
+ */
 @Entity
 @Table(name = "botella")
 @Data
@@ -36,10 +39,12 @@ public class Botella {
     @Column(name = "imagen", nullable = false, columnDefinition = "TEXT")
     private String imagen;
     
+    // Relación: Muchas botellas pertenecen a una discoteca
     @ManyToOne
     @JoinColumn(name = "discoteca_idDiscoteca", nullable = false)
     private Discoteca discoteca;
     
+    // Relación: Una botella puede aparecer en múltiples detalles de reservas
     @OneToMany(mappedBy = "botella", cascade = CascadeType.ALL)
     private List<DetalleReservaBotella> detallesReservasBotellas;
 }
