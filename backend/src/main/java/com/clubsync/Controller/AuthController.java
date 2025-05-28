@@ -156,7 +156,7 @@ public class AuthController {
      * 3. Encripta la contraseña usando BCrypt
      * 4. Persiste el nuevo usuario en la base de datos
      * 
-     * Reglas de negocio importantes:
+     * Requisitos:
      * - El email debe ser único en el sistema
      * - La contraseña se almacena siempre encriptada
      * - Solo se permiten registros con rol CLIENTE

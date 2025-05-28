@@ -8,11 +8,11 @@ import { UsuarioService, Usuario } from '../../service/usuario.service';
  * Permite crear, editar, eliminar y listar usuarios de todos los roles
  */
 @Component({
-  selector: 'app-gestionar-usuarios', // Selector CSS para usar este componente
-  standalone: true, // Indica que es un componente independiente
-  imports: [CommonModule, FormsModule], // Módulos necesarios importados
-  templateUrl: './gestionar-usuarios.component.html', // Ruta al archivo HTML asociado
-  styleUrls: ['./gestionar-usuarios.component.css'] // Ruta al archivo CSS asociado
+  selector: 'app-gestionar-usuarios',
+  standalone: true, 
+  imports: [CommonModule, FormsModule], 
+  templateUrl: './gestionar-usuarios.component.html', 
+  styleUrls: ['./gestionar-usuarios.component.css'] 
 })
 export class GestionarUsuariosComponent implements OnInit {
   // Propiedades para almacenar y gestionar datos de usuarios

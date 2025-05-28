@@ -2,120 +2,98 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common'; 
 import { FormsModule } from '@angular/forms'; 
 import { RouterModule } from '@angular/router'; 
-import { HttpClient } from '@angular/common/http'; 
 import { DiscotecaService } from '../../service/discoteca.service';
+import { CiudadService } from '../../service/ciudad.service';
 
 /**
  * Componente para visualizar y filtrar discotecas
  * Permite explorar discotecas filtrando por ciudad
  */
 @Component({
-  selector: 'app-detalle-discoteca', // Selector CSS para usar este componente
-  standalone: true, // Indica que es un componente independiente
-  imports: [CommonModule, FormsModule, RouterModule], // Módulos necesarios importados
-  templateUrl: './detalle-discoteca.component.html', // Ruta al archivo HTML asociado
-  styleUrl: './detalle-discoteca.component.css' // Ruta al archivo CSS asociado
+  selector: 'app-detalle-discoteca',
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterModule],
+  templateUrl: './detalle-discoteca.component.html',
+  styleUrl: './detalle-discoteca.component.css'
 })
 export class DetalleDiscotecaComponent implements OnInit {
-  // Propiedades para almacenar datos
-  ciudades: any[] = []; // Lista de ciudades para el filtro
-  discotecas: any[] = []; // Lista de discotecas a mostrar
-  ciudadSeleccionada: number | null = null; // ID de ciudad seleccionada para filtrar
+  ciudades: any[] = [];
+  discotecas: any[] = [];
+  ciudadSeleccionada: number | null = null;
   
-  // Estados de UI para gestionar la carga y errores
-  cargando: boolean = true; // Indicador de carga para mostrar spinner/skeleton
-  error: string = ''; // Mensaje de error para mostrar al usuario
+  cargando: boolean = true;
+  error: string = '';
   
-  // Configuración de la API
-  baseUrl: string = 'http://localhost:9000/api'; // URL base de la API
-
   /**
    * Constructor con inyección de dependencias
-   * @param http Cliente HTTP para realizar peticiones directas a la API
-   * @param discotecaService Servicio específico para operaciones con discotecas
+   * @param discotecaService Servicio para operaciones con discotecas
+   * @param ciudadService Servicio para operaciones con ciudades
    */
   constructor(
-    private http: HttpClient, // Inyección del cliente HTTP
-    private discotecaService: DiscotecaService // Inyección del servicio de discotecas
+    private discotecaService: DiscotecaService,
+    private ciudadService: CiudadService
   ) {}
 
   /**
    * Método del ciclo de vida que se ejecuta al inicializar el componente
-   * Carga los datos iniciales necesarios
    */
   ngOnInit(): void {
-    this.cargarCiudades(); // Carga la lista de ciudades para el filtro
-    this.cargarDiscotecas(); // Carga la lista completa de discotecas
+    this.cargarCiudades();
+    this.cargarDiscotecas();
   }
 
   /**
-   * Carga la lista de ciudades desde la API
-   * Estas ciudades se utilizan en el filtro desplegable
+   * Carga la lista de ciudades usando el servicio correspondiente
    */
   cargarCiudades(): void {
-    // Realiza una petición GET para obtener todas las ciudades
-    this.http.get<any[]>(`${this.baseUrl}/ciudades`).subscribe({
+    this.ciudadService.getCiudades().subscribe({
       next: (data) => {
-        // Si la petición es exitosa, almacena las ciudades
         this.ciudades = data;
       },
       error: (error) => {
-        // Si hay un error, lo registra en la consola
         console.error('Error al cargar ciudades:', error);
-        // No se establece mensaje de error visible porque el filtro
-        // por ciudad es una funcionalidad adicional, no crítica
       }
     });
   }
 
   /**
-   * Carga la lista completa de discotecas desde la API
-   * Establece estados de carga y maneja posibles errores
+   * Carga la lista completa de discotecas usando el servicio
    */
   cargarDiscotecas(): void {
-    this.cargando = true; // Activa el indicador de carga
+    this.cargando = true;
     
-    // Realiza una petición GET para obtener todas las discotecas
-    this.http.get<any[]>(`${this.baseUrl}/discotecas`).subscribe({
+    this.discotecaService.getDiscotecas().subscribe({
       next: (data) => {
-        // Si la petición es exitosa:
-        this.discotecas = data; // Almacena los datos recibidos
-        this.cargando = false; // Desactiva el indicador de carga
+        this.discotecas = data;
+        this.cargando = false;
       },
       error: (error) => {
-        // Si hay un error:
-        console.error('Error al cargar discotecas:', error); // Log para depuración
-        this.error = 'No se pudieron cargar las discotecas. Intenta nuevamente más tarde.'; // Mensaje para el usuario
-        this.cargando = false; // Desactiva el indicador de carga
+        console.error('Error al cargar discotecas:', error);
+        this.error = 'No se pudieron cargar las discotecas. Intenta nuevamente más tarde.';
+        this.cargando = false;
       }
     });
   }
 
   /**
-   * Filtra las discotecas según la ciudad seleccionada
-   * Si no hay ciudad seleccionada, carga todas las discotecas
+   * Filtra las discotecas según la ciudad seleccionada usando el servicio
    */
   filtrarPorCiudad(): void {
-    this.cargando = true; // Activa el indicador de carga
+    this.cargando = true;
     
-    // Verifica si hay una ciudad seleccionada para filtrar
     if (this.ciudadSeleccionada) {
-      // Usa el servicio específico para obtener discotecas por ciudad
       this.discotecaService.getDiscotecasByIdCiudad(this.ciudadSeleccionada).subscribe({
         next: (discotecas) => {
-          // Si la petición es exitosa:
-          this.discotecas = discotecas; // Actualiza la lista con los resultados filtrados
-          this.cargando = false; // Desactiva el indicador de carga
+          this.discotecas = discotecas;
+          this.cargando = false;
         },
         error: (error) => {
-          // Si hay un error:
-          console.error('Error al filtrar por ciudad:', error); // Log para depuración
-          this.error = 'No se pudieron cargar las discotecas para esta ciudad.'; // Mensaje para el usuario
-          this.cargando = false; // Desactiva el indicador de carga
+          console.error('Error al filtrar por ciudad:', error);
+          this.error = 'No se pudieron cargar las discotecas para esta ciudad.';
+          this.cargando = false;
         }
       });
     } else {
-      // Si no hay ciudad seleccionada (se seleccionó "Todas"), carga todas las discotecas
       this.cargarDiscotecas();
     }
   }

@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { EventosService, Evento } from '../../service/eventos.service'; // Servicio y modelo de Eventos
 import { DjService, Dj } from '../../service/dj.service'; // Servicio y modelo de DJs
 import { AuthService } from '../../service/auth.service'; // Servicio de autenticación
-import { HttpClient, HttpHeaders } from '@angular/common/http'; // Cliente HTTP para peticiones adicionales
 
 /**
  * Componente para la gestión de eventos de una discoteca
@@ -70,8 +69,8 @@ export class GestionarEventosComponent implements OnInit {
     private eventosService: EventosService, // Inyecta el servicio de eventos
     private djService: DjService, // Inyecta el servicio de DJs
     private authService: AuthService, // Inyecta el servicio de autenticación
-    private http: HttpClient // Inyecta el cliente HTTP
   ) {
+    
     // Intentar obtener el ID de la discoteca del localStorage
     const userData = JSON.parse(localStorage.getItem('user_data') || '{}');
     
@@ -101,7 +100,7 @@ export class GestionarEventosComponent implements OnInit {
    */
   private cargarEventos(): void {
     if (this.idDiscoteca) {
-      this.eventosService.getEventosByDiscoteca(this.idDiscoteca, 'TODOS').subscribe({
+      this.eventosService.getEventosByDiscoteca(this.idDiscoteca, 'TODOS').subscribe({ // 
         next: eventos => this.eventos = eventos, // Almacena los eventos recibidos
         error: error => this.handleError(error) // Maneja cualquier error
       });
@@ -109,25 +108,18 @@ export class GestionarEventosComponent implements OnInit {
   }
 
   /**
-   * Carga la lista de DJs disponibles directamente mediante petición HTTP
-   * Utiliza token de autenticación para acceder a la API
+   * Carga la lista de DJs disponibles usando el servicio DjService
+   * Reemplaza la implementación anterior que usaba HTTP directamente
    */
   cargarDjsDirectamente(): void {
-    const token = localStorage.getItem('token');
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': token ? `Bearer ${token}` : ''
+    this.djService.getDjs().subscribe({ // Llama al método getDjs() del servicio DjService
+      next: (djs) => { // Cuando se reciban los DJs, almacena los recibidos
+        this.djs = djs; // Almacena los DJs recibidos
+      },
+      error: (error) => {
+        this.handleError(error); // Maneja cualquier error
+      }
     });
-    
-    this.http.get('http://localhost:9000/api/djs', { headers })
-      .subscribe({
-        next: (response) => {
-          this.djs = response as any[]; // Almacena los DJs recibidos
-        },
-        error: (error) => {
-          this.handleError(error); // Maneja cualquier error
-        }
-      });
   }
 
   /**
@@ -214,7 +206,7 @@ export class GestionarEventosComponent implements OnInit {
    */
   editarEvento(evento: Evento): void {
     // Crea una copia del objeto para no modificar la lista original directamente
-    this.eventoSeleccionado = {...evento};
+    this.eventoSeleccionado = {...evento}; // Selecciona el evento a editar
     this.nuevoEvento = {...evento}; // Copia datos al modelo del formulario
     this.modoEdicion = true; // Activa modo edición
     this.mostrarFormulario = true; // Muestra el formulario
@@ -290,6 +282,66 @@ export class GestionarEventosComponent implements OnInit {
     } else {
       this.nuevoEvento.idDj = idDj; // Selecciona el nuevo DJ
     }
+  }
+
+  /**
+   * Filtra eventos según el término de búsqueda
+   * @param event Evento del input de búsqueda
+   */
+  buscar(event: any): void {
+    const termino = event.target.value.toLowerCase();
+    
+    // Si no hay término, recarga todos los eventos
+    if (!termino) {
+      this.cargarEventos();
+      return;
+    }
+    
+    // Solo filtra si el término tiene al menos 3 caracteres
+    if (termino.length >= 3) {
+      // Filtra los eventos que contienen el término en nombre o tipo
+      this.eventos = this.eventos.filter(evento => 
+        evento.nombre.toLowerCase().includes(termino) ||
+        evento.tipoEvento.toLowerCase().includes(termino)
+      );
+    }
+  }
+
+  /**
+   * Filtra la lista de DJs según el término de búsqueda
+   * @returns Array de DJs filtrado
+   */
+  filtrarDjs(): any[] {
+    if (!this.djs || this.djs.length === 0) {
+      return []; // Retorna lista vacía si no hay DJs
+    }
+    
+    if (!this.djBusqueda) {
+      return this.djs; // Retorna todos los DJs si no hay término de búsqueda
+    }
+    
+    const termino = this.djBusqueda.toLowerCase();
+    // Filtra DJs por nombre o género musical
+    return this.djs.filter(dj => 
+      dj.nombre.toLowerCase().includes(termino) ||
+      dj.generoMusical.toLowerCase().includes(termino)
+    );
+  }
+
+  /**
+   * Actualiza el estado de un evento (ACTIVO/CANCELADO)
+   * @param evento Evento cuyo estado se va a cambiar
+   */
+  cambiarEstadoEvento(evento: Evento): void {
+    if (!evento.idEvento) return;
+    
+    // Envía la actualización al servidor
+    this.eventosService.updateEvento(evento.idEvento, evento).subscribe({
+      next: () => {
+        console.log('Estado del evento actualizado correctamente');
+      },
+      error: error => this.handleError(error) // Maneja errores
+    });
   }
 
   /**
@@ -445,63 +497,5 @@ export class GestionarEventosComponent implements OnInit {
     this.formErrors.general = 'Ha ocurrido un error. Por favor, inténtelo de nuevo.';
   }
 
-  /**
-   * Filtra eventos según el término de búsqueda
-   * @param event Evento del input de búsqueda
-   */
-  buscar(event: any): void {
-    const termino = event.target.value.toLowerCase();
-    
-    // Si no hay término, recarga todos los eventos
-    if (!termino) {
-      this.cargarEventos();
-      return;
-    }
-    
-    // Solo filtra si el término tiene al menos 3 caracteres
-    if (termino.length >= 3) {
-      // Filtra los eventos que contienen el término en nombre o tipo
-      this.eventos = this.eventos.filter(evento => 
-        evento.nombre.toLowerCase().includes(termino) ||
-        evento.tipoEvento.toLowerCase().includes(termino)
-      );
-    }
-  }
-
-  /**
-   * Filtra la lista de DJs según el término de búsqueda
-   * @returns Array de DJs filtrado
-   */
-  filtrarDjs(): any[] {
-    if (!this.djs || this.djs.length === 0) {
-      return []; // Retorna lista vacía si no hay DJs
-    }
-    
-    if (!this.djBusqueda) {
-      return this.djs; // Retorna todos los DJs si no hay término de búsqueda
-    }
-    
-    const termino = this.djBusqueda.toLowerCase();
-    // Filtra DJs por nombre o género musical
-    return this.djs.filter(dj => 
-      dj.nombre.toLowerCase().includes(termino) ||
-      dj.generoMusical.toLowerCase().includes(termino)
-    );
-  }
-
-  /**
-   * Actualiza el estado de un evento (ACTIVO/CANCELADO)
-   * @param evento Evento cuyo estado se va a cambiar
-   */
-  cambiarEstadoEvento(evento: Evento): void {
-    if (!evento.idEvento) return;
-    
-    // Envía la actualización al servidor
-    this.eventosService.updateEvento(evento.idEvento, evento).subscribe({
-      next: () => {
-        console.log('Estado del evento actualizado correctamente');
-      },
-      error: error => this.handleError(error) // Maneja errores
-    });
-  }
+  
 }

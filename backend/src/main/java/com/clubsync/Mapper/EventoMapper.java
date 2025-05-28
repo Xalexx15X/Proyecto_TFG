@@ -65,7 +65,6 @@ public class EventoMapper implements GenericMapper<Evento, DtoEvento> {
         dto.setImagen(entity.getImagen());          // Imagen promocional del evento
         
         // Mapeo de relaciones principales (N:1)
-        // Se extraen solo los IDs de las entidades relacionadas para evitar ciclos y reducir payload
         dto.setIdDiscoteca(entity.getDiscoteca() != null ? entity.getDiscoteca().getIdDiscoteca() : null);
         dto.setIdDj(entity.getDj() != null ? entity.getDj().getIdDj() : null);
         dto.setIdUsuario(entity.getUsuario() != null ? entity.getUsuario().getIdUsuario() : null);

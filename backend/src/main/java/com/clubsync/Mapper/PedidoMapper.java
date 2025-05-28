@@ -43,12 +43,10 @@ public class PedidoMapper implements GenericMapper<Pedido, DtoPedido> {
         dto.setFechaHora(entity.getFechaHora());     
         
         // Mapeo de relación con Usuario (N:1)
-        // Extrae solo el ID del propietario del pedido para proteger datos sensibles
         dto.setIdUsuario(entity.getUsuario() != null ? entity.getUsuario().getIdUsuario() : null);
         
         // Mapeo de relación con LineaPedido (1:N)
         // Convierte la colección de líneas de pedido a una simple lista de IDs
-        // Evita ciclos infinitos en la serialización JSON y reduce el tamaño de respuesta
         dto.setIdLineasPedido(entity.getLineasPedido() != null ? 
                 entity.getLineasPedido().stream()
                     .map(lp -> lp.getIdLineaPedido())

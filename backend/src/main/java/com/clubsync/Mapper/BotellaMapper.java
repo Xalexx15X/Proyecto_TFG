@@ -50,13 +50,12 @@ public class BotellaMapper implements GenericMapper<Botella, DtoBotella> {
         
         // Mapeo de relación con DetalleReservaBotella (1:N)
         // Se convierte la colección de entidades relacionadas a una lista de IDs
-        // Esto evita ciclos infinitos en la serialización JSON y reduce la profundidad del objeto
         dto.setIdDetallesReservasBotellas(entity.getDetallesReservasBotellas() != null ? 
                 entity.getDetallesReservasBotellas().stream()
                     .map(drb -> drb.getIdDetalleReservaBotella())
                     .collect(Collectors.toList()) : 
                 new ArrayList<>());
-        
+
         return dto;
     }
 
@@ -91,7 +90,6 @@ public class BotellaMapper implements GenericMapper<Botella, DtoBotella> {
         
         // Nota: La relación con DetalleReservaBotella no se establece en la conversión a entidad
         // ya que esta relación se gestiona desde el lado propietario (DetalleReservaBotella)
-        // Esta es una práctica común para mantener la coherencia en relaciones bidireccionales
         
         return entity;
     }

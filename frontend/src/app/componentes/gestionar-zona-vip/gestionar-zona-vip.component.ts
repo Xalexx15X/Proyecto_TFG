@@ -9,11 +9,11 @@ import { AuthService } from '../../service/auth.service';
  * Permite a administradores de discoteca crear, editar, eliminar y listar sus zonas premium
  */
 @Component({
-  selector: 'app-gestionar-zona-vip', // Selector CSS para usar este componente en HTML
-  standalone: true, // Indica que es un componente independiente
-  imports: [CommonModule, FormsModule], // Módulos necesarios importados
-  templateUrl: './gestionar-zona-vip.component.html', // Ruta al archivo HTML asociado
-  styleUrls: ['./gestionar-zona-vip.component.css'] // Ruta al archivo CSS asociado
+  selector: 'app-gestionar-zona-vip', 
+  standalone: true, 
+  imports: [CommonModule, FormsModule], 
+  templateUrl: './gestionar-zona-vip.component.html', 
+  styleUrls: ['./gestionar-zona-vip.component.css'] 
 })
 export class GestionarZonaVipComponent implements OnInit {
   // Propiedades para almacenar y gestionar datos de zonas VIP
@@ -150,7 +150,7 @@ export class GestionarZonaVipComponent implements OnInit {
     ).subscribe({
       next: zonaVipActualizada => {
         // Busca la zona en la lista actual y la reemplaza
-        const index = this.zonasVip.findIndex(z => z.idZonaVip === zonaVipActualizada.idZonaVip);
+        const index = this.zonasVip.findIndex(z => z.idZonaVip === zonaVipActualizada.idZonaVip); // Encuentra el índice de la zona actualizada
         if (index !== -1) {
           this.zonasVip[index] = zonaVipActualizada; // Actualiza en la lista
         }

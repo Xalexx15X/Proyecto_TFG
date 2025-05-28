@@ -46,17 +46,18 @@ public class RecompensaTieneUsuarioMapper implements GenericMapper<RecompensaTie
         dto.setId(entity.getId());                        // ID único del registro de canje
         dto.setFechaCanjeado(entity.getFechaCanjeado());  // Momento en que se realizó el canje
         dto.setPuntosUtilizados(entity.getPuntosUtilizados()); // Costo en puntos aplicado
-        
-        // Mapeo de relaciones principales (N:1)
-        // Extrae solo los IDs para evitar ciclos infinitos en la serialización JSON
-        dto.setIdRecompensa(entity.getRecompensa() != null ? entity.getRecompensa().getIdRecompensa() : null);
-        dto.setIdUsuario(entity.getUsuario() != null ? entity.getUsuario().getIdUsuario() : null);
-        
         // Mapeo de campos polimórficos específicos para cada tipo de recompensa
         // Estos permiten referenciar a diferentes entidades según el tipo de beneficio
         dto.setBotellaId(entity.getBotellaId());    // Para recompensas de tipo botella
         dto.setEventoId(entity.getEventoId());      // Para recompensas de tipo evento
         dto.setZonaVipId(entity.getZonaVipId());    // Para recompensas de tipo zona VIP
+
+        // Mapeo de relaciones principales (N:1)
+        // Extrae solo los IDs para evitar ciclos infinitos en la serialización JSON
+        dto.setIdRecompensa(entity.getRecompensa() != null ? entity.getRecompensa().getIdRecompensa() : null);
+        dto.setIdUsuario(entity.getUsuario() != null ? entity.getUsuario().getIdUsuario() : null);
+        
+        
         
         return dto;
     }
@@ -77,6 +78,10 @@ public class RecompensaTieneUsuarioMapper implements GenericMapper<RecompensaTie
         entity.setId(dto.getId());
         entity.setFechaCanjeado(dto.getFechaCanjeado());
         entity.setPuntosUtilizados(dto.getPuntosUtilizados());
+        // Establecimiento de campos polimórficos específicos para cada tipo de recompensa
+        entity.setBotellaId(dto.getBotellaId());
+        entity.setEventoId(dto.getEventoId());
+        entity.setZonaVipId(dto.getZonaVipId());
         
         // Resolución de relaciones principales (N:1)
         // Carga las entidades completas desde la base de datos usando sus IDs
@@ -88,10 +93,7 @@ public class RecompensaTieneUsuarioMapper implements GenericMapper<RecompensaTie
             entity.setUsuario(usuarioRepository.findById(dto.getIdUsuario()).orElse(null));
         }
         
-        // Establecimiento de campos polimórficos específicos para cada tipo de recompensa
-        entity.setBotellaId(dto.getBotellaId());
-        entity.setEventoId(dto.getEventoId());
-        entity.setZonaVipId(dto.getZonaVipId());
+        
         
         return entity;
     }

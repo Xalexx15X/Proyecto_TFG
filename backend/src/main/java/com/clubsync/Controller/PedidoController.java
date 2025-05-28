@@ -337,22 +337,23 @@ public class PedidoController {
             Double totalIngresos = pedidoRepository.getTotalIngresos();
             
             // Construimos el resultado usando streams para mejorar la legibilidad
-            List<String> meses = datosIngresos.stream()
-                .map(dato -> (String) dato.get("mes"))
-                .collect(Collectors.toList());
+            List<String> meses = datosIngresos.stream() // Extraemos los meses de los datos
+                .map(dato -> (String) dato.get("mes")) // Aseguramos que el mes sea un String
+                .collect(Collectors.toList()); // Convertimos a lista de meses
                 
-            List<Double> ingresos = datosIngresos.stream()
+            List<Double> ingresos = datosIngresos.stream() // Extraemos los ingresos totales por mes
+                // Aseguramos que el total sea un número y lo convertimos a Double
                 .map(dato -> dato.get("total") != null ? ((Number) dato.get("total")).doubleValue() : 0.0)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()); // Convertimos a lista de ingresos totales por mes
             
             // Usamos Map.of para crear un mapa inmutable más limpio
             return ResponseEntity.ok(Map.of(
-                "meses", meses,
-                "ingresos", ingresos,
-                "totalIngresos", totalIngresos != null ? totalIngresos : 0.0
+                "meses", meses, // Lista de meses
+                "ingresos", ingresos, // Lista de ingresos totales por mes
+                "totalIngresos", totalIngresos != null ? totalIngresos : 0.0 // Suma total de ingresos
             ));
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception e) { // Capturamos cualquier error durante el proceso
+            e.printStackTrace(); 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("Error al obtener estadísticas de ingresos: " + e.getMessage());
         }

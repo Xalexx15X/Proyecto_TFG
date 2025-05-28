@@ -48,12 +48,10 @@ public class DetalleReservaBotellaMapper implements GenericMapper<DetalleReserva
         dto.setPrecioUnidad(entity.getPrecioUnidad());
         
         // Mapeo de relación con ReservaBotella (N:1)
-        // Extrae solo el ID para evitar ciclos y reducir tamaño de respuesta
         dto.setIdReservaBotella(entity.getReservaBotella() != null ? 
                 entity.getReservaBotella().getIdReservaBotella() : null);
                 
         // Mapeo de relación con Botella (N:1)
-        // Extrae solo el ID para evitar ciclos y reducir tamaño de respuesta
         dto.setIdBotella(entity.getBotella() != null ? 
                 entity.getBotella().getIdBotella() : null);
         

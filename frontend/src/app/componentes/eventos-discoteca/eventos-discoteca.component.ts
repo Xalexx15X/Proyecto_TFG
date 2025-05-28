@@ -88,15 +88,15 @@ export class EventosDiscotecaComponent implements OnInit {
     this.cargando = true; // Indica que la carga está en proceso
 
     // 1. Cargar los eventos de la discoteca
-    this.eventosService.getEventosByDiscoteca(this.idDiscoteca, 'TODOS').subscribe({
-      next: (eventos) => {
+    this.eventosService.getEventosByDiscoteca(this.idDiscoteca, 'TODOS').subscribe({ // Llama al servicio para obtener eventos
+      next: (eventos) => { // Cuando se reciben eventos
         // Guardamos los eventos
         this.eventos = eventos;
         
         // 2. Vemos qué eventos tienen DJ asignado
-        const eventosDjIds = eventos
-          .filter(e => e.idDj)
-          .map(e => e.idDj);
+        const eventosDjIds = eventos // Filtra eventos para obtener solo aquellos con DJ
+          .filter(e => e.idDj) // Filtra eventos que tienen un ID de DJ
+          .map(e => e.idDj); // Mapea para obtener solo los IDs de DJ
         
         // Si no hay DJs para cargar, terminamos
         if (eventosDjIds.length === 0) {
@@ -106,28 +106,28 @@ export class EventosDiscotecaComponent implements OnInit {
         }
         
         // 3. Cargar todos los DJs a la vez (optimización de peticiones)
-        forkJoin(
-          eventosDjIds.map(id => this.djService.getDj(id))
+        forkJoin( // Combina múltiples observables  
+          eventosDjIds.map(id => this.djService.getDj(id)) // Llama al servicio para cada ID de DJ
         ).subscribe({
-          next: (djs) => {
+          next: (djs) => { // Cuando todos los DJs se han cargado
             // Creamos un mapa simple para buscar DJs por ID
-            const mapaDjs: { [key: number]: any } = {};
-            djs.forEach(dj => {
-              if (dj && dj.idDj !== undefined) {
-                mapaDjs[dj.idDj] = dj;
+            const mapaDjs: { [key: number]: any } = {}; // Crea un objeto vacío para almacenar los DJs
+            djs.forEach(dj => { // Recorre cada objeto DJ
+              if (dj && dj.idDj !== undefined) { // Si tiene ID
+                mapaDjs[dj.idDj] = dj; // Almacena en el mapa
               }
             });
             
             // Asignamos cada DJ a su evento correspondiente
-            this.eventos.forEach(evento => {
-              if (evento.idDj && mapaDjs[evento.idDj]) {
+            this.eventos.forEach(evento => { // Recorre cada evento
+              if (evento.idDj && mapaDjs[evento.idDj]) { // Si tiene ID y existe en el mapa
                 evento.dj = mapaDjs[evento.idDj]; // Añade objeto DJ completo
               }
             });
             
             this.filtrarEventosIniciales(); // Aplica filtro inicial
           },
-          complete: () => {
+          complete: () => { // Cuando todas las peticiones se completan
             this.cargando = false; // Termina estado de carga
           },
           error: (error) => {

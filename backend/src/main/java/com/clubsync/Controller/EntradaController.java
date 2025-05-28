@@ -327,14 +327,15 @@ public class EntradaController {
         @PathVariable Integer idDiscoteca
     ) {
         try {
-            // Utilizamos los métodos simplificados
-            List<Map<String, Object>> eventos = entradaRepository.getEstadisticasAsistencia();
-            Integer totalEntradasVendidas = entradaRepository.getTotalEntradasVendidas();
+            // este método devuelve una lista de mapas con los eventos y sus entradas
+            List<Map<String, Object>> eventos = entradaRepository.getEstadisticasAsistencia(); 
+            // recuperamos la cantidad total de entradas vendidas
+            Integer totalEntradasVendidas = entradaRepository.getTotalEntradasVendidas(); 
             
             // Usamos Map.of para crear un mapa inmutable más limpio
-            return ResponseEntity.ok(Map.of(
-                "eventos", eventos,
-                "totalEntradasVendidas", totalEntradasVendidas != null ? totalEntradasVendidas : 0
+            return ResponseEntity.ok(Map.of( // usamos Map.of para crear un mapa inmutable más limpio
+                "eventos", eventos, // lista de mapas con los eventos y sus entradas
+                "totalEntradasVendidas", totalEntradasVendidas != null ? totalEntradasVendidas : 0 // total de entradas vendidas, asegurando que no sea null
             ));
         } catch (Exception e) {
             e.printStackTrace();

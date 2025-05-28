@@ -47,7 +47,7 @@ public interface PedidoRepository extends JpaRepository<Pedido, Integer> {
      * Consulta nativa SQL que genera estadísticas de ingresos mensuales
      * 
      * Esta consulta:
-     * 1. Selecciona el nombre del mes de cada pedido usando la función MONTHNAME de MySQL
+     * 1. Selecciona el nombre del mes de cada pedido usando la función MONTHNAME
      * 2. Calcula la suma total de ingresos por cada mes con SUM()
      * 3. Filtra únicamente pedidos completados para contar solo ventas reales
      * 4. Agrupa los resultados por mes, usando tanto MONTH() como MONTHNAME()

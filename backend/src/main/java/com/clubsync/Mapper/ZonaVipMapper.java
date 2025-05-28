@@ -44,7 +44,6 @@ public class ZonaVipMapper implements GenericMapper<ZonaVip, DtoZonaVip> {
         dto.setEstado(entity.getEstado());            // Estado actual (DISPONIBLE, RESERVADO, etc.)
         
         // Mapeo de relación con Discoteca (N:1)
-        // Extrae solo el ID para evitar ciclos infinitos en la serialización JSON
         dto.setIdDiscoteca(entity.getDiscoteca() != null ? entity.getDiscoteca().getIdDiscoteca() : null);
         
         // Mapeo de relación con ReservasBotella (1:N)

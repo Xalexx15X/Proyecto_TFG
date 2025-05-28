@@ -41,7 +41,6 @@ public class LineaPedidoMapper implements GenericMapper<LineaPedido, DtoLineaPed
         dto.setLineaPedidoJson(entity.getLineaPedidoJson());  // Datos serializados del ítem
         
         // Mapeo de relación con Pedido (N:1)
-        // Extrae solo el ID del pedido contenedor para evitar ciclos en la serialización
         dto.setIdPedido(entity.getPedido() != null ? entity.getPedido().getIdPedido() : null);
         
         return dto;

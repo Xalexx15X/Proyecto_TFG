@@ -137,8 +137,8 @@ export class GestionarRecompensasComponent implements OnInit {
     ).subscribe({
       next: recompensaActualizada => {
         // Busca la recompensa en la lista actual y la reemplaza
-        const index = this.recompensas.findIndex(r => r.idRecompensa === recompensaActualizada.idRecompensa);
-        if (index !== -1) {
+        const index = this.recompensas.findIndex(r => r.idRecompensa === recompensaActualizada.idRecompensa); // Encuentra el índice de la recompensa actualizada
+        if (index !== -1) {  // Si se encuentra, actualiza la lista
           this.recompensas[index] = recompensaActualizada; // Actualiza en la lista
         }
         this.cerrarFormulario(); // Cierra el formulario

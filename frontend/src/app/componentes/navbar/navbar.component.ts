@@ -49,7 +49,7 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // Suscribirse a cambios en el carrito para mantener actualizado el contador
     this.carritoSubscription = this.carritoService.items$.subscribe(items => {
-      console.log("Navbar: Items del carrito actualizados", items); // Log para depuración
+      console.log("Navbar: Items del carrito actualizados", items);
       this.cantidadCarrito = this.carritoService.obtenerCantidadItems(); // Actualiza contador
     });
 

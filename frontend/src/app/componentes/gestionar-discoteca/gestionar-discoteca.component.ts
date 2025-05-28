@@ -5,16 +5,12 @@ import { DiscotecaService, Discoteca } from '../../service/discoteca.service';
 import { CiudadService } from '../../service/ciudad.service';
 import { UsuarioService } from '../../service/usuario.service';
 
-/**
- * Componente para la gestión de discotecas
- * Permite crear, editar, eliminar y listar discotecas, así como asignarles administradores
- */
 @Component({
-  selector: 'app-gestionar-discoteca', // Selector CSS para usar este componente
-  standalone: true, // Indica que es un componente independiente
-  imports: [CommonModule, FormsModule], // Módulos necesarios importados
-  templateUrl: './gestionar-discoteca.component.html', // Ruta al archivo HTML asociado
-  styleUrls: ['./gestionar-discoteca.component.css'] // Ruta al archivo CSS asociado
+  selector: 'app-gestionar-discoteca',
+  standalone: true, 
+  imports: [CommonModule, FormsModule], 
+  templateUrl: './gestionar-discoteca.component.html',
+  styleUrls: ['./gestionar-discoteca.component.css']
 })
 export class GestionarDiscotecaComponent implements OnInit {
   // Propiedades para almacenar y gestionar datos
@@ -201,7 +197,7 @@ export class GestionarDiscotecaComponent implements OnInit {
    * @param id ID del administrador
    * @returns Nombre del administrador o cadena vacía si no existe
    */
-  getAdminNombre(id: number | null): string {
+  getAdminNombre(id: number | null): string { 
     if (!id) return ''; // Si no hay ID, retorna cadena vacía
     
     // Busca el administrador por ID y retorna su nombre
@@ -297,7 +293,7 @@ export class GestionarDiscotecaComponent implements OnInit {
       next: discotecaActualizada => {
         // Busca la discoteca en la lista actual y la reemplaza
         const index = this.discotecas.findIndex(d => d.idDiscoteca === discotecaActualizada.idDiscoteca);
-        if (index !== -1) {
+        if (index !== -1) { // Si se encuentra, actualiza la discoteca en la lista
           this.discotecas[index] = discotecaActualizada; // Actualiza en la lista
         }
         this.cerrarFormulario(); // Cierra el formulario

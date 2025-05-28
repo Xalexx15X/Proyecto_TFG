@@ -59,7 +59,6 @@ public class EntradaMapper implements GenericMapper<Entrada, DtoEntrada> {
         dto.setPrecio(entity.getPrecio());           // Precio final pagado
         
         // Mapeo de relaciones principales (N:1)
-        // Se extraen solo los IDs para evitar anidación excesiva y ciclos
         dto.setIdUsuario(entity.getUsuario() != null ? entity.getUsuario().getIdUsuario() : null);
         dto.setIdEvento(entity.getEvento() != null ? entity.getEvento().getIdEvento() : null);
         dto.setIdTramoHorario(entity.getTramoHorario() != null ? entity.getTramoHorario().getIdTramoHorario() : null);
@@ -107,7 +106,6 @@ public class EntradaMapper implements GenericMapper<Entrada, DtoEntrada> {
         
         // Nota: No se establece la relación con ReservasBotella en la conversión a entidad
         // Esta relación debe ser gestionada desde el lado propietario (ReservaBotella)
-        // Las reservas asociadas se vinculan a la entrada después de su creación
         
         return entity;
     }

@@ -107,7 +107,6 @@ export class PerfilComponent implements OnInit {
 
   /**
    * Activa el modo de edición de datos personales
-   * Prepara la UI para permitir modificaciones
    */
   activarEdicion(): void {
     this.editando = true; // Activa la bandera de edición

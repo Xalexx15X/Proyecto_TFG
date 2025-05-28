@@ -235,13 +235,13 @@ export class RecompensasComponent implements OnInit {
     
     // Si es una botella, carga sus detalles
     if (recompensa.botellaId) {
-      this.botellaService.getBotella(recompensa.botellaId).subscribe(botella => {
-        recompensa.detalle = botella;
+      this.botellaService.getBotella(recompensa.botellaId).subscribe(botella => { // Carga la botella
+        recompensa.detalle = botella; // Asocia la botella a la recompensa
         
         // Cargar la información de la discoteca asociada a la botella
-        if (botella.idDiscoteca) {
-          this.discotecaService.getDiscoteca(botella.idDiscoteca).subscribe(discoteca => {
-            recompensa.detalle.discoteca = discoteca;
+        if (botella.idDiscoteca) { // Verifica que la botella tenga una discoteca asociada
+          this.discotecaService.getDiscoteca(botella.idDiscoteca).subscribe(discoteca => { // Carga la discoteca
+            recompensa.detalle.discoteca = discoteca; // Asocia la discoteca a la botella
           });
         }
       });
@@ -252,9 +252,9 @@ export class RecompensasComponent implements OnInit {
         recompensa.detalle = evento;
         
         // Cargar la información de la discoteca asociada al evento
-        if (evento.idDiscoteca) {
-          this.discotecaService.getDiscoteca(evento.idDiscoteca).subscribe(discoteca => {
-            recompensa.detalle.discoteca = discoteca;
+        if (evento.idDiscoteca) { // Verifica que el evento tenga una discoteca asociada
+          this.discotecaService.getDiscoteca(evento.idDiscoteca).subscribe(discoteca => { // Carga la discoteca
+            recompensa.detalle.discoteca = discoteca; // Asocia la discoteca al evento
           });
         }
       });
@@ -265,9 +265,9 @@ export class RecompensasComponent implements OnInit {
         recompensa.detalle = zonaVip;
         
         // Cargar la información de la discoteca asociada a la zona VIP
-        if (zonaVip.idDiscoteca) {
-          this.discotecaService.getDiscoteca(zonaVip.idDiscoteca).subscribe(discoteca => {
-            recompensa.detalle.discoteca = discoteca;
+        if (zonaVip.idDiscoteca) { // Verifica que la zona VIP tenga una discoteca asociada
+          this.discotecaService.getDiscoteca(zonaVip.idDiscoteca).subscribe(discoteca => { // Carga la discoteca
+            recompensa.detalle.discoteca = discoteca; // Asocia la discoteca a la zona VIP
           });
         }
       });

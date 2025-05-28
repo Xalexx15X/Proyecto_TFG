@@ -47,7 +47,6 @@ public class SecurityConfig {
                 // ===== RUTAS PÚBLICAS (SIN AUTENTICACIÓN) =====
                 // Endpoints de autenticación
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/public/**").permitAll()
                 
                 // Datos de catálogo que deben ser públicos (solo consultas GET)
                 .requestMatchers(HttpMethod.GET, "/api/ciudades/**").permitAll()

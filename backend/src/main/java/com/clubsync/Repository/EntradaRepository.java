@@ -62,7 +62,7 @@ public interface EntradaRepository extends JpaRepository<Entrada, Integer> {
         *   -- Unión con tabla entrada para encontrar todas las entradas vendidas por evento:
         *   JOIN entrada en ON e.id_evento = en.evento_id_evento
         *   
-        * -- Agrupación por todos los campos no agregados para evitar ambigüedades en MySQL:
+        * -- Agrupación por todos los campos no agregados para evitar ambigüedades:
         * GROUP BY
         *   e.id_evento,                                             -- Agrupa por ID de evento (clave primaria)
         *   e.nombre,                                                -- Necesario incluir para poder seleccionarlo
@@ -103,13 +103,11 @@ public interface EntradaRepository extends JpaRepository<Entrada, Integer> {
     List<Map<String, Object>> getEstadisticasAsistencia();
     
     /**
-     * Consulta nativa SQL que cuenta el total de entradas vendidas en toda la plataforma
+     * Consulta que cuenta el total de entradas vendidas en toda la plataforma
      * 
      * Esta consulta:
      * 1. Realiza un conteo simple de todos los registros en la tabla entrada
      * 2. Devuelve un único valor numérico representando el total global de entradas
-     * 
-     * Es utilizada principalmente para estadísticas generales y dashboards administrativos
      * 
      * @return Número total de entradas vendidas en el sistema
      */

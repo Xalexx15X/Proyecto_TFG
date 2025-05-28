@@ -22,7 +22,7 @@ export class LoginComponent {
     password: '' // Contraseña del usuario
   };
   
-  error: string = ''; // Mensaje de error general (legacy, se usa formErrors en su lugar)
+  error: string = ''; // Mensaje de error general 
   
   // Objeto para almacenar errores específicos de validación por campo
   formErrors = {

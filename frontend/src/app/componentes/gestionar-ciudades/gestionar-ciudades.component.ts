@@ -139,8 +139,8 @@ export class GestionarCiudadesComponent implements OnInit {
       ).subscribe({
         next: (ciudadActualizada) => {
           // Busca la ciudad en la lista actual y la reemplaza
-          const index = this.ciudades.findIndex(c => c.idCiudad === ciudadActualizada.idCiudad);
-          if (index !== -1) {
+          const index = this.ciudades.findIndex(c => c.idCiudad === ciudadActualizada.idCiudad); // Encuentra el índice de la ciudad actualizada
+          if (index !== -1) { // Si se encuentra, actualiza la lista
             this.ciudades[index] = ciudadActualizada; // Actualiza en la lista
           }
           this.mostrarFormulario = false; // Oculta el formulario

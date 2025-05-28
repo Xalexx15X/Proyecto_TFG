@@ -13,7 +13,6 @@ import java.util.List;
 public class ApiError {
     /**
      * Momento exacto en que se produjo el error
-     * Facilita la depuración y el seguimiento cronológico de problemas
      */
     private LocalDateTime timestamp;
     

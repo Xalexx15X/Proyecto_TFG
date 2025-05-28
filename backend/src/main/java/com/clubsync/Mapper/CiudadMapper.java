@@ -35,7 +35,6 @@ public class CiudadMapper implements GenericMapper<Ciudad, DtoCiudad> {
         
         // Mapeo de relación con Discoteca (1:N)
         // Convierte la colección de discotecas relacionadas a una lista de IDs
-        // Evita ciclos infinitos en la serialización JSON y reduce el tamaño de respuesta
         dto.setIdDiscotecas(entity.getDiscotecas() != null ? 
                 entity.getDiscotecas().stream()
                     .map(d -> d.getIdDiscoteca())
@@ -64,7 +63,6 @@ public class CiudadMapper implements GenericMapper<Ciudad, DtoCiudad> {
         entity.setPais(dto.getPais());
         entity.setCodigoPostal(dto.getCodigoPostal());
         
-        // Nota: No se establece la relación con Discoteca en la conversión a entidad
         // Esta relación debe ser gestionada desde el lado propietario (Discoteca)
         // ya que Ciudad es el lado inverso de la relación bidireccional
         

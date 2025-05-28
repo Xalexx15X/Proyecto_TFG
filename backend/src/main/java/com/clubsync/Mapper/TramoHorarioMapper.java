@@ -40,7 +40,6 @@ public class TramoHorarioMapper implements GenericMapper<TramoHorario, DtoTramoH
         dto.setMultiplicadorPrecio(entity.getMultiplicadorPrecio());  // Factor de precio dinámico
         
         // Mapeo de relación con Discoteca (N:1)
-        // Extrae solo el ID para evitar ciclos infinitos en la serialización JSON
         dto.setIdDiscoteca(entity.getDiscoteca() != null ? entity.getDiscoteca().getIdDiscoteca() : null);
         
         return dto;
