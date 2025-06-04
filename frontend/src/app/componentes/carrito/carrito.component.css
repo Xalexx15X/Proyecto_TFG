@@ -409,15 +409,45 @@
       margin-top: 0.5rem;
     }
     
+    /* Ajustes específicos para la papelera en móvil */
     .btn-remove {
-      position: absolute;
-      top: 1rem;
-      left: 1rem;
+      position: static; /* En lugar de absolute */
+      margin-top: 0.5rem;
+      margin-left: 0rem; 
+      z-index: 1;
     }
     
     .item-badge {
-      top: 1rem;
-      right: 1rem;
+      position: static; /* En lugar de absolute */
+      display: inline-block;
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .item-details {
+      padding-top: 0; /* Ya no necesitamos espacio extra */
+    }
+    
+    .item-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+    
+    .item-info {
+      margin-bottom: 0.5rem;
+    }
+    
+    .cart-item {
+      padding: 1.5rem;
+    }
+  }
+  
+  /* Revertimos los ajustes para móviles pequeños que ya no son necesarios */
+  @media (max-width: 400px) {
+    .cart-item {
+      padding: 1.5rem; /* Volvemos al padding normal */
     }
   }
 

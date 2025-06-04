@@ -298,12 +298,128 @@
   
   /* Responsive */
   @media (max-width: 768px) {
+    .container-fluid {
+      padding: 1rem;
+    }
+    
+    /* Modificamos para mantener el botón a la derecha del título */
+    .page-header {
+      flex-direction: row; /* Cambiado de column a row */
+      flex-wrap: wrap; /* Permite que los elementos bajen si no caben */
+      justify-content: space-between; /* Mantiene el título a la izquierda y el botón a la derecha */
+      align-items: center; /* Centrado vertical */
+      gap: 0.5rem; /* Espacio entre elementos */
+    }
+    
+    /* El botón no necesita margin-top ya que está alineado con el título */
+    .btn-create {
+      margin: 0; /* Quitar cualquier margen */
+    }
+    
+    /* Si el título es muy largo y quieres asegurar que no ocupe toda la fila */
+    .page-title {
+      font-size: 1.7rem; /* Reducir tamaño para que quepa mejor */
+      max-width: 60%; /* Limitar ancho para dejar espacio al botón */
+    }
+    
     .card-body {
       padding: 1rem;
     }
-  
+    
+    /* Tabla responsiva - se mantiene igual */
     .table-responsive {
+      margin-top: 1rem;
+      padding: 0.5rem;
       border-radius: 10px;
-      overflow: hidden;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    .table {
+      min-width: 800px;
+    }
+    
+    .table th, .table td {
+      white-space: nowrap;
+      padding: 0.75rem;
+    }
+    
+    .table-thumbnail {
+      width: 45px;
+      height: 45px;
+    }
+    
+    .btn-icon {
+      width: 36px;
+      height: 36px;
+    }
+    
+    .table-responsive::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, 
+        rgba(255,215,64,0.5) 0%, 
+        rgba(255,215,64,0.2) 50%, 
+        rgba(255,215,64,0.5) 100%);
+      border-radius: 0 0 10px 10px;
+      pointer-events: none;
+    }
+  }
+  
+  /* Para pantallas muy pequeñas, podemos ajustar más si es necesario */
+  @media (max-width: 480px) {
+    .page-header {
+      margin-bottom: 1rem; /* Reducir espacio bajo el header */
+    }
+    
+    .page-title {
+      font-size: 1.5rem; /* Reducir aún más en pantallas muy pequeñas */
+    }
+    
+    .btn-create {
+      padding: 0.6rem 1.2rem; /* Botón ligeramente más pequeño */
+      font-size: 0.9rem;
+    }
+    
+    /* El resto se mantiene igual */
+    .table-responsive {
+      padding: 0.25rem;
+    }
+    
+    .table th, .table td {
+      padding: 0.5rem;
+    }
+    
+    .btn-icon {
+      width: 40px;
+      height: 40px;
+    }
+  }
+  
+  /* Mejora de la experiencia táctil */
+  @media (hover: none) {
+    /* Mejorar scrollbar para dispositivos táctiles */
+    .table-responsive::-webkit-scrollbar {
+      height: 6px;
+    }
+    
+    .table-responsive::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 3px;
+    }
+    
+    .table-responsive::-webkit-scrollbar-thumb {
+      background-color: rgba(255, 215, 64, 0.5);
+      border-radius: 3px;
+    }
+    
+    /* Scrollbar para Firefox */
+    .table-responsive {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 215, 64, 0.5) rgba(0, 0, 0, 0.1);
     }
   }

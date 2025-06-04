@@ -493,12 +493,6 @@ label {
 .admin-badges {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem;
-}
-
-.admin-badges {
-  display: flex;
-  flex-wrap: wrap;
   gap: 0.5rem;
 }
 
@@ -508,6 +502,79 @@ label {
   padding: 0.5rem 0.75rem;
   border-radius: 15px;
   font-weight: normal;
+}
+
+/* Mejora de estilo para administradores en la tabla */
+
+/* Cambiamos el estilo actual */
+.admin-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* Nuevo estilo con fondo amarillo y texto negro */
+.table td .badge,
+.admin-badges .badge,
+.table td .admin-badge {
+  background-color: #ffd740; /* Amarillo */
+  color: #000; /* Negro */
+  margin-right: 0.25rem;
+  font-weight: 500; /* Un poco más gruesa para mejor legibilidad */
+  padding: 0.4rem 0.8rem;
+  border-radius: 15px;
+}
+
+/* Efecto hover para mejorar la interacción */
+.admin-badges .badge:hover {
+  background-color: #ffec8b; /* Amarillo más claro al pasar el ratón */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Ajuste específico para el admin-badge en la tabla */
+.table td .admin-badge {
+  background-color: #ffd740; /* Amarillo */
+  color: #000; /* Negro */
+  padding: 0.4rem 0.8rem;
+  border-radius: 15px;
+  display: inline-block;
+  font-size: 0.9rem;
+}
+
+/* Mantenemos el estilo de los administradores seleccionados */
+.selected-admins .admin-badge {
+  background-color: #ffd740;
+  color: #000;
+  border-radius: 25px;
+  padding: 0.5rem 1rem;
+  margin: 0.25rem;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+}
+
+/* El botón de eliminar dentro del badge de administrador */
+.selected-admins .btn-remove {
+  background: none;
+  border: none;
+  color: #000; /* Cambiado a negro para mejor contraste */
+  margin-left: 0.5rem;
+  padding: 0;
+  cursor: pointer;
+}
+
+.selected-admins .btn-remove:hover {
+  color: #673ab7; /* Cambiado a morado para mejor contraste */
+}
+
+/* Ajuste responsivo */
+@media (max-width: 768px) {
+  .table td .badge,
+  .admin-badges .badge,
+  .table td .admin-badge {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.85rem;
+  }
 }
 
 /* Mensajes de error */
@@ -536,44 +603,191 @@ label {
 
 /* Responsive */
 @media (max-width: 768px) {
-  .card-body {
+  .container-fluid {
     padding: 1rem;
   }
-
-  .table-responsive {
-    border-radius: 10px;
-    overflow: hidden;
-  }
-}
-
-@media (max-width: 767.98px) {
+  
+  /* Corregimos el header para mantener el botón a la derecha del título */
   .page-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
+    flex-direction: row !important; /* Sobreescribimos la regla existente */
+    flex-wrap: nowrap !important; /* Evitamos que los elementos bajen */
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
   }
   
-  .form-actions {
-    flex-direction: column;
-    width: 100%;
+  /* Ajustamos el tamaño del título */
+  .page-title {
+    font-size: 1.7rem;
+    max-width: 60%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Muestra "..." si el texto es muy largo */
   }
   
-  .form-actions button {
-    width: 100%;
-    margin-bottom: 0.5rem;
+  /* Reducimos el tamaño del botón */
+  .btn-create {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    margin-right: 0;
+  }
+  
+  /* Ajustamos el buscador */
+  .search-container {
+    max-width: 100%;
+    margin: 1.5rem 0;
+  }
+  
+  /* Mejorar visualización de tabla en móvil con scroll horizontal */
+  .table-responsive {
+    margin-top: 1.5rem;
+    padding: 0.5rem;
+    border-radius: 10px;
+    overflow-x: auto; /* Habilita el desplazamiento horizontal */
+    -webkit-overflow-scrolling: touch; /* Scroll suave para iOS */
+  }
+  
+  /* Forzamos ancho mínimo para asegurar desplazamiento horizontal */
+  .table {
+    min-width: 900px;
+    font-size: 1rem;
+  }
+  
+  /* Optimizamos espacio en celdas */
+  .table th, .table td {
+    white-space: nowrap; /* Evita saltos de línea */
+    padding: 0.75rem;
+  }
+  
+  /* Reducimos tamaño de la miniatura */
+  .table-thumbnail {
+    width: 45px;
+    height: 45px;
+  }
+  
+  /* Compactamos botones de acción */
+  .btn-icon {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .btn-icon i {
+    font-size: 1rem;
+  }
+  
+  /* Indicador visual de scroll */
+  .table-responsive::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, 
+      rgba(255,215,64,0.5) 0%, 
+      rgba(255,215,64,0.2) 50%, 
+      rgba(255,215,64,0.5) 100%);
+    border-radius: 0 0 10px 10px;
+    pointer-events: none;
+  }
+  
+  /* Mejoramos formulario en móvil */
+  .card-body {
+    padding: 1rem !important;
+  }
+  
+  .section-title {
+    margin: 1rem 0 0.75rem;
+  }
+  
+  /* Ajustamos vista previa de imágenes */
+  .image-preview-container {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+  
+  .image-preview {
+    height: auto;
   }
 }
 
-/* Fix para borde interno */
-.border-end-md {
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-@media (max-width: 767.98px) {
+/* Ajustes para móviles pequeños */
+@media (max-width: 480px) {
+  .page-title {
+    font-size: 1.5rem;
+    max-width: 55%;
+  }
+  
+  .btn-create {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.8rem;
+  }
+  
+  /* Hacer botones más fáciles de tocar */
+  .btn-icon {
+    width: 40px;
+    height: 40px;
+  }
+  
+  /* Ajustamos columnas para formulario */
   .border-end-md {
     border-right: none;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    margin-bottom: 1.5rem;
-    padding-bottom: 1.5rem;
+  }
+  
+  /* Mejoramos visualización de imágenes en móvil pequeño */
+  .image-preview-container {
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 0.5rem;
+  }
+  
+  .image-preview {
+    padding-top: 100%;
+  }
+}
+
+/* Mejoras para la experiencia táctil */
+@media (hover: none) {
+  /* Personalizar scrollbar para táctil */
+  .table-responsive::-webkit-scrollbar {
+    height: 6px;
+  }
+  
+  .table-responsive::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+  }
+  
+  .table-responsive::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 215, 64, 0.5);
+    border-radius: 3px;
+  }
+  
+  /* Scrollbar para Firefox */
+  .table-responsive {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 215, 64, 0.5) rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Asegurar tamaño mínimo para elementos táctiles */
+  .btn, .form-control, .input-group-text, .form-select {
+    min-height: 44px;
+  }
+  
+  .btn-icon, .btn-delete {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  
+  /* Mejor feedback para los elementos seleccionables */
+  .admin-item {
+    padding: 0.8rem 1rem;
+  }
+  
+  .admin-item:active {
+    background: rgba(255, 215, 64, 0.2);
   }
 }

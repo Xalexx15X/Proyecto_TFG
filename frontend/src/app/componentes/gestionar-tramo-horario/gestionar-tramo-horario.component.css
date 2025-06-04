@@ -261,3 +261,207 @@
     color: #dc3545;
     border: 1px solid rgba(220, 53, 69, 0.4);
   }
+
+  /* Mejoras responsivas para gestionar-tramo-horario */
+@media (max-width: 768px) {
+  /* Mantenemos el botón a la derecha del título */
+  .page-header {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Ajustamos el tamaño del título para que quepa mejor */
+  .page-title {
+    font-size: 1.7rem;
+    max-width: 60%;
+  }
+  
+  /* Eliminamos márgenes del botón */
+  .btn-create {
+    margin: 0;
+    font-size: 0.9rem;
+    padding: 0.6rem 1.2rem;
+  }
+  
+  /* Reducimos padding en móvil */
+  .container-fluid {
+    padding: 1rem;
+  }
+  
+  .card-body {
+    padding: 1rem !important;
+  }
+  
+  /* Mejoramos visualización de la tabla en móvil */
+  .table-responsive {
+    margin-top: 1.5rem;
+    border-radius: 10px;
+    padding: 0.75rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Forzamos ancho mínimo para asegurar desplazamiento horizontal */
+  .table {
+    min-width: 800px;
+    font-size: 1rem;
+  }
+  
+  /* Optimizamos espacio en celdas */
+  .table th, .table td {
+    white-space: nowrap;
+    padding: 0.75rem;
+  }
+  
+  /* Reducimos tamaño de botones para mejor visualización */
+  .btn-icon {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .btn-icon i {
+    font-size: 1rem;
+  }
+  
+  /* Mejoramos visualización del indicador de multiplicador */
+  .multiplicador {
+    font-size: 0.9rem;
+    padding: 0.3rem 0.7rem;
+  }
+  
+  /* Añadimos un indicador visual de desplazamiento */
+  .table-responsive::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, 
+      rgba(255,215,64,0.5) 0%, 
+      rgba(255,215,64,0.2) 50%, 
+      rgba(255,215,64,0.5) 100%);
+    border-radius: 0 0 10px 10px;
+    pointer-events: none;
+  }
+  
+  /* Ajustamos espaciado en el formulario */
+  .mb-3 {
+    margin-bottom: 1rem !important;
+  }
+  
+  /* Mejoramos visualización de los controles de precio */
+  .price-indicator {
+    padding: 0.4rem;
+  }
+  
+  .price-indicator-label {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.6rem;
+  }
+}
+
+/* Ajustes para móviles muy pequeños */
+@media (max-width: 480px) {
+  /* Más compacto en pantallas muy pequeñas */
+  .page-title {
+    font-size: 1.5rem;
+  }
+  
+  .table-responsive {
+    padding: 0.5rem;
+  }
+  
+  /* Hacer botones más fáciles de tocar */
+  .btn-icon {
+    width: 40px;
+    height: 40px;
+  }
+  
+  /* Reducir espaciado en el formulario */
+  form .row {
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+  }
+  
+  form .col-md-6 {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}
+
+/* Mejoras para la experiencia táctil */
+@media (hover: none) {
+  /* Mejorar scrollbar para táctil */
+  .table-responsive::-webkit-scrollbar {
+    height: 6px;
+  }
+  
+  .table-responsive::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+  }
+  
+  .table-responsive::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 215, 64, 0.5);
+    border-radius: 3px;
+  }
+  
+  /* Scrollbar para Firefox */
+  .table-responsive {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 215, 64, 0.5) rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Hacer elementos interactivos más grandes para táctil */
+  .btn, .form-control, .input-group-text {
+    min-height: 44px;
+  }
+}
+
+/* Corrección para mantener el botón siempre al lado del título */
+@media (max-width: 768px) {
+  /* Forzamos que el botón permanezca a la derecha del título */
+  .page-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap; /* Cambiado de wrap a nowrap para evitar que baje */
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Reducimos el tamaño del título para asegurar que quepa junto al botón */
+  .page-title {
+    font-size: 1.5rem;
+    max-width: 65%; /* Ajustado para dejar más espacio al botón */
+    white-space: nowrap; /* Evita que el texto se corte en varias líneas */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Muestra "..." si el texto es muy largo */
+  }
+  
+  /* Hacemos el botón más compacto para que quepa al lado del título */
+  .btn-create {
+    margin: 0;
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+    white-space: nowrap;
+  }
+}
+
+/* Para pantallas extremadamente pequeñas, hacemos más ajustes si es necesario */
+@media (max-width: 400px) {
+  .page-title {
+    font-size: 1.3rem;
+    max-width: 60%;
+  }
+  
+  .btn-create {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+}
