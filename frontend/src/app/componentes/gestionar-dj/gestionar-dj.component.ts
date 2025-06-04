@@ -70,7 +70,7 @@ export class GestionarDjComponent implements OnInit {
   }
 
   /**
-   * Prepara el formulario para crear un nuevo DJ
+   * Prepara el formulario para crear un nuevo DJ se usa en el html
    * Resetea el formulario y muestra la interfaz de creación
    */
   mostrarCrear(): void {
@@ -80,7 +80,7 @@ export class GestionarDjComponent implements OnInit {
   }
 
   /**
-   * Cierra el formulario y resetea todos los estados
+   * Cierra el formulario y resetea todos los estados se usa en el html
    * Se usa para cancelar operaciones o después de completarlas
    */
   cerrarFormulario(): void {
@@ -91,7 +91,7 @@ export class GestionarDjComponent implements OnInit {
   }
 
   /**
-   * Crea un nuevo DJ con los datos del formulario
+   * Crea un nuevo DJ con los datos del formulario se usa en el html
    * Valida los datos y envía petición al servidor
    */
   crearDj(): void {
@@ -109,7 +109,7 @@ export class GestionarDjComponent implements OnInit {
   }
 
   /**
-   * Prepara el formulario para editar un DJ existente
+   * Prepara el formulario para editar un DJ existente se usa en el html
    * @param dj DJ a editar
    */
   editarDj(dj: Dj): void {
@@ -126,7 +126,7 @@ export class GestionarDjComponent implements OnInit {
   }
 
   /**
-   * Actualiza un DJ existente con los nuevos datos
+   * Actualiza un DJ existente con los nuevos datos se usa en el html
    * Valida y envía la solicitud de actualización al servidor
    */
   actualizarDj(): void {
@@ -153,7 +153,7 @@ export class GestionarDjComponent implements OnInit {
   }
 
   /**
-   * Elimina un DJ del sistema
+   * Elimina un DJ del sistema se usa en el html
    * Solicita confirmación antes de proceder
    * @param id ID del DJ a eliminar
    */
@@ -172,7 +172,7 @@ export class GestionarDjComponent implements OnInit {
   }
 
   /**
-   * Maneja la selección de una imagen para el DJ
+   * Maneja la selección de una imagen para el DJ se usa en el html
    * Convierte la imagen a Base64 para almacenamiento
    * @param event Evento del input de tipo file
    */
@@ -205,7 +205,7 @@ export class GestionarDjComponent implements OnInit {
   }
 
   /**
-   * Filtra DJs según el término de búsqueda
+   * Filtra DJs según el término de búsqueda se usa en el html
    * @param event Evento del input de búsqueda
    */
   buscar(event: any): void {

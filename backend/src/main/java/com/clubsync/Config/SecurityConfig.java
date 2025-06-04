@@ -56,6 +56,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/botellas/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/zonas-vip/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/recompensas").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/api/usuarios/**").permitAll()
                 
                 // ===== RUTAS PARA ADMIN GENERAL =====
                 .requestMatchers("/api/admin/ciudades/**").hasRole("ADMIN")
@@ -89,6 +90,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/entradas/**").authenticated()
                 .requestMatchers("/api/zonas-vip/reservar/**").authenticated()
                 .requestMatchers("/api/reserva-botella/**").authenticated()
+
                 
                 // Cualquier otra solicitud requiere autenticación
                 .anyRequest().authenticated())

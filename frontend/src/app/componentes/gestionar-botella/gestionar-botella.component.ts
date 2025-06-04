@@ -81,7 +81,7 @@ export class GestionarBotellaComponent implements OnInit {
 
   /**
    * Prepara el formulario para crear una nueva botella
-   * Resetea el formulario y muestra la interfaz de creación
+   * Resetea el formulario y muestra la interfaz de creación se usa en el html
    */
   mostrarCrear(): void {
     this.mostrarFormulario = true; // Muestra el formulario
@@ -91,8 +91,8 @@ export class GestionarBotellaComponent implements OnInit {
 
   /**
    * Cierra el formulario y resetea todos los estados
-   * Se usa para cancelar operaciones o después de completarlas
-   */
+   * Se usa para cancelar operaciones o después de completarlas se usa en el html
+   */ 
   cerrarFormulario(): void {
     this.mostrarFormulario = false; // Oculta el formulario
     this.modoEdicion = false; // Desactiva modo edición
@@ -102,7 +102,7 @@ export class GestionarBotellaComponent implements OnInit {
 
   /**
    * Crea una nueva botella con los datos del formulario
-   * Valida los datos y envía petición al servidor
+   * Valida los datos y envía petición al servidor se usa en el html
    */
   crearBotella(): void {
     if (!this.validarFormulario()) return; // Detiene el proceso si hay errores
@@ -123,8 +123,8 @@ export class GestionarBotellaComponent implements OnInit {
   }
 
   /**
-   * Prepara el formulario para editar una botella existente
-   * @param botella Botella a editar
+   * Prepara el formulario para editar una botella existente se usa en el html
+   * @param botella Botella a editar 
    */
   editarBotella(botella: Botella): void {
     // Crea una copia del objeto para no modificar la lista original directamente
@@ -141,7 +141,7 @@ export class GestionarBotellaComponent implements OnInit {
 
   /**
    * Actualiza una botella existente con los nuevos datos
-   * Valida y envía la solicitud de actualización al servidor
+   * Valida y envía la solicitud de actualización al servidor se usa en el html
    */
   actualizarBotella(): void {
     // Verifica que exista una botella seleccionada con ID válido
@@ -167,7 +167,7 @@ export class GestionarBotellaComponent implements OnInit {
   }
 
   /**
-   * Elimina una botella del sistema
+   * Elimina una botella del sistema se usa en el html
    * Solicita confirmación antes de proceder
    * @param id ID de la botella a eliminar
    */
@@ -186,7 +186,7 @@ export class GestionarBotellaComponent implements OnInit {
   }
 
   /**
-   * Maneja la selección de una imagen para la botella
+   * Maneja la selección de una imagen para la botella se usa en el html
    * Convierte la imagen a Base64 para almacenamiento
    * @param event Evento del input de tipo file
    */
@@ -216,7 +216,7 @@ export class GestionarBotellaComponent implements OnInit {
   }
 
   /**
-   * Filtra botellas según el término de búsqueda
+   * Filtra botellas según el término de búsqueda se usa en el html
    * @param event Evento del input de búsqueda
    */
   buscar(event: any): void {

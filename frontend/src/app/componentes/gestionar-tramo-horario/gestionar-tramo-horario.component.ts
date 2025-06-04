@@ -76,7 +76,7 @@ export class GestionarTramoHorarioComponent implements OnInit {
   }
 
   /**
-   * Prepara el formulario para crear un nuevo tramo horario
+   * Prepara el formulario para crear un nuevo tramo horario se usa en el html
    * Resetea el formulario y muestra la interfaz de creación
    */
   mostrarCrear(): void {
@@ -86,7 +86,7 @@ export class GestionarTramoHorarioComponent implements OnInit {
   }
 
   /**
-   * Cierra el formulario y resetea todos los estados
+   * Cierra el formulario y resetea todos los estados se usa en el html
    * Se usa para cancelar operaciones o después de completarlas
    */
   cerrarFormulario(): void {
@@ -97,7 +97,7 @@ export class GestionarTramoHorarioComponent implements OnInit {
   }
 
   /**
-   * Crea un nuevo tramo horario con los datos del formulario
+   * Crea un nuevo tramo horario con los datos del formulario se usa en el html
    * Valida los datos y envía petición al servidor
    */
   crearTramoHorario(): void {
@@ -119,7 +119,7 @@ export class GestionarTramoHorarioComponent implements OnInit {
   }
 
   /**
-   * Prepara el formulario para editar un tramo horario existente
+   * Prepara el formulario para editar un tramo horario existente se usa en el html
    * @param tramo Tramo horario a editar
    */
   editarTramoHorario(tramo: TramoHorario): void {
@@ -131,7 +131,7 @@ export class GestionarTramoHorarioComponent implements OnInit {
   }
 
   /**
-   * Actualiza un tramo horario existente con los nuevos datos
+   * Actualiza un tramo horario existente con los nuevos datos se usa en el html
    * Valida y envía la solicitud de actualización al servidor
    */
   actualizarTramoHorario(): void {
@@ -158,7 +158,7 @@ export class GestionarTramoHorarioComponent implements OnInit {
   }
 
   /**
-   * Elimina un tramo horario del sistema
+   * Elimina un tramo horario del sistema se usa en el html
    * Solicita confirmación antes de proceder
    * @param id ID del tramo horario a eliminar
    */
@@ -190,7 +190,7 @@ export class GestionarTramoHorarioComponent implements OnInit {
   }
 
   /**
-   * Formatea una fecha/hora en formato legible (HH:MM)
+   * Formatea una fecha/hora en formato legible (HH:MM) se usa en el html
    * @param dateTime Fecha/hora a formatear
    * @returns Hora formateada como string en formato HH:MM
    */
@@ -264,7 +264,7 @@ export class GestionarTramoHorarioComponent implements OnInit {
   }
 
   /**
-   * Convierte un valor a número de punto flotante
+   * Convierte un valor a número de punto flotante se usa en el html
    * Útil para mostrar el multiplicador como número en la interfaz
    * @param value Valor a convertir
    * @returns Número convertido o 0 si no es válido

@@ -68,7 +68,7 @@ export class GestionarUsuariosComponent implements OnInit {
   }
 
   /**
-   * Crea un nuevo usuario con los datos del formulario
+   * Crea un nuevo usuario con los datos del formulario se usa en el html
    * Valida los datos y envía la petición al servidor
    */
   crearUsuario(): void {
@@ -100,7 +100,7 @@ export class GestionarUsuariosComponent implements OnInit {
   }
 
   /**
-   * Actualiza un usuario existente con los nuevos datos
+   * Actualiza un usuario existente con los nuevos datos se usa en el html
    * Envía la solicitud de actualización al servidor
    */
   actualizarUsuario(): void {
@@ -125,7 +125,7 @@ export class GestionarUsuariosComponent implements OnInit {
   }
 
   /**
-   * Elimina un usuario del sistema
+   * Elimina un usuario del sistema se usa en el html
    * Solicita confirmación antes de proceder
    * @param id ID del usuario a eliminar
    */
@@ -144,7 +144,7 @@ export class GestionarUsuariosComponent implements OnInit {
   }
 
   /**
-   * Filtra usuarios según el término de búsqueda
+   * Filtra usuarios según el término de búsqueda se usa en el html
    * @param event Evento del input de búsqueda
    */
   buscar(event: any): void {
@@ -167,7 +167,7 @@ export class GestionarUsuariosComponent implements OnInit {
   }
 
   /**
-   * Prepara el formulario para editar un usuario existente
+   * Prepara el formulario para editar un usuario existente se usa en el html
    * @param usuario Usuario a editar
    */
   editarUsuario(usuario: Usuario): void {
@@ -178,7 +178,7 @@ export class GestionarUsuariosComponent implements OnInit {
   }
 
   /**
-   * Prepara el formulario para crear un nuevo usuario
+   * Prepara el formulario para crear un nuevo usuario se usa en el html
    * Resetea el formulario y muestra la interfaz de creación
    */
   mostrarCrear(): void {
@@ -188,7 +188,7 @@ export class GestionarUsuariosComponent implements OnInit {
   }
 
   /**
-   * Cierra el formulario y resetea todos los estados
+   * Cierra el formulario y resetea todos los estados se usa en el html
    * Se usa para cancelar operaciones o después de completarlas
    */
   cerrarFormulario(): void {
@@ -266,16 +266,5 @@ export class GestionarUsuariosComponent implements OnInit {
       role: '',
       general: ''
     };
-  }
-
-  /**
-   * Valida que solo se ingresen letras y espacios en ciertos campos
-   * Previene la entrada de caracteres no deseados
-   * @param event Evento de teclado a validar
-   * @returns booleano indicando si el carácter es permitido
-   */
-  validarInput(event: KeyboardEvent): boolean {
-    // Permite solo letras (incluyendo acentos y ñ) y espacios
-    return /[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]/.test(event.key);
   }
 }

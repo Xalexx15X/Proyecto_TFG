@@ -77,7 +77,7 @@ export class GestionarZonaVipComponent implements OnInit {
   }
 
   /**
-   * Prepara el formulario para crear una nueva zona VIP
+   * Prepara el formulario para crear una nueva zona VIP se usa en el html
    * Resetea el formulario y muestra la interfaz de creación
    */
   mostrarCrear(): void {
@@ -87,7 +87,7 @@ export class GestionarZonaVipComponent implements OnInit {
   }
 
   /**
-   * Cierra el formulario y resetea todos los estados
+   * Cierra el formulario y resetea todos los estados se usa en el html
    * Se usa para cancelar operaciones o después de completarlas
    */
   cerrarFormulario(): void {
@@ -98,7 +98,7 @@ export class GestionarZonaVipComponent implements OnInit {
   }
 
   /**
-   * Crea una nueva zona VIP con los datos del formulario
+   * Crea una nueva zona VIP con los datos del formulario se usa en el html
    * Valida los datos y envía petición al servidor
    */
   crearZonaVip(): void {
@@ -122,7 +122,7 @@ export class GestionarZonaVipComponent implements OnInit {
   }
 
   /**
-   * Prepara el formulario para editar una zona VIP existente
+   * Prepara el formulario para editar una zona VIP existente se usa en el html
    * @param zonaVip Zona VIP a editar
    */
   editarZonaVip(zonaVip: ZonaVip): void {
@@ -134,7 +134,7 @@ export class GestionarZonaVipComponent implements OnInit {
   }
 
   /**
-   * Actualiza una zona VIP existente con los nuevos datos
+   * Actualiza una zona VIP existente con los nuevos datos se usa en el html
    * Valida y envía la solicitud de actualización al servidor
    */
   actualizarZonaVip(): void {
@@ -161,7 +161,7 @@ export class GestionarZonaVipComponent implements OnInit {
   }
 
   /**
-   * Elimina una zona VIP del sistema
+   * Elimina una zona VIP del sistema se usa en el html
    * Solicita confirmación antes de proceder
    * @param id ID de la zona VIP a eliminar
    */
@@ -180,7 +180,7 @@ export class GestionarZonaVipComponent implements OnInit {
   }
 
   /**
-   * Filtra las zonas VIP según el término de búsqueda
+   * Filtra las zonas VIP según el término de búsqueda se usa en el html
    * @param event Evento del input de búsqueda
    */
   buscar(event: any): void {

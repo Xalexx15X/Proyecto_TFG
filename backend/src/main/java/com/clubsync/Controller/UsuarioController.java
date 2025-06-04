@@ -387,7 +387,7 @@ public class UsuarioController {
      *
      * @param id id del usuario cuyo monedero se actualizará
      * @param requestBody mapa con la clave "monedero" y valor a establecer
-     * @return dto del usuario con el saldo de monedero actualizado
+     * @return dto del usuario with el saldo de monedero actualizado
      * @throws ResourceNotFoundException si el usuario no existe
      */
     @Operation(
@@ -435,7 +435,7 @@ public class UsuarioController {
         )
         @Valid @RequestBody Map<String, Double> requestBody
     ) {
-        Double monedero = requestBody.get("monedero");
+        Double monedero = requestBody.get("monedero"); 
         
         if (monedero == null) {
             return ResponseEntity.badRequest().build();
@@ -523,7 +523,7 @@ public class UsuarioController {
                 mediaType = "application/json",
                 schema = @Schema(
                     type = "object", 
-                    example = "{\"nombre\": \"Juan Pérez\", \"email\": \"juan@example.com\"}"
+                    example = "{\"nombre\": \"Juan Pérez\", \"email\": \"juan@example.com\", \"password\": \"nueva123\"}"
                 )
             )
         )
@@ -531,6 +531,7 @@ public class UsuarioController {
     ) {
         String nombre = requestBody.get("nombre");
         String email = requestBody.get("email");
+        String password = requestBody.get("password");
         
         if (nombre == null || email == null) {
             return ResponseEntity.badRequest().build();
@@ -538,21 +539,26 @@ public class UsuarioController {
         
         // Verificar email duplicado
         usuarioService.findByEmail(email)
-            .ifPresent(usuarioExistente -> {
-                if (!usuarioExistente.getIdUsuario().equals(id)) {
-                    throw new IllegalArgumentException("El email ya está registrado");
+            .ifPresent(usuarioExistente -> { // Si existe un usuario con ese email
+                if (!usuarioExistente.getIdUsuario().equals(id)) { // y no es el mismo usuario
+                    throw new IllegalArgumentException("El email ya está registrado"); // lanzar excepción
                 }
             });
         
-        Usuario usuario = usuarioService.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario", "id", id));
+        Usuario usuario = usuarioService.findById(id) // Obtener usuario
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario", "id", id)); // si no existe lanzar excepción
         
-        usuario.setNombre(nombre);
-        usuario.setEmail(email);
+        usuario.setNombre(nombre); // Actualizar nombre
+        usuario.setEmail(email); // Actualizar email
         
-        Usuario usuarioActualizado = usuarioService.save(usuario);
+        // Actualizar contraseña solo si se proporciona una nueva
+        if (password != null && !password.isEmpty()) { // Si hay nueva contraseña
+            usuario.setPassword(passwordEncoder.encode(password)); // Encriptar y actualizar
+        }
         
-        return ResponseEntity.ok(usuarioMapper.toDto(usuarioActualizado));
+        Usuario usuarioActualizado = usuarioService.save(usuario); // Guardar cambios
+        
+        return ResponseEntity.ok(usuarioMapper.toDto(usuarioActualizado)); // Devolver respuesta
     }
 
     /**

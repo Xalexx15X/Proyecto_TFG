@@ -10,391 +10,420 @@ import { CarritoService, ItemCarrito } from '../../service/carrito.service';
 import { AuthService } from '../../service/auth.service';
 
 /**
- * Componente para el proceso de compra de entradas y reservas VIP
- * Implementa un flujo paso a paso para la selección de opciones
+ * Tipo de botella seleccionada para compra
  */
+interface BotellaSeleccionada {
+  idBotella: number;
+  nombre: string;
+  cantidad: number;
+  precio: number;
+}
+
 @Component({
-  selector: 'app-comprar-entrada', // Selector CSS para usar este componente
-  standalone: true, // Indica que es un componente independiente
-  imports: [CommonModule, FormsModule, RouterModule], // Módulos necesarios importados
-  templateUrl: './comprar-entrada.component.html', // Ruta al archivo HTML asociado
-  styleUrl: './comprar-entrada.component.css' // Ruta al archivo CSS asociado
+  selector: 'app-comprar-entrada', 
+  standalone: true, 
+  imports: [CommonModule, FormsModule, RouterModule], 
+  templateUrl: './comprar-entrada.component.html', 
+  styleUrl: './comprar-entrada.component.css' 
 })
 export class ComprarEntradaComponent implements OnInit {
-  // Estados del flujo de compra
+  // Estado del flujo de compra
   paso: number = 1; // Paso actual del asistente de compra (1: tipo de entrada, 2: opciones, etc.)
   tipoEntrada: 'ENTRADA' | 'RESERVA_VIP' = 'ENTRADA'; // Tipo de compra seleccionado
   
   // Datos del evento y opciones disponibles
-  idEvento: number = 0; // ID del evento seleccionado (se obtiene de la URL)
-  evento: any = null; // Datos completos del evento
-  tramosHorarios: any[] = []; // Tramos horarios disponibles
-  zonasVip: any[] = []; // Zonas VIP disponibles
-  botellas: any[] = []; // Botellas disponibles para reserva
+  idEvento: number = 0; // ID del evento a comprar
+  evento: any = null; // Detalles del evento cargado
+  tramosHorarios: any[] = []; // Lista de tramos horarios disponibles
+  zonasVip: any[] = []; // Lista de zonas VIP disponibles
+  botellas: any[] = []; // Lista de botellas disponibles para compra
 
-  // Opciones seleccionadas por el usuario
-  tramoSeleccionado: any = null; // Tramo horario elegido
-  zonaVipSeleccionada: any = null; // Zona VIP elegida (para reservas)
-  botellasSeleccionadas: {idBotella: number, nombre: string, cantidad: number, precio: number}[] = []; // Botellas elegidas
+  // Selecciones del usuario
+  tramoSeleccionado: any = null; // Tramo horario seleccionado por el usuario
+  zonaVipSeleccionada: any = null; // Zona VIP seleccionada por el usuario
+  botellasSeleccionadas: BotellaSeleccionada[] = []; // Lista de botellas seleccionadas
   cantidad: number = 1; // Cantidad de entradas/reservas
   
-  // Estados de la UI
-  cargando: boolean = true; // Indicador de carga
-  error: string = ''; // Mensaje de error
-  exito: string = ''; // Mensaje de éxito
-  
-  /**
-   * Constructor con inyección de dependencias
-   * @param route Servicio para acceder a parámetros de ruta
-   * @param router Servicio para navegación programática
-   * @param eventosService Servicio para obtener datos de eventos
-   * @param tramoHorarioService Servicio para tramos horarios
-   * @param botellaService Servicio para obtener botellas disponibles
-   * @param zonaVipService Servicio para obtener zonas VIP
-   * @param carritoService Servicio para gestionar el carrito de compras
-   * @param authService Servicio para verificar autenticación
-   */
+  // Mensajes para el usuario
+  error: string = '';
+  exito: string = '';
+
   constructor(
-    private route: ActivatedRoute, // Para obtener el ID del evento de la URL
-    private router: Router, // Para redireccionar al usuario
-    private eventosService: EventosService, // Para obtener datos del evento
-    private tramoHorarioService: TramoHorarioService, // Para obtener tramos horarios
-    private botellaService: BotellaService, // Para obtener botellas disponibles
-    private zonaVipService: ZonaVipService, // Para obtener zonas VIP
-    private carritoService: CarritoService, // Para añadir al carrito
-    private authService: AuthService // Para verificar si el usuario está logueado
+    private route: ActivatedRoute,
+    private router: Router,
+    private eventosService: EventosService, 
+    private tramoHorarioService: TramoHorarioService, 
+    private botellaService: BotellaService, 
+    private zonaVipService: ZonaVipService, 
+    private carritoService: CarritoService, 
+    private authService: AuthService 
   ) {}
   
   /**
-   * Método del ciclo de vida que se ejecuta al inicializar el componente
-   * Verifica autenticación y carga datos iniciales
+   * Método que se ejecuta al inicializar el componente
    */
   ngOnInit(): void {
-    // Verificar si el usuario está autenticado
+    // Verifica que el usuario esté autenticado antes de permitir la compra
     if (!this.authService.isLoggedIn()) {
-      // Si no está autenticado, redirigir a login y guardar URL actual para volver después
+      // Si no está autenticado, redirecciona al login y guarda la URL actual para volver después
       this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
-      return;
+      return; // Termina la ejecución para evitar cargar datos sin autenticación
     }
     
-    // Obtener el ID del evento de los parámetros de la URL
+    // Se suscribe a los parámetros de la ruta para obtener el ID del evento de la URL
     this.route.params.subscribe(params => {
-      this.idEvento = +params['id']; // Convertir a número
+      // Convierte el parámetro 'id' a número usando el operador +
+      this.idEvento = +params['id'];
       if (this.idEvento) {
-        this.cargarDatosEvento(); // Cargar datos del evento
+        // Si hay un ID válido, carga los datos del evento
+        this.cargarDatosEvento();
       } else {
+        // Si no hay un ID válido, muestra un mensaje de error
         this.error = 'No se encontró el evento solicitado';
-        this.cargando = false;
       }
     });
   }
   
   /**
-   * Carga los datos básicos del evento seleccionado
-   * Verifica si el evento está disponible para compra
+   * Carga los datos del evento y verifica su disponibilidad
    */
   cargarDatosEvento(): void {
-    this.cargando = true;
+    // Reinicia el mensaje de error antes de hacer la petición
+    this.error = '';
     
-    // Obtener datos del evento desde el servicio
+    // Llama al servicio para obtener los detalles del evento
     this.eventosService.getEvento(this.idEvento).subscribe({
-      next: (data) => {
+      next: (data) => { // Callback para cuando se reciben los datos correctamente
+        // Guarda los datos del evento recibidos
         this.evento = data;
         
-        // Verificar si el evento está activo y disponible para compra
-        if (!this.verificarEventoActivo(this.evento)) {
-          if (this.evento.estado !== 'ACTIVO') {
-            this.error = 'Este evento no está disponible para compra porque está inactivo.';
-          } else {
-            this.error = 'Este evento ya ha finalizado y no está disponible para compra.';
-          }
-          this.cargando = false;
-          return;
+        // Verifica si el evento está disponible para compra
+        if (!this.esEventoDisponible(this.evento)) {
+          // Si no está disponible, muestra un error específico
+          this.mostrarErrorEvento();
+          return; // Termina la ejecución para no cargar más datos
         }
         
-        // Si está activo, continuar cargando los datos adicionales
-        this.cargarTramos();
+        // Si el evento está disponible, continúa cargando datos relacionados
+        this.cargarDatosDeLaDiscoteca();
       },
-      error: (error) => {
+      error: (error) => { // Callback para manejar errores en la petición
         console.error('Error al cargar evento:', error);
         this.error = 'No se pudo cargar la información del evento.';
-        this.cargando = false;
       }
     });
   }
   
   /**
-   * Carga los tramos horarios disponibles para la discoteca
-   * Los tramos afectan al precio final según multiplicadores
+   * Determina si un evento está disponible para compra
    */
-  cargarTramos(): void {
-    // Verificar que tenemos la información necesaria
-    if (!this.evento || !this.evento.idDiscoteca) {
+  esEventoDisponible(evento: any): boolean {
+    // Evento debe existir y tener fecha asignada
+    if (!evento || !evento.fechaHora) {
+      return false; // Si falta alguno de estos datos, no está disponible
+    }
+    
+    // Evento debe tener estado "ACTIVO"
+    if (evento.estado !== 'ACTIVO') {
+      return false; // Si no está activo, no está disponible
+    }
+    
+    // Evento no debe haber terminado (yo he asumido que no hay eventos que duren mas de 7 horas)
+    const fechaEvento = new Date(evento.fechaHora); // Convierte la cadena de fecha a objeto Date
+    fechaEvento.setHours(fechaEvento.getHours() + 7); // Añade 7 horas (duración que yo he estimado)
+    return new Date() < fechaEvento; // Compara con la fecha actual para ver si ya pasó
+  }
+  
+  /**
+   * Muestra el mensaje de error adecuado según el estado del evento
+   */
+  mostrarErrorEvento(): void {
+    if (!this.evento) {
+      // Si no hay datos del evento
+      this.error = 'No se encontró información del evento.';
+    } else if (this.evento.estado !== 'ACTIVO') {
+      // Si el evento no está activo
+      this.error = 'Este evento no está disponible para compra porque está inactivo.';
+    } else {
+      // Si el evento ya pasó
+      this.error = 'Este evento ya ha finalizado y no está disponible para compra.';
+    }
+  }
+  
+  /**
+   * Carga todos los datos necesarios de la discoteca (tramos, zonas VIP, botellas)
+   */
+  cargarDatosDeLaDiscoteca(): void {
+    // Obtiene el ID de la discoteca desde el evento cargado
+    const idDiscoteca = this.evento?.idDiscoteca;
+    
+    // Verifica que exista un ID de discoteca
+    if (!idDiscoteca) {
+      // Si no hay ID de discoteca, muestra error y termina
       this.error = 'No se pudo obtener la información de la discoteca.';
-      this.cargando = false;
       return;
     }
     
-    // Obtener tramos horarios para esta discoteca
-    this.tramoHorarioService.getTramoHorariosByDiscoteca(this.evento.idDiscoteca).subscribe({
-      next: (tramos) => {
+    // Carga todos los datos necesarios en paralelo para optimizar
+    this.cargarTramos(idDiscoteca); // Carga los tramos horarios
+    this.cargarZonasVIP(idDiscoteca); // Carga las zonas VIP
+    this.cargarBotellas(idDiscoteca); // Carga las botellas disponibles
+  }
+  
+  /**
+   * Carga los tramos horarios de la discoteca
+   */
+  cargarTramos(idDiscoteca: number): void {
+    // Llama al servicio para obtener los tramos horarios de esta discoteca
+    this.tramoHorarioService.getTramoHorariosByDiscoteca(idDiscoteca).subscribe({
+      next: (tramos) => { // Callback cuando se reciben los datos correctamente
+        // Guarda los tramos recibidos
         this.tramosHorarios = tramos;
-        this.cargarZonasVIP(); // Continuar con la carga de datos
       },
-      error: (error) => {
+      error: (error) => { // Callback para manejar errores
         console.error('Error al cargar tramos horarios:', error);
         this.error = 'No se pudieron cargar los horarios disponibles.';
-        this.cargando = false;
       }
     });
   }
   
   /**
-   * Carga las zonas VIP disponibles para la discoteca
-   * Necesario para las reservas VIP
+   * Carga las zonas VIP disponibles
    */
-  cargarZonasVIP(): void {
-    // Verificar que tenemos ID de discoteca
-    if (!this.evento.idDiscoteca) return;
-    
-    // Obtener zonas VIP para esta discoteca
-    this.zonaVipService.getZonasVipByDiscoteca(this.evento.idDiscoteca).subscribe({
-      next: (zonas) => {
-        // Filtrar solo las zonas que están disponibles
+  cargarZonasVIP(idDiscoteca: number): void {
+    // Llama al servicio para obtener las zonas VIP de esta discoteca
+    this.zonaVipService.getZonasVipByDiscoteca(idDiscoteca).subscribe({
+      next: (zonas) => { // Callback cuando se reciben los datos correctamente
+        // Filtra solo las zonas que tienen estado "DISPONIBLE" y guarda el resultado
         this.zonasVip = zonas.filter(z => z.estado === 'DISPONIBLE');
-        this.cargarBotellas(); // Continuar con la carga de datos
       },
-      error: (error) => {
+      error: (error) => { // Callback para manejar errores
         console.error('Error al cargar zonas VIP:', error);
-        // No mostramos error al usuario porque es opcional para entrada normal
-        this.cargarBotellas(); // Continuamos a pesar del error
+        // No muestro el error al usuario ya que podría ser que solo esté comprando entradas normales
       }
     });
   }
   
   /**
-   * Carga las botellas disponibles para la discoteca
-   * Necesario para las reservas VIP
+   * Carga las botellas disponibles
    */
-  cargarBotellas(): void {
-    // Verificar que tenemos ID de discoteca
-    if (!this.evento.idDiscoteca) return;
-    
-    // Obtener botellas para esta discoteca
-    this.botellaService.getBotellasByDiscoteca(this.evento.idDiscoteca).subscribe({
-      next: (botellas) => {
-        // Filtrar solo las botellas que están disponibles
+  cargarBotellas(idDiscoteca: number): void {
+    // Llama al servicio para obtener las botellas de esta discoteca
+    this.botellaService.getBotellasByDiscoteca(idDiscoteca).subscribe({
+      next: (botellas) => { // Callback cuando se reciben los datos correctamente
+        // Filtra solo las botellas que tienen disponibilidad "DISPONIBLE"
         this.botellas = botellas.filter(b => b.disponibilidad === 'DISPONIBLE');
-        this.cargando = false; // Finaliza la carga inicial
       },
-      error: (error) => {
+      error: (error) => { // Callback para manejar errores
         console.error('Error al cargar botellas:', error);
-        // No mostramos error porque es opcional para entrada normal
-        this.cargando = false; // Finaliza la carga a pesar del error
+        // No muestro el error al usuario ya que podría ser que solo esté comprando entradas normales
       }
     });
   }
   
   /**
-   * Establece el tipo de entrada seleccionada y avanza al siguiente paso
-   * @param tipo Tipo de entrada ('ENTRADA' o 'RESERVA_VIP')
+   * Cambia el tipo de entrada y avanza al siguiente paso se usa en el html
    */
   seleccionarTipoEntrada(tipo: 'ENTRADA' | 'RESERVA_VIP'): void {
-    this.tipoEntrada = tipo; // Guarda el tipo seleccionado
-    this.paso = 2; // Avanza al siguiente paso del asistente
+    // Guarda el tipo de entrada seleccionado (entrada normal o reserva VIP)
+    this.tipoEntrada = tipo;
+    // Avanza al siguiente paso del proceso de compra
+    this.paso = 2;
   }
   
   /**
-   * Establece el tramo horario seleccionado
-   * @param tramo Tramo horario seleccionado
+   * Selecciona un tramo horario se usa en el html
    */
   seleccionarTramo(tramo: any): void {
+    // Guarda el tramo horario seleccionado por el usuario
     this.tramoSeleccionado = tramo;
   }
   
   /**
-   * Establece la zona VIP seleccionada para reservas
-   * @param zona Zona VIP seleccionada
+   * Selecciona una zona VIP se usa en el html
    */
   seleccionarZonaVip(zona: any): void {
+    // Guarda la zona VIP seleccionada por el usuario
     this.zonaVipSeleccionada = zona;
   }
   
   /**
-   * Agrega una botella a la selección o incrementa su cantidad
-   * @param botella Botella a agregar
+   * Agrega una botella a la selección se usa en el html
    */
   agregarBotella(botella: any): void {
-    // Buscar si ya existe esta botella en la selección
+    // Busca si esta botella ya está en la lista de seleccionadas
     const existente = this.botellasSeleccionadas.find(b => b.idBotella === botella.idBotella);
     
     if (existente) {
-      // Si ya existe, incrementar cantidad
+      // Si ya existe, incrementa la cantidad
       existente.cantidad++;
     } else {
-      // Si no existe, agregar nueva botella con cantidad 1
+      // Si no existe, añade la botella a la lista con cantidad 1
       this.botellasSeleccionadas.push({
-        idBotella: botella.idBotella,
-        nombre: botella.nombre,
-        cantidad: 1,
-        precio: botella.precio
+        idBotella: botella.idBotella, // ID único de la botella
+        nombre: botella.nombre,        // Nombre para mostrar
+        cantidad: 1,                   // Cantidad inicial
+        precio: botella.precio         // Precio unitario
       });
     }
   }
   
   /**
-   * Quita una botella de la selección o reduce su cantidad
-   * @param idBotella ID de la botella a quitar
+   * Quita una botella de la selección se usa en el html
    */
   quitarBotella(idBotella: number): void {
+    // Busca la posición de la botella en el array
     const index = this.botellasSeleccionadas.findIndex(b => b.idBotella === idBotella);
     
-    if (index !== -1) {
+    if (index !== -1) { // Si la botella está en la lista
       if (this.botellasSeleccionadas[index].cantidad > 1) {
-        // Si hay más de una, reducir cantidad
+        // Si hay más de una, reduce la cantidad
         this.botellasSeleccionadas[index].cantidad--;
       } else {
-        // Si solo hay una, eliminar de la lista
+        // Si solo hay una, elimina la botella de la lista
         this.botellasSeleccionadas.splice(index, 1);
       }
     }
   }
   
   /**
-   * Obtiene la cantidad seleccionada de una botella específica
-   * @param idBotella ID de la botella
-   * @returns Cantidad seleccionada (0 si no está seleccionada)
+   * Obtiene la cantidad seleccionada de una botella se usa en el html
    */
   getCantidadBotella(idBotella: number): number {
+    // Busca la botella en la lista de seleccionadas
     const botella = this.botellasSeleccionadas.find(b => b.idBotella === idBotella);
+    // Devuelve la cantidad o 0 si no está seleccionada
     return botella ? botella.cantidad : 0;
   }
   
   /**
-   * Calcula el precio total de la compra según selecciones
-   * @returns Precio total calculado
+   * Calcula el precio total de la compra se usa en el html
    */
   calcularTotal(): number {
-    let total = 0;
+    // Si no hay tramo seleccionado o no hay datos del evento, el total es 0
+    if (!this.tramoSeleccionado || !this.evento) return 0;
     
-    // Verificar que tenemos la información básica necesaria
-    if (!this.tramoSeleccionado || !this.evento) return total;
-    
-    // Determinar precio base según tipo de entrada
+    // Determina el precio base según el tipo de entrada seleccionado
     const precioBase = this.tipoEntrada === 'ENTRADA' 
-      ? this.evento.precioBaseEntrada
-      : this.evento.precioBaseReservado;
+      ? this.evento.precioBaseEntrada     // Precio para entrada normal
+      : this.evento.precioBaseReservado;  // Precio para reserva VIP
     
-    // Aplicar multiplicador del tramo horario al precio base y cantidad
-    total = precioBase * parseFloat(this.tramoSeleccionado.multiplicadorPrecio) * this.cantidad;
+    // Obtiene el multiplicador de precio del tramo horario 
+    const multiplicador = parseFloat(this.tramoSeleccionado.multiplicadorPrecio);
     
-    // Si es reserva VIP, agregar precio de botellas seleccionadas
+    // Calcula el precio base * multiplicador * cantidad de entradas
+    let total = precioBase * multiplicador * this.cantidad;
+    
+    // Si es una reserva VIP, añade el costo de las botellas seleccionadas
     if (this.tipoEntrada === 'RESERVA_VIP') {
-      const precioBotellas = this.botellasSeleccionadas.reduce(
-        (subtotal, botella) => subtotal + (botella.precio * botella.cantidad),
+      // Suma el precio de cada botella multiplicado por su cantidad
+      const precioBotellas = this.botellasSeleccionadas.reduce( // Recorre las botellas seleccionadas (el reduce lo que hace es ir sumado valores acumulativos si tenemos un array con 1,2,3,4,5 devolvera 15)
+        (subtotal, botella) => subtotal + (botella.precio * botella.cantidad), // Suma el precio de la botella
         0
       );
-      total += precioBotellas;
+      total += precioBotellas; // Añade el costo de las botellas al total
     }
     
-    return total;
+    return total; // Devuelve el precio total calculado
   }
   
   /**
-   * Valida que se hayan completado todas las selecciones necesarias
-   * @returns true si el formulario es válido, false en caso contrario
+   * Valida que se hayan completado todas las selecciones necesarias se usa en el html
    */
   validarFormulario(): boolean {
-    this.error = ''; // Reinicia mensajes de error
+    // Reinicia el mensaje de error
+    this.error = '';
     
-    // Validar tramo horario (obligatorio para ambos tipos)
+    // Verifico que se haya seleccionado un tramo horario
     if (!this.tramoSeleccionado) {
       this.error = 'Debes seleccionar un horario';
       return false;
     }
     
-    // Validaciones adicionales para reservas VIP
+    // Validaciones adicionales solo para reservas VIP
     if (this.tipoEntrada === 'RESERVA_VIP') {
-      // Debe seleccionar una zona VIP
+      // Debe haber seleccionado una zona VIP
       if (!this.zonaVipSeleccionada) {
         this.error = 'Debes seleccionar una zona VIP';
         return false;
       }
       
-      // Debe seleccionar al menos una botella
+      // Debe haber seleccionado al menos una botella
       if (this.botellasSeleccionadas.length === 0) {
         this.error = 'Debes seleccionar al menos una botella';
         return false;
       }
     }
     
-    // Validar cantidad
+    // Verifica que la cantidad sea válida
     if (this.cantidad < 1) {
       this.error = 'La cantidad debe ser al menos 1';
       return false;
     }
     
-    return true; // Todo correcto
+    // Si pasa todas las validaciones, el formulario es válido
+    return true;
   }
   
   /**
-   * Añade la selección actual al carrito de compras
-   * Valida y prepara el objeto para el servicio de carrito
+   * Añade la selección actual al carrito de compras se usa en el html
    */
   agregarAlCarrito(): void {
-    // Validar que se hayan completado todas las selecciones necesarias
+    // Primero valida que el formulario esté completo
     if (!this.validarFormulario()) {
-      return;
+      return; // Si hay errores, termina la ejecución
     }
     
-    this.cargando = true;
+    // Reinicia el mensaje de error
     this.error = '';
     
-    // Crear objeto base para el carrito con propiedades comunes
+    // Crea el objeto con los datos para añadir al carrito
     const item: ItemCarrito = {
-      id: '', // Se generará automáticamente en el servicio
-      tipo: this.tipoEntrada, // ENTRADA o RESERVA_VIP
-      idEvento: this.evento.idEvento,
-      nombre: this.evento.nombre,
-      imagen: this.evento.imagen,
-      fechaEvento: this.evento.fechaHora,
-      cantidad: this.cantidad,
+      id: '',                            // ID vacío, lo asignará el servicio
+      tipo: this.tipoEntrada,            // Tipo de entrada (normal o VIP)
+      idEvento: this.evento.idEvento,    // ID del evento
+      nombre: this.evento.nombre,        // Nombre del evento
+      imagen: this.evento.imagen,        // URL de la imagen
+      fechaEvento: this.evento.fechaHora, // Fecha y hora del evento
+      cantidad: this.cantidad,           // Cantidad de entradas/reservas
       precioUnitario: this.tipoEntrada === 'ENTRADA' ? 
-        this.evento.precioBaseEntrada : 
-        this.evento.precioBaseReservado,
-      multiplicadorPrecio: parseFloat(this.tramoSeleccionado.multiplicadorPrecio),
-      fechaHora: this.evento.fechaHora,
-      idTramoHorario: this.tramoSeleccionado.idTramoHorario,
+        this.evento.precioBaseEntrada :  // Precio base para entrada normal
+        this.evento.precioBaseReservado, // Precio base para reserva VIP
+      multiplicadorPrecio: parseFloat(this.tramoSeleccionado.multiplicadorPrecio), // Multiplicador del tramo
+      fechaHora: this.evento.fechaHora,  // Fecha y hora del evento
+      idTramoHorario: this.tramoSeleccionado.idTramoHorario, // ID del tramo horario
     };
   
-    // Si es reserva VIP, añadir propiedades adicionales específicas
+    // Si es reserva VIP, añade los datos específicos de la zona y botellas
     if (this.tipoEntrada === 'RESERVA_VIP' && this.zonaVipSeleccionada) {
-      item.idZonaVip = this.zonaVipSeleccionada.idZonaVip;
-      item.nombreZonaVip = this.zonaVipSeleccionada.nombre;
-      item.botellas = this.botellasSeleccionadas;
+      item.idZonaVip = this.zonaVipSeleccionada.idZonaVip;       // ID de la zona VIP
+      item.nombreZonaVip = this.zonaVipSeleccionada.nombre;      // Nombre de la zona VIP
+      item.botellas = this.botellasSeleccionadas;                // Lista de botellas seleccionadas
+      
+      // Si la zona tiene aforo máximo, lo añade al item
       if (this.zonaVipSeleccionada.aforoMaximo) {
         item.aforoZona = parseInt(this.zonaVipSeleccionada.aforoMaximo);
       }
     }
   
-    // Añadir al carrito (el servicio gestionará la creación del pedido EN_PROCESO)
+    // Llama al servicio para añadir el item al carrito
     this.carritoService.agregarItem(item).subscribe({
-      next: (result) => {
-        this.cargando = false;
-        // Verificar si hay error desde el servicio
+      next: (result) => { // Callback para cuando se añade correctamente
+        // Verifica si hay errores en la respuesta
         if (result && result.error) {
           this.error = result.error;
           return;
         }
-        // Mostrar mensaje de éxito
+        
+        // Muestro mensaje de éxito
         this.exito = 'Se ha agregado al carrito exitosamente';
-        // Redireccionar al carrito después de un breve retraso
+        
+        // Después de 1.5 segundos, redirecciona al carrito
         setTimeout(() => {
           this.router.navigate(['/carrito']);
         }, 1500);
       },
-      error: (err) => {
-        this.cargando = false;
+      error: (err) => { // Callback para manejar errores
         console.error('Error al agregar al carrito:', err);
         this.error = 'Error al agregar al carrito. Intente nuevamente.';
       }
@@ -402,55 +431,30 @@ export class ComprarEntradaComponent implements OnInit {
   }
   
   /**
-   * Permite navegar a un paso anterior del asistente
-   * @param paso Número de paso al que se desea volver
+   * Navega a un paso anterior se usa en el html
    */
   volverAlPaso(paso: number): void {
+    // Cambia el paso actual al paso indicado
     this.paso = paso;
   }
 
   /**
-   * Formatea una fecha ISO a formato legible en español
-   * @param dateString Fecha en formato string ISO
-   * @returns Fecha formateada (ej: "15 de mayo de 2025, 22:30")
+   * Formatea una fecha para mostrarla en español se usa en el html
    */
   formatDate(dateString: string): string {
+    // Si no hay fecha, devuelve cadena vacía
     if (!dateString) return '';
     
+    // Convierte la cadena a objeto Date
     const date = new Date(dateString);
+    
+    // Formatea la fecha usando el locale español y las opciones especificadas
     return date.toLocaleDateString('es-ES', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+      day: '2-digit',      // Día con 2 dígitos (01-31)
+      month: 'long',       // Nombre completo del mes (enero, febrero...)
+      year: 'numeric',     // Año completo (2023)
+      hour: '2-digit',     // Hora con 2 dígitos (00-23)
+      minute: '2-digit'    // Minutos con 2 dígitos (00-59)
     });
-  }
-
-  /**
-   * Verifica si un evento está activo y disponible para compra
-   * @param evento Evento a verificar
-   * @returns true si el evento está activo y su fecha es válida
-   */
-  private verificarEventoActivo(evento: any): boolean {
-    // Verificar que el evento existe y tiene fecha asignada
-    if (!evento || !evento.fechaHora) {
-      return false;
-    }
-    
-    // Verificar el estado del evento - solo mostrar si está ACTIVO
-    if (evento.estado !== 'ACTIVO') {
-      return false;
-    }
-    
-    // Verificar la fecha/hora del evento
-    const fechaEvento = new Date(evento.fechaHora);
-    const ahora = new Date();
-    
-    // Añadir 7 horas a la fecha del evento (duración máxima)
-    fechaEvento.setHours(fechaEvento.getHours() + 7);
-    
-    // El evento está activo si la fecha actual es anterior a la fecha del evento + 7 horas
-    return ahora < fechaEvento;
   }
 }

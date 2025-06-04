@@ -159,20 +159,21 @@ export class UsuarioService extends BaseService {
   }
 
   /**
-   * Actualiza solo la información básica del usuario (nombre y email)
-   * Cambiado de PATCH a PUT porque el backend no soporta PATCH
+   * Actualiza la información básica del usuario y opcionalmente la contraseña
    * @param id ID del usuario a actualizar
    * @param nombre Nuevo nombre para el usuario
    * @param email Nuevo email para el usuario
+   * @param password Nueva contraseña (opcional)
    * @returns Observable que emite la respuesta del servidor tras la actualización
-   * @requires Autenticación (usa headers con token JWT)
    */
-  updateInfoBasica(id: number, nombre: string, email: string): Observable<any> {
-    // Realiza una petición PUT a un endpoint específico para actualizar info básica
-    return this.http.put<any>(
-      `${this.apiUrl}/${id}/info-basica`, 
-      { nombre, email }, 
-      { headers: this.getHeaders() }
-    );
+  updateInfoBasica(id: number, nombre: string, email: string, password?: string): Observable<any> {
+    // Crear objeto de datos a enviar
+    const datos: any = { nombre, email };
+    // Añadir contraseña solo si se proporciona
+    if (password) { 
+      datos.password = password;
+    }
+    // Realizar petición PUT al endpoint
+    return this.http.put<any>(`${this.apiUrl}/${id}/info-basica`, datos, { headers: this.getHeaders() });
   }
 }

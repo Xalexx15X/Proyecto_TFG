@@ -36,7 +36,7 @@ public interface EntradaRepository extends JpaRepository<Entrada, Integer> {
     List<Entrada> findByFechaCompraBetween(LocalDateTime inicio, LocalDateTime fin);
     
     /**
-     * Consulta nativa SQL que genera estadísticas detalladas de asistencia por evento
+     * Consulta SQL que genera estadísticas detalladas de asistencia por evento
      * 
         * SELECT
         *   e.nombre,            -- Extrae el nombre del evento para identificación
@@ -69,7 +69,7 @@ public interface EntradaRepository extends JpaRepository<Entrada, Integer> {
         *   e.fecha_hora,                                            -- Necesario incluir para poder seleccionarlo
         *   e.capacidad                                              -- Necesario para el cálculo de porcentaje
         *   
-        * -- Ordenación temporal descendente para mostrar eventos más recientes primero:
+        * -- Ordenación descendente para mostrar eventos más recientes primero:
         * ORDER BY
         *   e.fecha_hora DESC
      * 

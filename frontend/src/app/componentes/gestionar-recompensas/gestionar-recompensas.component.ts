@@ -84,7 +84,7 @@ export class GestionarRecompensasComponent implements OnInit {
   }
 
   /**
-   * Crea una nueva recompensa con los datos del formulario
+   * Crea una nueva recompensa con los datos del formulario se usa en el html
    * Valida los datos y envía petición al servidor
    */
   crearRecompensa(): void {
@@ -112,8 +112,8 @@ export class GestionarRecompensasComponent implements OnInit {
   }
 
   /**
-   * Prepara el formulario para editar una recompensa existente
-   * @param recompensa Recompensa a editar
+   * Prepara el formulario para editar una recompensa existente se usa en el html
+   * @param recompensa Recompensa a editar 
    */
   editarRecompensa(recompensa: Recompensa): void {
     // Crea una copia del objeto para no modificar la lista original directamente
@@ -123,7 +123,7 @@ export class GestionarRecompensasComponent implements OnInit {
   }
 
   /**
-   * Actualiza una recompensa existente con los nuevos datos
+   * Actualiza una recompensa existente con los nuevos datos se usa en el html
    * Valida y envía la solicitud de actualización al servidor
    */
   actualizarRecompensa(): void {
@@ -148,7 +148,7 @@ export class GestionarRecompensasComponent implements OnInit {
   }
 
   /**
-   * Elimina una recompensa del sistema
+   * Elimina una recompensa del sistema se usa en el html
    * Solicita confirmación antes de proceder
    * @param id ID de la recompensa a eliminar
    */
@@ -167,7 +167,7 @@ export class GestionarRecompensasComponent implements OnInit {
   }
 
   /**
-   * Cierra el formulario y resetea todos los estados
+   * Cierra el formulario y resetea todos los estados se usa en el html
    * Se usa para cancelar operaciones o después de completarlas
    */
   cerrarFormulario(): void {
@@ -177,8 +177,8 @@ export class GestionarRecompensasComponent implements OnInit {
   }
 
   /**
-   * Filtra recompensas según el término de búsqueda
-   * @param event Evento del input de búsqueda
+   * Filtra recompensas según el término de búsqueda se usa en el html
+   * @param event Evento del input de búsqueda 
    */
   buscar(event: any): void {
     // Obtiene el término de búsqueda y lo convierte a minúsculas
@@ -233,7 +233,7 @@ export class GestionarRecompensasComponent implements OnInit {
   }
 
   /**
-   * Obtiene el nombre legible del tipo de recompensa
+   * Obtiene el nombre legible del tipo de recompensa se usa en el html
    * @param tipoId ID del tipo de recompensa
    * @returns Nombre legible del tipo
    */

@@ -3,14 +3,16 @@
   padding: 1rem 0;
 }
 
-.navbar-custom .navbar-brand {
-  text-transform: uppercase;
-  font-size: 1.5rem;
-  letter-spacing: 0.1rem;
-  font-weight: 700;
+.navbar-logo {
+  height: 90px;
+  width: auto;
+  object-fit: contain;
+  margin-right: 1rem;
 }
 
-.navbar-custom .navbar-nav .nav-item .nav-link {
+/* Enlaces del menú */
+.navbar-custom .nav-link {
+  color: rgba(255, 255, 255, 0.9) !important;
   text-transform: uppercase;
   font-size: 0.8rem;
   font-weight: 500;
@@ -19,53 +21,12 @@
   transition: all 0.3s ease;
 }
 
-.navbar-custom .navbar-nav .nav-item .nav-link.active {
+.navbar-custom .nav-link:hover,
+.navbar-custom .nav-link.active {
   color: #ffd740 !important;
 }
 
-.navbar-custom .navbar-nav .nav-item .nav-link:hover {
-  color: #ffd740 !important;
-}
-
-.navbar-custom.navbar-shrink {
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-}
-
-.dropdown-menu {
-  background-color: white;
-  border: none;
-  box-shadow: 0 2px 15px rgba(0,0,0,0.1);
-  margin-top: 0.5rem;
-  border-radius: 0.5rem;
-}
-
-.dropdown-item {
-  cursor: pointer !important;
-  padding: 0.75rem 1.5rem;
-  transition: all 0.3s ease;
-}
-
-.dropdown-item:hover {
-  background-color: rgba(156, 39, 176, 0.1);
-  color: #9c27b0;
-}
-
-.dropdown-toggle::after {
-  display: inline-block;
-  margin-left: 0.5em;
-  vertical-align: middle;
-  content: "";
-  border-top: 0.3em solid;
-  border-right: 0.3em solid transparent;
-  border-bottom: 0;
-  border-left: 0.3em solid transparent;
-}
-
-.nav-link {
-  cursor: pointer;
-}
-
+/* Menú hamburguesa */
 .navbar-toggler {
   border: none;
   padding: 0.5rem;
@@ -75,13 +36,29 @@
   box-shadow: none;
 }
 
-@media (max-width: 991.98px) {
-  .navbar-collapse {
-    background: rgba(103, 58, 183, 0.95);
-    padding: 1rem;
-    border-radius: 0.5rem;
-    margin-top: 0.5rem;
-  }
+/* Dropdown menus */
+.dropdown-menu {
+  background-color: white;
+  border: none;
+  box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+  margin-top: 0.5rem;
+  border-radius: 0.5rem;
+  display: none;
+}
+
+.dropdown-menu.show {
+  display: block;
+}
+
+.dropdown-item {
+  color: #424242;
+  padding: 0.75rem 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.dropdown-item:hover {
+  background-color: rgba(156, 39, 176, 0.1);
+  color: #9c27b0;
 }
 
 /* Estilos para el carrito */
@@ -94,16 +71,6 @@
   padding: 0.35em 0.5em;
 }
 
-/* Animación hover para el carrito */
-.nav-link:has(.bi-cart3):hover {
-  transform: translateY(-2px);
-}
-
-/* Ajuste de posición del badge */
-.position-relative {
-  display: inline-block;
-}
-
 /* Estilos para el monedero */
 .wallet-link {
   display: flex;
@@ -114,32 +81,220 @@
 
 .bi-wallet2 {
   font-size: 1.2rem;
-  color: #CA9CDA;  /* Cambiado a blanco con ligera transparencia */
-  transition: color 0.3s ease;
+  color: #CA9CDA;
 }
 
 .wallet-amount {
   font-weight: 500;
-  color: #CA9CDA;  /* Cambiado a blanco con ligera transparencia */
+  color: #CA9CDA;
   font-size: 0.9rem;
-  transition: color 0.3s ease;
 }
 
-/* Efecto hover para monedero */
-.wallet-link:hover .bi-wallet2,
-.wallet-link:hover .wallet-amount {
-  color: #ffd740;  /* Color amarillo al hacer hover */
-  transform: translateY(-2px);
+/* Para pantallas grandes (desktop) */
+@media (min-width: 992px) {
+  /* Hacer que el menú aparezca al pasar el ratón y se mantenga visible */
+  .nav-item.dropdown:hover .dropdown-menu {
+    display: block;
+  }
+  
+  /* Para que el menú desplegable no desaparezca al intentar hacer clic */
+  .dropdown-menu:hover {
+    display: block;
+  }
+  
+  /* Estilos específicos para escritorio - mejor comportamiento hover */
+  /* Crear un área de "padding invisible" para evitar que el menú desaparezca */
+  .nav-item.dropdown {
+    position: relative;
+  }
+  
+  /* Hace que el dropdown aparezca al pasar el ratón por el nav-item */
+  .nav-item.dropdown:hover .dropdown-menu {
+    display: block;
+    min-width: 100%; /* Hace que el ancho mínimo sea el mismo que el elemento padre */
+    width: auto; /* Permite que crezca si el contenido lo requiere */
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  
+  /* Animación para los dropdowns */
+  .dropdown-menu {
+    display: block;
+    min-width: 100%; /* Ancho mínimo igual al padre */
+    width: auto; /* Permite que crezca si el contenido lo requiere */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: opacity 0.3s, transform 0.3s, visibility 0s 0.3s;
+    margin-top: 0;
+    border: none;
+    background-color: white;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    border-radius: 0.5rem;
+    pointer-events: none; /* Evita que los eventos del mouse interfieran durante la transición */
+  }
+  
+  /* Crea un área adicional entre el elemento padre y el dropdown para facilitar la navegación */
+  .dropdown-menu::before {
+    content: '';
+    position: absolute;
+    top: -10px; /* Área invisible para evitar que el menú desaparezca */
+    left: 0;
+    width: 100%;
+    height: 10px;
+    background: transparent;
+  }
+  
+  /* Mantiene visible el dropdown cuando el cursor está sobre él */
+  .dropdown-menu:hover {
+    display: block;
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  
+  /* Ajuste para que los items del dropdown tengan el ancho completo */
+  .dropdown-item {
+    width: 100%;
+    white-space: normal; /* Permite que el texto se envuelva si es necesario */
+  }
 }
 
-.wallet-link:hover {
-  transform: translateY(-2px);
-  transition: transform 0.2s ease;
+/* Para pantallas pequeñas (móvil) */
+@media (max-width: 991.98px) {
+  /* Estilos para el menú desplegable en móvil */
+  .navbar-collapse {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+    background: rgba(103, 58, 183, 0.95);
+    border-radius: 0.5rem;
+    margin-top: 0.5rem;
+    z-index: 1000;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto; /* Permitir scroll si el menú es muy largo */
+  }
+  
+  /* Estructura para mantener el flujo correcto */
+  .navbar-nav {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .navbar-nav .nav-item {
+    width: 100%;
+    margin-right: 0 !important;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Ajustes para los submenús en móvil para evitar superposición */
+  .dropdown-menu {
+    position: static !important;
+    float: none;
+    width: 100%;
+    margin: 0.25rem 0 0.75rem !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-radius: 0.5rem;
+    padding: 0 !important;
+    display: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+  }
+  
+  /* Ajustes para anidar visualmente los menús */
+  .dropdown-menu {
+    margin-left: 1rem !important; /* Indentación para indicar jerarquía */
+  }
+  
+  /* Mostrar el dropdown cuando tiene la clase show */
+  .dropdown-menu.show {
+    display: block !important;
+    max-height: none; /* Asegurar que no haya límite de altura */
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+  
+  /* Asegurarse que el texto en el submenú sea legible */
+  .dropdown-item {
+    color: #424242;
+    padding: 0.75rem 1rem !important;
+    white-space: normal; /* Permitir que el texto se envuelva */
+  }
+  
+  /* Limpiar posicionamiento para evitar superposiciones */
+  .navbar-nav .dropdown-menu,
+  .navbar-nav.ms-auto .dropdown-menu {
+    position: static !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    float: none !important;
+    transform: none !important;
+    margin-top: 0.25rem !important;
+    margin-bottom: 0.75rem !important;
+    width: 100% !important;
+  }
+  
+  /* Ajustes específicos para el menú hamburguesa */
+  .navbar-collapse.show {
+    display: block !important;
+  }
+  
+  /* Corregir el espacio entre elementos */
+  .navbar-nav .nav-item:not(:last-child) {
+    margin-right: 0 !important;
+    margin-bottom: 0.25rem;
+  }
+  
+  /* Ajustar la apariencia de los toggles en móvil */
+  .nav-link.dropdown-toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .nav-link.dropdown-toggle::after {
+    content: '';
+    display: inline-block;
+    margin-left: 0.5em;
+    vertical-align: middle;
+    border-top: 0.3em solid;
+    border-right: 0.3em solid transparent;
+    border-bottom: 0;
+    border-left: 0.3em solid transparent;
+  }
+}
+
+/* Ajustes para pantallas pequeñas */
+@media (max-width: 768px) {
+  .navbar-logo {
+    height: 80px;
+  }
+}
+
+@media (max-width: 568px) {
+  .navbar-logo {
+    height: 70px;
+  }
+}
+
+.navbar-custom.navbar-shrink {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+/* Ajuste de posición del badge */
+.position-relative {
+  display: inline-block;
 }
 
 /* Ajuste de espaciado entre elementos */
 .navbar-nav .nav-item:not(:last-child) {
-  margin-right: 0.75rem; /* Reducido de 1rem a 0.75rem */
+  margin-right: 0.75rem;
 }
 
 @media (max-width: 991.98px) {
@@ -160,7 +315,7 @@
 .navbar-nav .dropdown-item {
   padding: 0.75rem 1.5rem;
   font-size: 0.9rem;
-  color: #424242;
+  color: #424242; /* Color de texto gris oscuro */
   transition: all 0.3s ease;
 }
 
@@ -175,49 +330,32 @@
   border-color: rgba(0,0,0,0.1);
 }
 
-/* Responsive adjustments */
-@media (max-width: 991.98px) {
-  .navbar-nav .dropdown-menu {
-    background: rgba(255, 255, 255, 0.05);
-    box-shadow: none;
-  }
-
-  .navbar-nav .dropdown-item {
-    color: rgba(255, 255, 255, 0.9);
-  }
-
-  .navbar-nav .dropdown-item:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: #ffd740;
-  }
-}
-
 /* Ajuste del logo */
 .navbar-logo {
   height: 90px;
   width: auto;
   object-fit: contain;
-  margin-right: 1rem; /* Reducido de 2rem a 1rem */
+  margin-right: 1rem;
 }
 
 .navbar-brand {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-right: 1rem; /* Reducido de 2rem a 1rem */
-  padding-right: 0.5rem; /* Reducido de 1rem a 0.5rem */
+  margin-right: 1rem;
+  padding-right: 0.5rem;
 }
 
 /* Para pantallas más pequeñas */
 @media (max-width: 768px) {
   .navbar-logo {
-    height: 90px;  /* Aún más pequeño en móviles */
+    height: 90px;
   }
 }
 
 @media (max-width: 568px) {
   .navbar-logo {
-    height: 90px;  /* Aún más pequeño en móviles */
+    height: 90px;
   }
 }
 
@@ -243,6 +381,7 @@ button.dropdown-item {
   background: none;
   border: none;
   font-size: inherit;
+  color: #424242; /* Aseguramos que el texto de los botones también sea gris */
 }
 
 .custom-dropdown {
@@ -274,23 +413,26 @@ button.dropdown-item {
   display: none;
 }
 
-/* Estilos para el desplegable con hover */
-.custom-dropdown:hover details[open],
-.custom-dropdown:hover .dropdown-menu {
-  display: block;
-}
+/* Comportamiento del dropdown en escritorio */
+@media (min-width: 992px) {
+  /* Estilos para el desplegable with hover en escritorio */
+  .custom-dropdown:hover details[open],
+  .custom-dropdown:hover .dropdown-menu {
+    display: block;
+  }
 
-.custom-dropdown .dropdown-menu {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  margin-top: 0;
-}
+  .custom-dropdown .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 0;
+  }
 
-.custom-dropdown:hover .dropdown-menu {
-  display: block;
-  animation: fadeIn 0.3s ease;
+  .custom-dropdown:hover .dropdown-menu {
+    display: block;
+    animation: fadeIn 0.3s ease;
+  }
 }
 
 @keyframes fadeIn {
@@ -312,7 +454,7 @@ button.dropdown-item {
 .dropdown-item {
   display: block;
   padding: 0.75rem 1.5rem;
-  color: #212529;
+  color: #424242; /* Texto gris oscuro para contraste */
   text-decoration: none;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -329,24 +471,295 @@ button.dropdown-item {
 }
 
 .navbar-nav .nav-link {
-  padding-left: 0.75rem !important;  /* Ajustado de 0.5rem a 0.75rem */
-  padding-right: 0.75rem !important; /* Ajustado de 0.5rem a 0.75rem */
+  padding-left: 0.75rem !important;
+  padding-right: 0.75rem !important;
 }
 
 /* Ajuste del menú de usuario */
 .navbar-nav.ms-auto {
-  margin-left: 1rem !important; /* Reducido de 2rem a 1rem */
+  margin-left: 1rem !important;
 }
 
 /* Ajuste específico para el nombre de usuario */
 .navbar-nav .nav-item:last-child {
-  margin-left: 0.75rem; /* Reducido de 1.5rem */
+  margin-left: 0.75rem;
 }
 
-/* Ajuste del contenedor principal */
+/* Ajuste para el dropdown del perfil de usuario */
+.navbar-nav .dropdown:last-child .dropdown-menu,
+li.nav-item:last-child .dropdown-menu {
+  min-width: 200px !important; /* Ancho mínimo más grande para el menú del perfil */
+  right: 0; /* Alinear a la derecha */
+  left: auto; /* Anular la alineación a la izquierda por defecto */
+}
+
+/* Eliminar la transición que causa el efecto de carga */
+@media (min-width: 992px) {
+  /* Eliminar la transición retrasada que causa el problema */
+  .dropdown-menu {
+    transition: opacity 0.2s ease, transform 0.15s ease; /* Transición más rápida sin retraso */
+    visibility: visible !important; /* Evitar cambios de visibilidad */
+    display: none; /* Oculto por defecto */
+    opacity: 0; /* Transparente por defecto */
+  }
+  
+  /* Al hacer hover, mostrar inmediatamente */
+  .nav-item.dropdown:hover .dropdown-menu,
+  .dropdown-menu:hover {
+    display: block !important; /* Mostrar inmediatamente */
+    opacity: 1 !important; /* Totalmente visible */
+    transform: translateY(0) !important; /* Sin transformación */
+    pointer-events: auto !important; /* Permitir eventos del mouse */
+  }
+  
+  /* Precargar con todos los estilos aplicados */
+  .dropdown-menu {
+    background-color: white !important;
+    border: none !important;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1) !important;
+    border-radius: 0.5rem !important;
+    margin-top: 0.5rem !important;
+    padding: 0.5rem 0 !important;
+  }
+}
+
+/* Ajustar el ancho del menú de usuario específicamente */
+.navbar-nav li.nav-item:last-child .dropdown-menu {
+  min-width: 220px !important; /* Específicamente para el menú de usuario */
+}
+
+/* Mantener el menú visible mientras se navega hacia él */
+.dropdown-menu::before {
+  content: '';
+  position: absolute;
+  top: -15px; /* Área más grande para mejor navegación */
+  left: 0;
+  width: 100%;
+  height: 15px;
+  background: transparent;
+}
+
+/* Asegurar que los elementos del dropdown sean lo suficientemente anchos */
+.dropdown-item {
+  white-space: nowrap; /* Mantener todo en una línea */
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+}
+
+/* Eliminar cualquier regla conflictiva */
+.custom-dropdown .dropdown-menu {
+  min-width: 200px !important; /* Ancho mínimo consistente */
+}
+
+/* Ajustes finales para asegurar consistencia y evitar conflictos */
+.navbar-nav .dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  margin-top: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+}
+
+.navbar-nav .dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+  color: #424242;
+  text-decoration: none;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.navbar-nav .dropdown-item:hover {
+  background-color: rgba(156, 39, 176, 0.1);
+  color: #9c27b0;
+}
+
+.navbar-nav .dropdown-divider {
+  height: 1px;
+  margin: 0.5rem 0;
+  background-color: rgba(0,0,0,0.1);
+}
+
+/* Asegurando que el menú de usuario se muestre correctamente */
+.navbar-nav.ms-auto .dropdown-menu {
+  right: 0;
+  left: auto;
+  min-width: 220px;
+  display: none;
+  position: absolute;
+  top: 100%;
+  z-index: 1000;
+  margin-top: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+}
+
+.navbar-nav.ms-auto .dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+  color: #424242;
+  text-decoration: none;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.navbar-nav.ms-auto .dropdown-item:hover {
+  background-color: rgba(156, 39, 176, 0.1);
+  color: #9c27b0;
+}
+
+.navbar-nav.ms-auto .dropdown-divider {
+  height: 1px;
+  margin: 0.5rem 0;
+  background-color: rgba(0,0,0,0.1);
+}
+
+/* Ajustes para el contenedor principal */
 .container {
   max-width: 1400px;
   margin: 0 auto;
-  padding-left: 1rem !important;  /* Reducido de 2rem a 1rem */
-  padding-right: 1rem !important; /* Reducido de 2rem a 1rem */
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+}
+
+/* Añade estos estilos al final de tu archivo CSS para asegurar que tienen prioridad */
+
+/* Estilos específicos para móvil - arreglo de dropdowns */
+@media (max-width: 991.98px) {
+  /* Asegurar que los dropdowns se muestran en móvil cuando tienen la clase show */
+  .navbar-collapse .dropdown-menu.show {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  
+  /* Hacer que los dropdowns sean visibles cuando el toggle está activado */
+  .navbar-collapse .nav-item.dropdown .dropdown-menu {
+    display: none; /* Oculto por defecto */
+    opacity: 1; /* Sin animación en móvil */
+    visibility: visible;
+    transform: none;
+    transition: none; /* Eliminar transiciones en móvil */
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    margin: 0.5rem 0 !important;
+    padding: 0 !important;
+    border-radius: 0.5rem !important;
+  }
+  
+  /* Cuando se hace clic en el toggle */
+  .navbar-collapse .dropdown-toggle.show + .dropdown-menu,
+  .navbar-collapse .nav-item.dropdown.show .dropdown-menu {
+    display: block !important;
+  }
+}
+
+/* Correcciones específicas para el menú hamburguesa - alineación de elementos */
+@media (max-width: 991.98px) {
+  /* Asegurar que todos los elementos del menú estén alineados */
+  .navbar-nav,
+  .navbar-nav.ms-auto {
+    width: 100%;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  
+  /* Eliminar cualquier margen o padding que cause desalineación */
+  .navbar-nav .nav-item,
+  .navbar-nav.ms-auto .nav-item {
+    width: 100%;
+    margin: 0 0 0.5rem 0 !important;
+    padding: 0 !important;
+  }
+  
+  /* Asegurar que los enlaces ocupen el ancho completo */
+  .navbar-nav .nav-link,
+  .navbar-nav.ms-auto .nav-link {
+    width: 100%;
+    padding: 0.75rem 1rem !important;
+    display: flex !important;
+    align-items: center;
+  }
+  
+  /* Corregir el wallet-link para que esté alineado */
+  .wallet-link {
+    width: 100%;
+    justify-content: flex-start !important;
+    padding: 0.75rem 1rem !important;
+  }
+  
+  /* Ajustar la posición del carrito */
+  .position-relative {
+    width: 100%;
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Eliminar cualquier margen especial para el último elemento */
+  .navbar-nav .nav-item:last-child,
+  .navbar-nav.ms-auto .nav-item:last-child {
+    margin-left: 0 !important;
+  }
+  
+  /* Corregir la alineación del dropdown de perfil */
+  .navbar-nav.ms-auto .dropdown-menu {
+    width: 100% !important;
+    right: auto !important;
+    left: 0 !important;
+    margin: 0.5rem 0 !important;
+  }
+  
+  /* Asegurar que todos los dropdowns tengan el mismo ancho */
+  .dropdown-menu {
+    width: 100% !important;
+    min-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  
+  /* Corregir la apariencia de los items del dropdown */
+  .dropdown-item {
+    padding: 0.75rem 1rem !important;
+    text-align: left;
+  }
+  
+  /* Ajustar espaciado entre elementos */
+  .navbar-nav .nav-item + .nav-item,
+  .navbar-nav.ms-auto .nav-item + .nav-item {
+    margin-top: 0.25rem !important;
+  }
+  
+  /* Eliminar cualquier sangría que pueda causar desalineación */
+  .navbar-collapse ul,
+  .navbar-collapse li {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  
+  /* Asegurar que los iconos estén alineados */
+  .nav-link .bi {
+    margin-right: 0.5rem;
+  }
+  
+  /* Asegurar que el badge del carrito esté correctamente posicionado */
+  .position-absolute.badge {
+    top: 0 !important;
+    right: auto !important;
+    left: 1.5rem !important;
+    transform: translateY(-50%) !important;
+  }
 }

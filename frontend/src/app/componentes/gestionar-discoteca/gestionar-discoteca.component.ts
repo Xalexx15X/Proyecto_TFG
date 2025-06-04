@@ -119,8 +119,8 @@ export class GestionarDiscotecaComponent implements OnInit {
   }
 
   /**
-   * Cierra el formulario y resetea todos los estados
-   * Se usa para cancelar operaciones o después de completarlas
+   * Cierra el formulario y resetea todos los estados 
+   * Se usa para cancelar operaciones o después de completarlas se usa en el html
    */
   cerrarFormulario(): void {
     this.mostrarFormulario = false; // Oculta el formulario
@@ -130,7 +130,7 @@ export class GestionarDiscotecaComponent implements OnInit {
   }
 
   /**
-   * Maneja la selección de imágenes para la discoteca
+   * Maneja la selección de imágenes para la discoteca se usa en el html
    * Convierte las imágenes a Base64 y las almacena para vista previa
    * @param event Evento del input de tipo file
    */
@@ -153,7 +153,7 @@ export class GestionarDiscotecaComponent implements OnInit {
   }
 
   /**
-   * Elimina una imagen de la vista previa y del modelo
+   * Elimina una imagen de la vista previa y del modelo se usa en el html
    * @param index Índice de la imagen a eliminar
    */
   borrarImagen(index: number): void {
@@ -162,7 +162,7 @@ export class GestionarDiscotecaComponent implements OnInit {
   }
 
   /**
-   * Filtra la lista de administradores según el término de búsqueda
+   * Filtra la lista de administradores según el término de búsqueda se usa en el html
    * @returns Array de administradores filtrado
    */
   filtrarAdmins(): any[] {
@@ -178,7 +178,7 @@ export class GestionarDiscotecaComponent implements OnInit {
   }
 
   /**
-   * Asigna un administrador a la discoteca actual
+   * Asigna un administrador a la discoteca actual se usa en el html
    * @param idUsuario ID del usuario administrador
    */
   agregarAdmin(idUsuario: number): void {
@@ -186,14 +186,14 @@ export class GestionarDiscotecaComponent implements OnInit {
   }
 
   /**
-   * Elimina el administrador asignado a la discoteca actual
+   * Elimina el administrador asignado a la discoteca actual se usa en el html
    */
   removerAdmin(idUsuario: number): void {
     this.nuevaDiscoteca.idAdministrador = null; // Quita la asignación
   }
 
   /**
-   * Obtiene el nombre de un administrador a partir de su ID
+   * Obtiene el nombre de un administrador a partir de su ID se usa en el html
    * @param id ID del administrador
    * @returns Nombre del administrador o cadena vacía si no existe
    */
@@ -205,7 +205,7 @@ export class GestionarDiscotecaComponent implements OnInit {
   }
 
   /**
-   * Obtiene el nombre de una ciudad a partir de su ID
+   * Obtiene el nombre de una ciudad a partir de su ID se usa en el html
    * @param idCiudad ID de la ciudad
    * @returns Nombre de la ciudad o cadena vacía si no existe
    */
@@ -215,7 +215,7 @@ export class GestionarDiscotecaComponent implements OnInit {
   }
 
   /**
-   * Crea una nueva discoteca con los datos del formulario
+   * Crea una nueva discoteca con los datos del formulario se usa en el html
    * Valida los datos y envía petición al servidor
    */
   crearDiscoteca(): void {
@@ -233,7 +233,7 @@ export class GestionarDiscotecaComponent implements OnInit {
   }
 
   /**
-   * Prepara el formulario para editar una discoteca existente
+   * Prepara el formulario para editar una discoteca existente se usa en el html
    * @param discoteca Discoteca a editar
    */
   editarDiscoteca(discoteca: Discoteca): void {
@@ -263,7 +263,7 @@ export class GestionarDiscotecaComponent implements OnInit {
   }
 
   /**
-   * Actualiza una discoteca existente con los nuevos datos
+   * Actualiza una discoteca existente con los nuevos datos se usa en el html
    * Valida y envía la solicitud de actualización al servidor
    */
   actualizarDiscoteca(): void {
@@ -303,8 +303,8 @@ export class GestionarDiscotecaComponent implements OnInit {
   }
 
   /**
-   * Elimina una discoteca del sistema
-   * Solicita confirmación antes de proceder
+   * Elimina una discoteca del sistema se usa en el html
+   * Solicita confirmación antes de proceder 
    * @param id ID de la discoteca a eliminar
    */
   eliminarDiscoteca(id: number): void {
@@ -353,7 +353,7 @@ export class GestionarDiscotecaComponent implements OnInit {
   }
 
   /**
-   * Filtra discotecas según el término de búsqueda
+   * Filtra discotecas según el término de búsqueda se usa en el html
    * @param event Evento del input de búsqueda
    */
   buscar(event: any): void {

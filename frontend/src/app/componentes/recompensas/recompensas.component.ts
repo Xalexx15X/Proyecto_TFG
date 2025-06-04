@@ -5,78 +5,76 @@ import { RouterModule } from '@angular/router';
 import { RecompensaService } from '../../service/recompensa.service'; 
 import { BotellaService } from '../../service/botella.service'; 
 import { EventosService } from '../../service/eventos.service'; 
-import { ZonaVipService } from '../../service/zona-vip.service'; 
+import { ZonaVipService } from '../../service/zona-vip.service';
 import { DiscotecaService } from '../../service/discoteca.service'; 
 import { AuthService } from '../../service/auth.service'; 
 import { UsuarioService } from '../../service/usuario.service'; 
-import { RecompensaUsuarioService, RecompensaUsuario } from '../../service/recompensa-usuario.service';
-import { map, switchMap, finalize } from 'rxjs/operators';
-import jsPDF from 'jspdf'; // Importamos jsPDF para generar PDFs
+import { RecompensaUsuarioService, RecompensaUsuario } from '../../service/recompensa-usuario.service'; 
+import { map, switchMap, catchError } from 'rxjs/operators'; 
+import { Observable, of, forkJoin } from 'rxjs';
+import jsPDF from 'jspdf';
 
-// Interfaz personalizada para representar una recompensa ya canjeada por el usuario
-// Incluye campos para almacenar detalles adicionales del item canjeado
+//Interfaz que define la estructura de una recompensa que ha sido canjeada por un usuario
 interface RecompensaCanjeada {
-  id?: number;               // ID único del registro de canjeo
+  id?: number;                // ID único del registro de canjeo (opcional)
   fechaCanjeado: Date | string; // Fecha en que se realizó el canjeo
-  puntosUtilizados: number;  // Puntos gastados en este canjeo
-  idRecompensa?: number;     // ID de la recompensa canjeada
-  idUsuario?: number;        // ID del usuario que realizó el canjeo
-  botellaId?: number;        // ID de la botella (si la recompensa es una botella)
-  eventoId?: number;         // ID del evento (si la recompensa es entrada a evento)
-  zonaVipId?: number;        // ID de la zona VIP (si la recompensa es acceso a zona VIP)
-  detalle?: any;             // Objeto con detalles del item canjeado (botella, evento o zona VIP)
-  recompensa?: any;          // Detalles de la recompensa base canjeada
+  puntosUtilizados: number;   // Cantidad de puntos que se usaron para este canjeo
+  idRecompensa?: number;      // ID de la recompensa base (opcional)
+  idUsuario?: number;         // ID del usuario que realizó el canjeo (opcional)
+  botellaId?: number;         // ID de la botella si la recompensa es de tipo BOTELLA (opcional)
+  eventoId?: number;          // ID del evento si la recompensa es de tipo EVENTO (opcional)
+  zonaVipId?: number;         // ID de la zona VIP si la recompensa es de tipo ZONA_VIP (opcional)
+  detalle?: any;              // Detalles completos del item canjeado (botella, evento o zona VIP)
+  recompensa?: any;           // Detalles completos de la recompensa base
 }
 
-// Decorador @Component que define las propiedades del componente
-@Component({
-  selector: 'app-recompensas', // Selector CSS para usar este componente en HTML
-  standalone: true, // Indica que es un componente independiente
-  imports: [CommonModule, FormsModule, RouterModule], // Módulos necesarios importados
-  templateUrl: './recompensas.component.html', // Ruta al archivo HTML asociado
-  styleUrl: './recompensas.component.css' // Ruta al archivo CSS asociado
-})
-export class RecompensasComponent implements OnInit {
-  // Variables para controlar la interfaz y el flujo del asistente de canjeo
-  paso: number = 1; // Control del paso actual del asistente de canjeo
-  cargando: boolean = false; // Indicador de carga para mostrar spinner
-  error: string = ''; // Mensaje de error para mostrar al usuario
-  exito: string = ''; // Mensaje de éxito para mostrar al usuario
-  
-  // Datos del usuario y sus puntos disponibles
-  usuario: any = null; // Almacena los datos completos del usuario autenticado
-  puntosDisponibles: number = 0; // Puntos actuales que el usuario puede canjear
-  
-  // Listas de elementos disponibles para seleccionar
-  discotecas: any[] = []; // Lista de todas las discotecas
-  recompensas: any[] = []; // Lista de todas las recompensas del sistema
-  recompensasFiltradas: any[] = []; // Recompensas filtradas por puntos disponibles
-  botellas: any[] = []; // Lista de botellas disponibles (si aplica)
-  zonasVip: any[] = []; // Lista de zonas VIP disponibles (si aplica)
-  eventos: any[] = []; // Lista de eventos disponibles (si aplica)
-  
-  // Selecciones actuales del usuario en el proceso de canjeo
-  discotecaSeleccionada: number | null = null; // ID de la discoteca seleccionada
-  recompensaSeleccionada: any = null; // Recompensa seleccionada por el usuario
-  itemSeleccionado: any = null; // Item específico seleccionado (botella, evento o zona VIP)
-  
-  // Historial de recompensas ya canjeadas por el usuario
-  recompensasCanjeadas: RecompensaCanjeada[] = []; // Historial de canjeos previos
-  mostrarHistorial: boolean = false; // Controla visibilidad del historial
+//Interfaz que define la estructura base de una recompensa en el sistema
+interface Recompensa {
+  idRecompensa?: number;      // ID único de la recompensa
+  nombre: string;             // Nombre descriptivo de la recompensa
+  descripcion: string;        // Descripción detallada de la recompensa
+  puntosNecesarios: number;   // Puntos requeridos para poder canjear esta recompensa
+  tipo: 'BOTELLA' | 'EVENTO' | 'ZONA_VIP'; // Tipo de recompensa (solo estos 3 valores permitidos)
+  fechaInicio: Date | string; // Fecha desde la que está disponible la recompensa
+  fechaFin: Date | string;    // Fecha hasta la que está disponible la recompensa
+  esCanjeable?: boolean;      // Indica si el usuario actual puede canjear esta recompensa con sus puntos disponibles
+}
 
-  /**
-   * Constructor con inyección de todos los servicios necesarios
-   * @param authService Para obtener información del usuario autenticado
-   * @param recompensaService Para gestionar las recompensas disponibles
-   * @param recompensaUsuarioService Para registrar y consultar canjeos
-   * @param botellaService Para consultar botellas disponibles
-   * @param eventosService Para consultar eventos disponibles
-   * @param zonaVipService Para consultar zonas VIP disponibles
-   * @param discotecaService Para listar las discotecas
-   * @param usuarioService Para actualizar puntos del usuario
-   */
+// Decorador que define las propiedades del componente
+@Component({
+  selector: 'app-recompensas',
+  standalone: true, 
+  imports: [CommonModule, FormsModule, RouterModule], 
+  templateUrl: './recompensas.component.html', 
+  styleUrl: './recompensas.component.css' 
+})
+export class RecompensasComponent implements OnInit { 
+  // Variables para controlar el estado de la interfaz de usuario
+  paso: number = 1; // Paso actual del proceso de canjeo (1: selección de recompensa, 2: discoteca, 3: item, 4: confirmación)
+  error: string = ''; // Almacena mensajes de error para mostrar al usuario
+  exito: string = ''; // Almacena mensajes de éxito para mostrar al usuario
+  mostrarHistorial: boolean = false; // Controla si se muestra el historial de recompensas o el formulario de canjeo
+
+  // Datos del usuario autenticado
+  usuario: any = null; // Objeto que almacena los datos del usuario actual
+  puntosDisponibles: number = 0; // Cantidad de puntos que tiene disponibles el usuario para canjear
+
+  // Colecciones de datos
+  discotecas: any[] = []; // Lista de todas las discotecas disponibles
+  recompensas: Recompensa[] = []; // Lista de todas las recompensas disponibles en el sistema
+  recompensasFiltradas: Recompensa[] = []; // Recompensas filtradas 
+  recompensasCanjeadas: RecompensaCanjeada[] = []; // Historial de recompensas que el usuario ha canjeado
+  botellas: any[] = []; // Lista de botellas disponibles para la discoteca seleccionada
+  zonasVip: any[] = []; // Lista de zonas VIP disponibles para la discoteca seleccionada
+  eventos: any[] = []; // Lista de eventos disponibles para la discoteca seleccionada
+  
+  // Variables para almacenar las selecciones que va haciendo el usuario durante el proceso
+  discotecaSeleccionada: number | null = null; // ID de la discoteca que el usuario ha seleccionado
+  recompensaSeleccionada: Recompensa | null = null; // Recompensa que el usuario ha seleccionado para canjear
+  itemSeleccionado: any = null; // Item específico (botella, evento o zona VIP) que el usuario ha seleccionado
+  
   constructor(
-    private authService: AuthService,
+    private authService: AuthService, 
     private recompensaService: RecompensaService,
     private recompensaUsuarioService: RecompensaUsuarioService,
     private botellaService: BotellaService,
@@ -86,122 +84,99 @@ export class RecompensasComponent implements OnInit {
     private usuarioService: UsuarioService
   ) { }
 
-  /**
-   * Método del ciclo de vida que se ejecuta al inicializarse el componente
-   * Inicia la carga de datos necesarios para el funcionamiento
-   */
-  ngOnInit(): void {
-    this.cargarDatosUsuario(); // Carga la información del usuario actual
-    this.cargarDiscotecas(); // Carga la lista de discotecas disponibles
-    this.cargarHistorialRecompensas(); // Carga el historial de canjeos previos
+  ngOnInit(): void { 
+    this.inicializarDatos(); // Llama al método que inicializa todos los datos necesarios
+  }
+  
+  //Método privado que centraliza la inicialización de todos los datos necesarios
+  private inicializarDatos(): void { 
+    this.cargarDatosUsuario(); // Carga los datos del usuario autenticado
+    this.cargarDiscotecas(); // Carga la lista de discotecas
+    this.cargarHistorialRecompensas(); // Carga el historial de recompensas canjeadas
   }
 
-  /**
-   * Carga los datos del usuario autenticado actualmente
-   * Obtiene su información completa, incluyendo puntos disponibles
-   */
+  //Carga los datos del usuario autenticado actualmente, incluyendo sus puntos disponibles
   cargarDatosUsuario(): void {
-    // Obtiene el ID del usuario desde el servicio de autenticación
-    const userId = this.authService.getUserId();
+    const userId = this.authService.getUserId(); // Obtiene el ID del usuario autenticado
     
-    // Verifica que se haya obtenido un ID válido
+    // Si no hay un usuario autenticado, muestra un error y termina
     if (!userId) {
       this.error = 'No se pudo obtener la información del usuario.';
       return;
     }
-
-    // Activa indicador de carga
-    this.cargando = true;
     
-    // Solicita la información completa del usuario al servidor
-    this.usuarioService.getUsuario(userId).subscribe({
-      next: (usuario) => {
-        // Guarda la información del usuario y sus puntos
-        this.usuario = usuario;
-        this.puntosDisponibles = usuario.puntosRecompensa || 0;
-        
-        // Una vez obtenidos los puntos, carga las recompensas disponibles
-        this.cargarRecompensasDisponibles();
-        
-        // Desactiva indicador de carga
-        this.cargando = false;
-      },
-      error: (err) => {
-        // Maneja errores en la carga de datos del usuario
-        console.error('Error al cargar datos de usuario:', err);
-        this.error = 'No se pudo cargar la información del usuario.';
-        this.cargando = false;
-      }
-    });
+    // Llama al servicio para obtener los datos completos del usuario
+    this.usuarioService.getUsuario(userId)
+      .subscribe({ 
+        next: (usuario) => { // Callback para manejar la respuesta exitosa
+          this.usuario = usuario; // Guarda los datos del usuario
+          this.puntosDisponibles = usuario.puntosRecompensa || 0; // Obtiene los puntos disponibles
+          this.cargarRecompensasDisponibles(); // Carga las recompensas disponibles
+        }, 
+        error: (err) => { // Callback para manejar errores
+          console.error('Error al cargar datos de usuario:', err); 
+          this.error = 'No se pudo cargar la información del usuario.'; 
+        }
+      });
   }
 
-  /**
-   * Carga la lista de todas las discotecas para selección
-   */
+  //Carga la lista de todas las discotecas disponibles en el sistema
   cargarDiscotecas(): void {
-    // Solicita la lista de discotecas al servidor
-    this.discotecaService.getDiscotecas().subscribe({
-      next: (discotecas) => {
-        // Almacena la lista de discotecas
-        this.discotecas = discotecas;
-      },
-      error: (err) => {
-        // Maneja errores en la carga de discotecas
-        console.error('Error al cargar discotecas:', err);
-        this.error = 'No se pudo cargar la lista de discotecas.';
-      }
-    });
+    this.discotecaService.getDiscotecas() // Llama al servicio para obtener las discotecas
+      .pipe(
+        catchError(err => { // Maneja posibles errores en la petición
+          console.error('Error al cargar discotecas:', err); 
+          this.error = 'No se pudo cargar la lista de discotecas.';
+          return of([]); // Devuelve un array vacío en caso de error para que la app siga funcionando
+        })
+      )
+      .subscribe(discotecas => { // Procesa la respuesta
+        this.discotecas = discotecas; // Guarda la lista de discotecas
+      });
   }
 
   /**
-   * Carga las recompensas disponibles en el sistema
-   * Marca cuáles son canjeables según los puntos del usuario
+   * Carga todas las recompensas disponibles y marca las que el usuario puede canjear
+   * con sus puntos actuales
    */
   cargarRecompensasDisponibles(): void {
-    // Activa indicador de carga
-    this.cargando = true;
-      
-    // Carga todas las recompensas sin filtrar inicialmente por puntos
-    this.recompensaService.getRecompensas().subscribe({
-      next: (recompensas) => {
-        // Registro para depuración
-        console.log('Recompensas cargadas:', recompensas);
-        
-        // Almacena la lista completa de recompensas
-        this.recompensas = recompensas;
-        
-        // Marca cada recompensa como canjeable o no según los puntos disponibles
-        this.recompensas.forEach(recompensa => {
-          recompensa.esCanjeable = recompensa.puntosNecesarios <= this.puntosDisponibles;
-        });
-        
-        // Desactiva indicador de carga
-        this.cargando = false;
-      },
-      error: (err) => {
-        // Maneja errores en la carga de recompensas
-        console.error('Error al cargar recompensas:', err);
-        this.error = 'No se pudieron cargar las recompensas disponibles.';
-        this.cargando = false;
-      }
-    });
+    this.recompensaService.getRecompensas() // Llama al servicio para obtener las recompensas
+      .subscribe({
+        next: (recompensas) => { // Callback para manejar la respuesta exitosa
+          this.recompensas = recompensas; // Guarda la lista de recompensas
+          
+          // Para cada recompensa, verifica si el usuario tiene suficientes puntos para canjearla
+          this.recompensas.forEach(recompensa => {
+            recompensa.esCanjeable = recompensa.puntosNecesarios <= this.puntosDisponibles;
+          });
+          
+          // Actualiza la lista filtrada que muestra todas
+          this.filtrarRecompensas();
+        },
+        error: (err) => { // Callback para manejar errores
+          console.error('Error al cargar recompensas:', err);
+          this.error = 'No se pudieron cargar las recompensas disponibles.';
+        }
+      });
   }
 
-  /**
-   * Carga el historial de recompensas ya canjeadas por el usuario
-   * Obtiene detalles adicionales para cada canjeo
-   */
+  //Filtra las recompensas según algún criterio en este caso todas
+  filtrarRecompensas(): void {
+    // Por defecto, mostramos todas las recompensas sin filtrar
+    this.recompensasFiltradas = [...this.recompensas]; // Copia todas las recompensas
+  }
+
+  // Carga el historial de recompensas que el usuario ha canjeado previamente
   cargarHistorialRecompensas(): void {
-    // Obtiene el ID del usuario autenticado
-    const userId = this.authService.getUserId();
+    const userId = this.authService.getUserId(); // Obtiene el ID del usuario autenticado
     if (!userId) return; // Si no hay usuario, termina
 
-    // Solicita el historial de canjeos del usuario
-    this.recompensaUsuarioService.getRecompensasUsuario(userId).subscribe({
-      next: (recompensasUsuario) => { // Respuesta exitosa       
-        // Mapea la estructura recibida del backend a la estructura local
-        this.recompensasCanjeadas = recompensasUsuario.map(item => {
-          return {
+    // Llama al servicio para obtener las recompensas canjeadas por el usuario
+    this.recompensaUsuarioService.getRecompensasUsuario(userId)
+      .subscribe({
+        next: (recompensasUsuario) => { // Callback para manejar la respuesta exitosa
+          // Mapea los resultados al formato local definido en la interfaz RecompensaCanjeada
+          this.recompensasCanjeadas = recompensasUsuario.map(item => ({
             id: item.id,
             fechaCanjeado: item.fechaCanjeado,
             puntosUtilizados: item.puntosUtilizados,
@@ -210,89 +185,122 @@ export class RecompensasComponent implements OnInit {
             botellaId: item.botellaId,
             eventoId: item.eventoId,
             zonaVipId: item.zonaVipId
-          };
-        });
-        
-        // Para cada canjeo, carga información adicional de los items
-        this.recompensasCanjeadas.forEach(recompensa => {
-          this.cargarDetallesItem(recompensa);
-        });
-      },
-      error: (err) => {
-        // Maneja errores en la carga del historial
-        console.error('Error al cargar historial de recompensas:', err);
-      }
+          }));
+          
+          // Carga los detalles adicionales para cada recompensa canjeada
+          this.cargarDetallesRecompensasCanjeadas();
+        },
+        error: (err) => { // Callback para manejar errores
+          console.error('Error al cargar historial de recompensas:', err); // Log del error
+        }
+      });
+  }
+
+  /**
+   * Carga los detalles adicionales para todas las recompensas canjeadas
+   * que se muestran en el historial
+   */
+  private cargarDetallesRecompensasCanjeadas(): void {
+    // Si no hay recompensas canjeadas, no hace nada
+    if (this.recompensasCanjeadas.length === 0) return;
+    
+    // Para cada recompensa canjeada, carga sus detalles específicos
+    this.recompensasCanjeadas.forEach(recompensa => {
+      this.cargarDetallesItem(recompensa);
     });
   }
 
   /**
-   * Carga los detalles específicos del item asociado a una recompensa canjeada
-   * (botella, evento o zona VIP)
-   * @param recompensa Objeto de recompensa canjeada al que añadir los detalles
+   * Carga los detalles específicos de un item asociado a una recompensa canjeada
+   * @param recompensa Recompensa canjeada para la cual cargar los detalles
    */
   cargarDetallesItem(recompensa: RecompensaCanjeada): void {
-    // Carga detalles según el tipo de item canjeado
-    
-    // Si es una botella, carga sus detalles
-    if (recompensa.botellaId) {
-      this.botellaService.getBotella(recompensa.botellaId).subscribe(botella => { // Carga la botella
-        recompensa.detalle = botella; // Asocia la botella a la recompensa
-        
-        // Cargar la información de la discoteca asociada a la botella
-        if (botella.idDiscoteca) { // Verifica que la botella tenga una discoteca asociada
-          this.discotecaService.getDiscoteca(botella.idDiscoteca).subscribe(discoteca => { // Carga la discoteca
-            recompensa.detalle.discoteca = discoteca; // Asocia la discoteca a la botella
-          });
-        }
-      });
-    } 
-    // Si es un evento, carga sus detalles
-    else if (recompensa.eventoId) {
-      this.eventosService.getEvento(recompensa.eventoId).subscribe(evento => {
-        recompensa.detalle = evento;
-        
-        // Cargar la información de la discoteca asociada al evento
-        if (evento.idDiscoteca) { // Verifica que el evento tenga una discoteca asociada
-          this.discotecaService.getDiscoteca(evento.idDiscoteca).subscribe(discoteca => { // Carga la discoteca
-            recompensa.detalle.discoteca = discoteca; // Asocia la discoteca al evento
-          });
-        }
-      });
-    } 
-    // Si es una zona VIP, carga sus detalles
-    else if (recompensa.zonaVipId) {
-      this.zonaVipService.getZonaVip(recompensa.zonaVipId).subscribe(zonaVip => {
-        recompensa.detalle = zonaVip;
-        
-        // Cargar la información de la discoteca asociada a la zona VIP
-        if (zonaVip.idDiscoteca) { // Verifica que la zona VIP tenga una discoteca asociada
-          this.discotecaService.getDiscoteca(zonaVip.idDiscoteca).subscribe(discoteca => { // Carga la discoteca
-            recompensa.detalle.discoteca = discoteca; // Asocia la discoteca a la zona VIP
-          });
-        }
-      });
+    // Primero carga los detalles de la recompensa base
+    if (recompensa.idRecompensa) {
+      this.recompensaService.getRecompensa(recompensa.idRecompensa)
+        .subscribe(recompensaDetalle => {
+          recompensa.recompensa = recompensaDetalle; // Guarda los detalles de la recompensa
+        });
     }
 
-    // Además, carga los detalles de la recompensa base (nombre, tipo, etc.)
-    if (recompensa.idRecompensa) {
-      this.recompensaService.getRecompensa(recompensa.idRecompensa).subscribe(recompensaDetalle => {
-        recompensa.recompensa = recompensaDetalle;
-      });
+    // Luego carga los detalles específicos según el tipo de item (botella, evento o zona VIP)
+    if (recompensa.botellaId) {
+      this.cargarDetalleBotella(recompensa); // Si es una botella
+    } else if (recompensa.eventoId) {
+      this.cargarDetalleEvento(recompensa); // Si es un evento
+    } else if (recompensa.zonaVipId) {
+      this.cargarDetalleZonaVip(recompensa); // Si es una zona VIP
     }
   }
 
   /**
-   * Maneja la selección de una recompensa por parte del usuario
-   * Inicia el proceso de canjeo si tiene suficientes puntos
+   * Carga los detalles de una botella específica y su discoteca asociada
+   * @param recompensa Recompensa canjeada que contiene un ID de botella
+   */
+  private cargarDetalleBotella(recompensa: RecompensaCanjeada): void {
+    this.botellaService.getBotella(recompensa.botellaId!) // Llama al servicio para obtener los detalles de la botella
+      .subscribe(botella => {
+        recompensa.detalle = botella; // Guarda los detalles de la botella
+        
+        // Si la botella tiene una discoteca asociada, carga sus detalles
+        if (botella.idDiscoteca) {
+          this.cargarDiscotecaParaDetalle(recompensa, botella.idDiscoteca);
+        }
+      });
+  }
+
+  /**
+   * Carga los detalles de un evento específico y su discoteca asociada
+   * @param recompensa Recompensa canjeada que contiene un ID de evento
+   */
+  private cargarDetalleEvento(recompensa: RecompensaCanjeada): void {
+    this.eventosService.getEvento(recompensa.eventoId!) // Llama al servicio para obtener los detalles del evento
+      .subscribe(evento => {
+        recompensa.detalle = evento; // Guarda los detalles del evento
+        
+        // Si el evento tiene una discoteca asociada, carga sus detalles
+        if (evento.idDiscoteca) {
+          this.cargarDiscotecaParaDetalle(recompensa, evento.idDiscoteca);
+        }
+      });
+  }
+
+  /**
+   * Carga los detalles de una zona VIP específica y su discoteca asociada
+   * @param recompensa Recompensa canjeada que contiene un ID de zona VIP
+   */
+  private cargarDetalleZonaVip(recompensa: RecompensaCanjeada): void {
+    this.zonaVipService.getZonaVip(recompensa.zonaVipId!) // Llama al servicio para obtener los detalles de la zona VIP
+      .subscribe(zonaVip => {
+        recompensa.detalle = zonaVip; // Guarda los detalles de la zona VIP
+        
+        // Si la zona VIP tiene una discoteca asociada, carga sus detalles
+        if (zonaVip.idDiscoteca) {
+          this.cargarDiscotecaParaDetalle(recompensa, zonaVip.idDiscoteca);
+        }
+      });
+  }
+
+  /**
+   * Carga la información de una discoteca y la asocia al detalle de la recompensa
+   * @param recompensa Recompensa canjeada a la que asociar la discoteca
+   * @param idDiscoteca ID de la discoteca a cargar
+   */
+  private cargarDiscotecaParaDetalle(recompensa: RecompensaCanjeada, idDiscoteca: number): void {
+    this.discotecaService.getDiscoteca(idDiscoteca) // Llama al servicio para obtener los detalles de la discoteca
+      .subscribe(discoteca => {
+        if (recompensa.detalle) {
+          recompensa.detalle.discoteca = discoteca; // Añade la información de la discoteca al detalle
+        }
+      });
+  }
+
+  /**
+   * Maneja la selección de una recompensa por parte del usuario e inicia el proceso de canjeo se usa en el html
    * @param recompensa Recompensa seleccionada por el usuario
    */
-  seleccionarRecompensa(recompensa: any): void {
-    // Registros para depuración
-    console.log('Seleccionando recompensa:', recompensa);
-    console.log('Puntos disponibles:', this.puntosDisponibles);
-    console.log('Puntos necesarios:', recompensa.puntosNecesarios);
-    
-    // Verifica que el usuario tenga suficientes puntos
+  seleccionarRecompensa(recompensa: Recompensa): void {
+    // Verifica que el usuario tenga suficientes puntos para canjear la recompensa
     if (recompensa.puntosNecesarios > this.puntosDisponibles) {
       this.error = 'No tienes suficientes puntos para canjear esta recompensa.';
       return;
@@ -302,16 +310,17 @@ export class RecompensasComponent implements OnInit {
     this.recompensaSeleccionada = recompensa;
     this.paso = 2; // Avanza al paso de selección de discoteca
     
-    // Limpia selecciones anteriores
+    // Limpia selecciones anteriores y posibles errores
     this.discotecaSeleccionada = null;
     this.itemSeleccionado = null;
     this.botellas = [];
     this.eventos = [];
     this.zonasVip = [];
+    this.error = '';
   }
 
   /**
-   * Maneja la selección de discoteca y avanza al paso de selección de items
+   * Maneja la selección de discoteca por parte del usuario y avanza al siguiente paso se usa en el html
    */
   seleccionarDiscoteca(): void {
     // Verifica que se haya seleccionado una discoteca
@@ -320,103 +329,121 @@ export class RecompensasComponent implements OnInit {
       return;
     }
     
-    // Avanza al paso de selección de items específicos
+    // Avanza al paso de selección de item específico
     this.paso = 3;
+    this.error = '';
     
-    // Carga los items disponibles según el tipo de recompensa
+    // Carga los items disponibles según el tipo de recompensa seleccionada
     this.cargarItemsSegunRecompensa();
   }
 
-  /**
-   * Carga los items específicos disponibles según el tipo de recompensa seleccionada
-   * (botellas, eventos o zonas VIP)
-   */
+  //Carga los items específicos disponibles según el tipo de recompensa seleccionada
   cargarItemsSegunRecompensa(): void {
-    // Verifica que existan los datos necesarios
+    // Verifica que haya una discoteca y una recompensa seleccionadas
     if (!this.discotecaSeleccionada || !this.recompensaSeleccionada) return;
     
-    // Activa indicador de carga y limpia errores
-    this.cargando = true;
-    this.error = '';
+    this.error = ''; // Limpia mensajes de error anteriores
     
-    // Determina el tipo de recompensa seleccionada
-    const tipo = this.recompensaSeleccionada.tipo;
-    
-    // Carga diferentes tipos de items según el tipo de recompensa
-    if (tipo === 'BOTELLA') {
-      // Para botellas: carga botellas disponibles en la discoteca seleccionada
-      this.botellaService.getBotellasByDiscoteca(this.discotecaSeleccionada).pipe(
-        // Filtra solo las botellas disponibles
-        map(botellas => botellas.filter(b => b.disponibilidad === 'DISPONIBLE'))
-      ).subscribe({
-        next: (botellas) => {
-          this.botellas = botellas;
-          // Muestra mensaje si no hay botellas disponibles
-          if (botellas.length === 0) {
-            this.error = 'No hay botellas disponibles en esta discoteca.';
-          }
-          this.cargando = false;
-        },
-        error: (err) => {
-          console.error('Error al cargar botellas:', err);
-          this.error = 'No se pudieron cargar las botellas disponibles.';
-          this.cargando = false;
-        }
-      });
-    } 
-    else if (tipo === 'EVENTO') {
-      // Para eventos: carga eventos activos en la discoteca seleccionada
-      this.eventosService.getEventosByDiscoteca(this.discotecaSeleccionada, 'ACTIVO').subscribe({
-        next: (eventos) => {
-          this.eventos = eventos;
-          // Muestra mensaje si no hay eventos disponibles
-          if (eventos.length === 0) {
-            this.error = 'No hay eventos disponibles en esta discoteca.';
-          }
-          this.cargando = false;
-        },
-        error: (err) => {
-          console.error('Error al cargar eventos:', err);
-          this.error = 'No se pudieron cargar los eventos disponibles.';
-          this.cargando = false;
-        }
-      });
-    } 
-    else if (tipo === 'ZONA_VIP') {
-      // Para zonas VIP: carga zonas disponibles en la discoteca seleccionada
-      this.zonaVipService.getZonasVipByDiscoteca(this.discotecaSeleccionada).pipe(
-        // Filtra solo zonas en estado disponible
-        map(zonasVip => zonasVip.filter(z => z.estado === 'DISPONIBLE'))
-      ).subscribe({
-        next: (zonasVip) => {
-          this.zonasVip = zonasVip;
-          // Muestra mensaje si no hay zonas VIP disponibles
-          if (zonasVip.length === 0) {
-            this.error = 'No hay zonas VIP disponibles en esta discoteca.';
-          }
-          this.cargando = false;
-        },
-        error: (err) => {
-          console.error('Error al cargar zonas VIP:', err);
-          this.error = 'No se pudieron cargar las zonas VIP disponibles.';
-          this.cargando = false;
-        }
-      });
+    // Determina qué tipo de items cargar según el tipo de recompensa
+    switch (this.recompensaSeleccionada.tipo) {
+      case 'BOTELLA': // Si es una recompensa de tipo botella
+        this.cargarBotellas(); // Carga las botellas disponibles
+        break;
+      case 'EVENTO': // Si es una recompensa de tipo evento
+        this.cargarEventos(); // Carga los eventos disponibles
+        break;
+      case 'ZONA_VIP': // Si es una recompensa de tipo zona VIP
+        this.cargarZonasVIP(); // Carga las zonas VIP disponibles
+        break;
+      default: // Si es un tipo no reconocido
+        this.error = 'Tipo de recompensa no soportado'; // Muestra un error
     }
   }
 
   /**
-   * Maneja la selección del item específico (botella, evento o zona VIP)
-   * @param item El item seleccionado por el usuario
+   * Carga las botellas disponibles para la discoteca seleccionada
    */
-  seleccionarItem(item: any): void {
-    this.itemSeleccionado = item;
-    this.paso = 4; // Avanza al paso de confirmación
+  private cargarBotellas(): void {
+    this.botellaService.getBotellasByDiscoteca(this.discotecaSeleccionada!) // Llama al servicio para obtener las botellas
+      .pipe(
+        // Filtra solo las botellas que están disponibles
+        map(botellas => botellas.filter(b => b.disponibilidad === 'DISPONIBLE'))
+      )
+      .subscribe({
+        next: (botellas) => { // Callback para manejar la respuesta exitosa
+          this.botellas = botellas; // Guarda la lista de botellas
+          
+          // Si no hay botellas disponibles, muestra un mensaje
+          if (botellas.length === 0) {
+            this.error = 'No hay botellas disponibles en esta discoteca.';
+          }
+        },
+        error: (err) => { // Callback para manejar errores
+          console.error('Error al cargar botellas:', err); // Log del error
+          this.error = 'No se pudieron cargar las botellas disponibles.'; // Mensaje para el usuario
+        }
+      });
   }
 
   /**
-   * Procesa el canjeo de la recompensa seleccionada
-   * Registra el canjeo y actualiza los puntos del usuario
+   * Carga los eventos disponibles para la discoteca seleccionada
+   */
+  private cargarEventos(): void {
+    // Llama al servicio para obtener los eventos activos de la discoteca
+    this.eventosService.getEventosByDiscoteca(this.discotecaSeleccionada!, 'ACTIVO')
+      .subscribe({
+        next: (eventos) => { // Callback para manejar la respuesta exitosa
+          this.eventos = eventos; // Guarda la lista de eventos
+          
+          // Si no hay eventos disponibles, muestra un mensaje
+          if (eventos.length === 0) {
+            this.error = 'No hay eventos disponibles en esta discoteca.';
+          }
+        },
+        error: (err) => { // Callback para manejar errores
+          console.error('Error al cargar eventos:', err); // Log del error
+          this.error = 'No se pudieron cargar los eventos disponibles.'; // Mensaje para el usuario
+        }
+      });
+  }
+
+  /**
+   * Carga las zonas VIP disponibles para la discoteca seleccionada
+   */
+  private cargarZonasVIP(): void {
+    this.zonaVipService.getZonasVipByDiscoteca(this.discotecaSeleccionada!) // Llama al servicio para obtener las zonas VIP
+      .pipe(
+        // Filtra solo las zonas VIP que están disponibles
+        map(zonasVip => zonasVip.filter(z => z.estado === 'DISPONIBLE'))
+      )
+      .subscribe({
+        next: (zonasVip) => { // Callback para manejar la respuesta exitosa
+          this.zonasVip = zonasVip; // Guarda la lista de zonas VIP
+          
+          // Si no hay zonas VIP disponibles, muestra un mensaje
+          if (zonasVip.length === 0) {
+            this.error = 'No hay zonas VIP disponibles en esta discoteca.';
+          }
+        },
+        error: (err) => { // Callback para manejar errores
+          console.error('Error al cargar zonas VIP:', err); // Log del error
+          this.error = 'No se pudieron cargar las zonas VIP disponibles.'; // Mensaje para el usuario
+        }
+      });
+  }
+
+  /**
+   * Maneja la selección de un item específico por parte del usuario se usa en el html
+   * @param item Item seleccionado (botella, evento o zona VIP)
+   */
+  seleccionarItem(item: any): void {
+    this.itemSeleccionado = item; // Guarda el item seleccionado
+    this.paso = 4; // Avanza al paso de confirmación
+    this.error = ''; // Limpia mensajes de error anteriores
+  }
+
+  /**
+   * Procesa el canjeo de la recompensa seleccionada se usa en el html
    */
   canjearRecompensa(): void {
     // Verifica que todos los datos necesarios estén presentes
@@ -425,9 +452,15 @@ export class RecompensasComponent implements OnInit {
       return;
     }
 
+    // Verifica que la recompensa tenga un ID válido
+    if (!this.recompensaSeleccionada.idRecompensa) {
+      this.error = 'La recompensa seleccionada no tiene un ID válido.';
+      return;
+    }
+
     // Obtiene datos necesarios para el canjeo
-    const idUsuario = this.usuario.idUsuario;
-    const puntosRequeridos = this.recompensaSeleccionada.puntosNecesarios;
+    const idUsuario = this.usuario.idUsuario; // ID del usuario
+    const puntosRequeridos = this.recompensaSeleccionada.puntosNecesarios; // Puntos necesarios
 
     // Verifica nuevamente que el usuario tenga suficientes puntos
     if (this.puntosDisponibles < puntosRequeridos) {
@@ -435,228 +468,228 @@ export class RecompensasComponent implements OnInit {
       return;
     }
 
-    // Activa indicador de carga
-    this.cargando = true;
-    const tipo = this.recompensaSeleccionada.tipo;
+    const tipo = this.recompensaSeleccionada.tipo; // Tipo de recompensa
 
-    // Prepara el objeto de canjeo según la estructura esperada por el backend
+    // Prepara el objeto de canjeo con los datos correctos según el tipo
     const canjeo: RecompensaUsuario = {
       fechaCanjeado: new Date(), // Fecha actual
-      puntosUtilizados: puntosRequeridos, // Puntos que cuesta la recompensa
-      idRecompensa: this.recompensaSeleccionada.idRecompensa, // ID de la recompensa canjeada
-      idUsuario: idUsuario, // ID del usuario que realiza el canjeo
+      puntosUtilizados: puntosRequeridos, // Puntos que se gastarán
+      idRecompensa: this.recompensaSeleccionada.idRecompensa, // ID de la recompensa
+      idUsuario: idUsuario, // ID del usuario
       
-      // Solo establece el ID del tipo de item correspondiente, los demás quedan null
+      // Solo establece el ID correspondiente al tipo de item seleccionado
       botellaId: tipo === 'BOTELLA' ? this.itemSeleccionado.idBotella : null,
       eventoId: tipo === 'EVENTO' ? this.itemSeleccionado.idEvento : null,
       zonaVipId: tipo === 'ZONA_VIP' ? this.itemSeleccionado.idZonaVip : null
     };
 
-    // Registro para depuración
-    console.log('Enviando datos de canjeo:', canjeo);
-
-    // Encadena operaciones usando operadores RxJS
-    this.recompensaUsuarioService.canjearRecompensa(canjeo).pipe(
-      // Después de registrar el canjeo, actualiza los puntos del usuario
-      switchMap(() => {
-        const nuevosPuntos = this.puntosDisponibles - puntosRequeridos;
-        return this.usuarioService.actualizarPuntosRecompensa(idUsuario, nuevosPuntos);
-      }),
-      // Asegura que se desactive el indicador de carga al terminar (éxito o error)
-      finalize(() => {
-        this.cargando = false;
-      })
-    ).subscribe({
-      next: (usuarioActualizado) => {
-        // Actualiza los datos locales con la información del usuario actualizada
-        this.usuario = usuarioActualizado;
-        this.puntosDisponibles = usuarioActualizado.puntosRecompensa;
-        
-        // Muestra mensaje de éxito
-        this.exito = '¡Recompensa canjeada con éxito!';
-        
-        // Recarga el historial de recompensas para incluir la nueva
-        this.cargarHistorialRecompensas();
-        
-        // Después de 3 segundos, reinicia el proceso y quita el mensaje de éxito
-        setTimeout(() => {
-          this.reiniciarSeleccion();
-          this.exito = '';
-        }, 3000);
-      },
-      error: (err) => {
-        // Maneja errores en el proceso de canjeo
-        console.error('Error al canjear recompensa:', err);
-        this.error = 'Error al procesar el canjeo. Inténtalo de nuevo.';
-      }
-    });
+    // Registra el canjeo y actualiza los puntos del usuario en cadena
+    this.recompensaUsuarioService.canjearRecompensa(canjeo)
+      .pipe(
+        // Después de registrar el canjeo, actualiza los puntos del usuario
+        switchMap(() => {
+          const nuevosPuntos = this.puntosDisponibles - puntosRequeridos; // Calcula los nuevos puntos
+          return this.usuarioService.actualizarPuntosRecompensa(idUsuario, nuevosPuntos); // Actualiza los puntos
+        })
+      )
+      .subscribe({
+        next: (usuarioActualizado) => { // Callback para manejar la respuesta exitosa
+          // Actualiza los datos locales
+          this.usuario = usuarioActualizado; // Actualiza los datos del usuario
+          this.puntosDisponibles = usuarioActualizado.puntosRecompensa; // Actualiza los puntos disponibles
+          
+          // Muestra mensaje de éxito
+          this.exito = '¡Recompensa canjeada con éxito!';
+          
+          // Recarga el historial y reinicia después de un tiempo
+          this.cargarHistorialRecompensas(); // Recarga el historial con la nueva recompensa
+          
+          // Después de 3 segundos, reinicia la selección y quita el mensaje de éxito
+          setTimeout(() => {
+            this.reiniciarSeleccion();
+            this.exito = '';
+          }, 3000);
+        },
+        error: (err) => { // Callback para manejar errores
+          console.error('Error al canjear recompensa:', err); // Log del error
+          this.error = 'Error al procesar el canjeo. Inténtalo de nuevo.'; // Mensaje para el usuario
+        }
+      });
   }
 
   /**
- * Genera y descarga un PDF con los detalles de una recompensa canjeada
- * @param recompensaCanjeada Objeto con los detalles de la recompensa canjeada
- */
-descargarComprobante(recompensaCanjeada: RecompensaCanjeada): void {
-  if (!recompensaCanjeada || !recompensaCanjeada.detalle) return;
+   * Genera y descarga un PDF con los detalles de una recompensa canjeada se usa en el html
+   * @param recompensaCanjeada Recompensa canjeada para la cual generar el comprobante
+   */
+  descargarComprobante(recompensaCanjeada: RecompensaCanjeada): void {
+    // Verifica que la recompensa tenga detalles
+    if (!recompensaCanjeada || !recompensaCanjeada.detalle) return;
 
-  // Crea un nuevo documento PDF
-  const doc = new jsPDF();
-  
-  // Configura y añade título al PDF
-  doc.setFontSize(22);
-  doc.setTextColor(100, 58, 183); // Color morado para el título
-  doc.text('ClubSync - Comprobante de Recompensa', 105, 20, { align: 'center' });
-  
-  // Obtener datos para el PDF
-  const recompensaInfo = recompensaCanjeada.recompensa || {};
-  const detalleItem = recompensaCanjeada.detalle || {};
-  const tipoRecompensa = recompensaInfo.tipo || '';
-  
-  // Nombre de la recompensa
-  doc.setFontSize(16);
-  doc.setTextColor(0, 0, 0);
-  doc.text(recompensaInfo.nombre || 'Recompensa', 105, 40, { align: 'center' });
-  
-  // Tipo de recompensa
-  doc.setFontSize(14);
-  doc.text(this.getNombreTipo(tipoRecompensa), 105, 50, { align: 'center' });
-  
-  // Información de la fecha de canjeo
-  doc.setFontSize(12);
-  doc.text(`Canjeado el: ${this.formatearFecha(recompensaCanjeada.fechaCanjeado)}`, 20, 70);
-  doc.text(`Puntos utilizados: ${recompensaCanjeada.puntosUtilizados} pts`, 20, 80);
-  
-  // Datos del item específico según el tipo de recompensa
-  doc.setFontSize(14);
-  doc.text('Detalles del producto canjeado:', 20, 100);
-  
-  // Nombre del item
-  doc.setFontSize(12);
-  doc.text(`Producto: ${detalleItem.nombre || 'No disponible'}`, 20, 115);
-  
-  // Variables para almacenar información de la discoteca
-  let nombreDiscoteca = "No disponible";
-  let direccionDiscoteca = "No disponible";
-  
-  // Información específica según el tipo
-  if (tipoRecompensa === 'BOTELLA') {
-    doc.text(`Tipo: ${detalleItem.tipo || 'Estándar'}`, 20, 125);
-    doc.text(`Tamaño: ${detalleItem.tamano || 'Normal'}`, 20, 135);
+    // Crea un nuevo documento PDF
+    const doc = new jsPDF();
     
-    // Obtener información de la discoteca de la botella
-    if (detalleItem.discoteca) {
-      nombreDiscoteca = detalleItem.discoteca.nombre;
-      direccionDiscoteca = detalleItem.discoteca.direccion || "No disponible";
-    }
-  } 
-  else if (tipoRecompensa === 'EVENTO') {
-    doc.text(`Fecha del evento: ${this.formatearFecha(detalleItem.fechaHora)}`, 20, 125);
-    doc.text(`Descripción: ${detalleItem.descripcion || 'No disponible'}`, 20, 135);
+    // Configura y añade título al PDF
+    doc.setFontSize(22); // Tamaño de fuente grande para el título
+    doc.setTextColor(100, 58, 183); // Color morado para el título
+    doc.text('ClubSync - Comprobante de Recompensa', 105, 20, { align: 'center' });
     
-    // Obtener información de la discoteca del evento
-    if (detalleItem.discoteca) {
-      nombreDiscoteca = detalleItem.discoteca.nombre;
-      direccionDiscoteca = detalleItem.discoteca.direccion || "No disponible";
+    // Obtener datos para el PDF
+    const recompensaInfo = recompensaCanjeada.recompensa || {}; // Información de la recompensa
+    const detalleItem = recompensaCanjeada.detalle || {}; // Detalles del item
+    const tipoRecompensa = recompensaInfo.tipo || ''; // Tipo de recompensa
+    
+    // Nombre de la recompensa
+    doc.setFontSize(16);
+    doc.setTextColor(0, 0, 0); // Color negro para el texto normal
+    doc.text(recompensaInfo.nombre || 'Recompensa', 105, 40, { align: 'center' });
+    
+    // Tipo de recompensa
+    doc.setFontSize(14);
+    doc.text(this.getNombreTipo(tipoRecompensa), 105, 50, { align: 'center' });
+    
+    // Información de la fecha de canjeo
+    doc.setFontSize(12);
+    doc.text(`Canjeado el: ${this.formatearFecha(recompensaCanjeada.fechaCanjeado)}`, 20, 70);
+    doc.text(`Puntos utilizados: ${recompensaCanjeada.puntosUtilizados} pts`, 20, 80);
+    
+    // Datos del item específico según el tipo de recompensa
+    doc.setFontSize(14);
+    doc.text('Detalles del producto canjeado:', 20, 100);
+    
+    // Nombre del item
+    doc.setFontSize(12);
+    doc.text(`Producto: ${detalleItem.nombre || 'No disponible'}`, 20, 115);
+    
+    // Variables para almacenar información de la discoteca
+    let nombreDiscoteca = "No disponible";
+    let direccionDiscoteca = "No disponible";
+    
+    // Información específica según el tipo de recompensa
+    if (tipoRecompensa === 'BOTELLA') { // Si es una botella
+      doc.text(`Tipo: ${detalleItem.tipo || 'Estándar'}`, 20, 125);
+      doc.text(`Tamaño: ${detalleItem.tamano || 'Normal'}`, 20, 135);
+      
+      // Obtener información de la discoteca de la botella
+      if (detalleItem.discoteca) {
+        nombreDiscoteca = detalleItem.discoteca.nombre;
+        direccionDiscoteca = detalleItem.discoteca.direccion || "No disponible";
+      }
+    } 
+    else if (tipoRecompensa === 'EVENTO') { // Si es un evento
+      doc.text(`Fecha del evento: ${this.formatearFecha(detalleItem.fechaHora)}`, 20, 125);
+      doc.text(`Descripción: ${detalleItem.descripcion || 'No disponible'}`, 20, 135);
+      
+      // Obtener información de la discoteca del evento
+      if (detalleItem.discoteca) {
+        nombreDiscoteca = detalleItem.discoteca.nombre;
+        direccionDiscoteca = detalleItem.discoteca.direccion || "No disponible";
+      }
     }
+    else if (tipoRecompensa === 'ZONA_VIP') { // Si es una zona VIP
+      doc.text(`Aforo máximo: ${detalleItem.aforoMaximo || 'No disponible'}`, 20, 125);
+      doc.text(`Descripción: ${detalleItem.descripcion || 'No disponible'}`, 20, 135);
+      
+      // Obtener información de la discoteca de la zona VIP
+      if (detalleItem.discoteca) {
+        nombreDiscoteca = detalleItem.discoteca.nombre;
+        direccionDiscoteca = detalleItem.discoteca.direccion || "No disponible";
+      }
+    }
+    
+    // Añadir información de la discoteca en todos los casos
+    doc.setFontSize(13);
+    doc.setTextColor(100, 58, 183); // Color morado para enfatizar la discoteca
+    doc.text('Discoteca donde canjear:', 20, 150);
+    doc.setTextColor(0, 0, 0); // Vuelve al color negro
+    doc.setFontSize(12);
+    doc.text(`Nombre: ${nombreDiscoteca}`, 20, 160);
+    doc.text(`Dirección: ${direccionDiscoteca}`, 20, 170);
+    
+    // Añade un código QR simulado (cuadrado negro)
+    doc.setDrawColor(0);
+    doc.setFillColor(0, 0, 0);
+    doc.rect(140, 100, 40, 40, 'F'); // Dibuja un rectángulo negro como simulación de QR
+    
+    // Información de validación
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100); // Color gris para el texto informativo
+    doc.text('Este comprobante debe presentarse junto con identificación para canjear la recompensa. ' +
+            'Documento generado el ' + new Date().toLocaleDateString(), 105, 200, { align: 'center' });
+    
+    // Información legal/copyright
+    doc.setFontSize(8);
+    doc.text('ClubSync © ' + new Date().getFullYear() + ' - Todos los derechos reservados', 
+            105, 280, { align: 'center' });
+    
+    // Nombre del archivo basado en la recompensa
+    const nombreRecompensa = (recompensaInfo.nombre || 'recompensa').replace(/\s+/g, '-').toLowerCase();
+    doc.save(`comprobante-${nombreRecompensa}-${recompensaCanjeada.id || Date.now()}.pdf`); // Descarga el PDF
   }
-  else if (tipoRecompensa === 'ZONA_VIP') {
-    doc.text(`Aforo máximo: ${detalleItem.aforoMaximo || 'No disponible'}`, 20, 125);
-    doc.text(`Descripción: ${detalleItem.descripcion || 'No disponible'}`, 20, 135);
-    
-    // Obtener información de la discoteca de la zona VIP
-    if (detalleItem.discoteca) {
-      nombreDiscoteca = detalleItem.discoteca.nombre;
-      direccionDiscoteca = detalleItem.discoteca.direccion || "No disponible";
-    }
-  }
-  
-  // Añadir información de la discoteca en todos los casos
-  doc.setFontSize(13);
-  doc.setTextColor(100, 58, 183); // Color morado para enfatizar la discoteca
-  doc.text('Discoteca donde canjear:', 20, 150);
-  doc.setTextColor(0, 0, 0);
-  doc.setFontSize(12);
-  doc.text(`Nombre: ${nombreDiscoteca}`, 20, 160);
-  doc.text(`Dirección: ${direccionDiscoteca}`, 20, 170);
-  
-  // Añade un código QR simulado (cuadrado negro)
-  doc.setDrawColor(0);
-  doc.setFillColor(0, 0, 0);
-  doc.rect(140, 100, 40, 40, 'F');
-  
-  // Información de validación
-  doc.setFontSize(10);
-  doc.setTextColor(100, 100, 100);
-  doc.text('Este comprobante debe presentarse junto con identificación para canjear la recompensa. ' +
-           'Documento generado el ' + new Date().toLocaleDateString(), 105, 200, { align: 'center' });
-  
-  // Información legal/copyright
-  doc.setFontSize(8);
-  doc.text('ClubSync © ' + new Date().getFullYear() + ' - Todos los derechos reservados', 
-           105, 280, { align: 'center' });
-  
-  // Nombre del archivo basado en la recompensa
-  const nombreRecompensa = (recompensaInfo.nombre || 'recompensa').replace(/\s+/g, '-').toLowerCase();
-  doc.save(`comprobante-${nombreRecompensa}-${recompensaCanjeada.id || Date.now()}.pdf`);
-}
 
   /**
    * Reinicia la selección y vuelve al primer paso del asistente
    */
   reiniciarSeleccion(): void {
-    this.discotecaSeleccionada = null;
-    this.recompensaSeleccionada = null;
-    this.itemSeleccionado = null;
-    this.paso = 1;
-    this.cargarRecompensasDisponibles();
+    this.discotecaSeleccionada = null; // Limpia la discoteca seleccionada
+    this.recompensaSeleccionada = null; // Limpia la recompensa seleccionada
+    this.itemSeleccionado = null; // Limpia el item seleccionado
+    this.paso = 1; // Vuelve al primer paso
+    this.error = ''; // Limpia mensajes de error
+    this.cargarRecompensasDisponibles(); // Recarga las recompensas disponibles
   }
 
   /**
-   * Navega a un paso específico del asistente
-   * @param paso Número del paso al que se desea volver
+   * Navega a un paso específico del asistente se usa en el html
+   * @param paso Número de paso al que navegar
    */
   volverAlPaso(paso: number): void {
-    this.paso = paso;
-  }
-
-  /**
-   * Alterna la visibilidad del historial de recompensas canjeadas
-   */
-  toggleHistorial(): void {
-    this.mostrarHistorial = !this.mostrarHistorial;
-  }
-
-  /**
-   * Obtiene el nombre legible de un tipo de recompensa
-   * @param tipo Código del tipo de recompensa
-   * @returns Nombre legible para mostrar al usuario
-   */
-  getNombreTipo(tipo: string): string {
-    switch(tipo) {
-      case 'BOTELLA': return 'Botella';
-      case 'EVENTO': return 'Entrada para evento';
-      case 'ZONA_VIP': return 'Reserva zona VIP';
-      default: return tipo;
+    if (paso >= 1 && paso <= 4) { // Verifica que el paso sea válido
+      this.paso = paso; // Actualiza el paso actual
+      this.error = ''; // Limpia mensajes de error
     }
   }
 
   /**
-   * Formatea una fecha para mostrarla en formato legible
-   * @param fecha Fecha a formatear (string o Date)
-   * @returns Fecha formateada como string según localización española
-   */
-  formatearFecha(fecha: string | Date): string {
-    if (!fecha) return 'Fecha no disponible';
-    return new Date(fecha).toLocaleDateString('es-ES');
+   * Alterna la visibilidad entre el formulario de canjeo y el historial de recompensas se usa en el html
+   */ 
+  toggleHistorial(): void {
+    this.mostrarHistorial = !this.mostrarHistorial; // Invierte el valor actual
   }
 
   /**
-   * Obtiene el nombre de una discoteca a partir de su ID
+   * Convierte el código de tipo de recompensa a un nombre legible se usa en el html
+   * @param tipo Código del tipo de recompensa
+   * @returns Nombre legible del tipo de recompensa
+   */
+  getNombreTipo(tipo: string | undefined): string {
+    if (!tipo) return 'Desconocido'; // Si no hay tipo, devuelve 'Desconocido'
+    
+    // Mapeo de códigos de tipo a nombres legibles
+    const tiposRecompensa = {
+      'BOTELLA': 'Botella',
+      'EVENTO': 'Entrada para evento',
+      'ZONA_VIP': 'Reserva zona VIP'
+    };
+    return tiposRecompensa[tipo as keyof typeof tiposRecompensa] || tipo; // Devuelve el nombre o el código original
+  }
+
+  /**
+   * Formatea una fecha para mostrarla en formato legible español se usa en el html
+   * @param fecha Fecha a formatear
+   * @returns Fecha formateada en formato español
+   */
+  formatearFecha(fecha: string | Date): string {
+    if (!fecha) return 'Fecha no disponible'; // Si no hay fecha, devuelve mensaje
+    return new Date(fecha).toLocaleDateString('es-ES'); // Formatea la fecha en formato español
+  }
+
+  /**
+   * Obtiene el nombre de una discoteca a partir de su ID se usa en el html
    * @param id ID de la discoteca
-   * @returns Nombre de la discoteca o mensaje de error si no se encuentra
+   * @returns Nombre de la discoteca o mensaje si no se encuentra
    */
   getNombreDiscoteca(id: number): string {
-    const discoteca = this.discotecas.find(d => d.idDiscoteca === id);
-    return discoteca ? discoteca.nombre : 'Discoteca no encontrada';
+    const discoteca = this.discotecas.find(d => d.idDiscoteca === id); // Busca la discoteca por ID
+    return discoteca ? discoteca.nombre : 'Discoteca no encontrada'; // Devuelve el nombre o mensaje si no existe
   }
 }

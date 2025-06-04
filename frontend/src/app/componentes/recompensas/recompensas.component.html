@@ -29,16 +29,8 @@
       <i class="bi bi-check-circle-fill"></i> {{exito}}
     </div>
 
-    <!-- Indicador de carga -->
-    <div class="text-center py-4" *ngIf="cargando">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Cargando...</span>
-      </div>
-      <p class="mt-2">Procesando...</p>
-    </div>
-
     <!-- HISTORIAL DE RECOMPENSAS -->
-    <div class="historial-section" *ngIf="mostrarHistorial && !cargando">
+    <div class="historial-section" *ngIf="mostrarHistorial">
       <h2 class="section-title mb-4">Historial de recompensas canjeadas</h2>
       
       <div class="row" *ngIf="recompensasCanjeadas.length > 0; else sinHistorial">
@@ -80,7 +72,7 @@
     </div>
 
     <!-- CANJEAR RECOMPENSAS -->
-    <div class="canjear-section" *ngIf="!mostrarHistorial && !cargando">
+    <div class="canjear-section" *ngIf="!mostrarHistorial">
       <!-- PASO 1: Seleccionar recompensa disponible -->
       <div *ngIf="paso === 1">
         <h2 class="section-title mb-4">Recompensas disponibles</h2>

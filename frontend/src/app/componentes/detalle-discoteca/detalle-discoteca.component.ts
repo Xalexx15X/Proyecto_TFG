@@ -21,7 +21,6 @@ export class DetalleDiscotecaComponent implements OnInit {
   discotecas: any[] = [];
   ciudadSeleccionada: number | null = null;
   
-  cargando: boolean = true;
   error: string = '';
   
   /**
@@ -60,37 +59,33 @@ export class DetalleDiscotecaComponent implements OnInit {
    * Carga la lista completa de discotecas usando el servicio
    */
   cargarDiscotecas(): void {
-    this.cargando = true;
+    this.error = '';
     
     this.discotecaService.getDiscotecas().subscribe({
       next: (data) => {
         this.discotecas = data;
-        this.cargando = false;
       },
       error: (error) => {
         console.error('Error al cargar discotecas:', error);
         this.error = 'No se pudieron cargar las discotecas. Intenta nuevamente más tarde.';
-        this.cargando = false;
       }
     });
   }
 
   /**
-   * Filtra las discotecas según la ciudad seleccionada usando el servicio
+   * Filtra las discotecas según la ciudad seleccionada usando el servicio se usa en el html
    */
   filtrarPorCiudad(): void {
-    this.cargando = true;
+    this.error = '';
     
     if (this.ciudadSeleccionada) {
       this.discotecaService.getDiscotecasByIdCiudad(this.ciudadSeleccionada).subscribe({
         next: (discotecas) => {
           this.discotecas = discotecas;
-          this.cargando = false;
         },
         error: (error) => {
           console.error('Error al filtrar por ciudad:', error);
           this.error = 'No se pudieron cargar las discotecas para esta ciudad.';
-          this.cargando = false;
         }
       });
     } else {

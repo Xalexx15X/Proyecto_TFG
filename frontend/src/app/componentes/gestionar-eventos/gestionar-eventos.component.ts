@@ -63,24 +63,14 @@ export class GestionarEventosComponent implements OnInit {
    * @param eventosService Servicio para gestionar eventos
    * @param djService Servicio para gestionar DJs
    * @param authService Servicio de autenticación para identificar la discoteca
-   * @param http Cliente HTTP para peticiones adicionales
    */
   constructor(
-    private eventosService: EventosService, // Inyecta el servicio de eventos
-    private djService: DjService, // Inyecta el servicio de DJs
-    private authService: AuthService, // Inyecta el servicio de autenticación
+    private eventosService: EventosService, 
+    private djService: DjService,
+    private authService: AuthService 
   ) {
-    
-    // Intentar obtener el ID de la discoteca del localStorage
-    const userData = JSON.parse(localStorage.getItem('user_data') || '{}');
-    
-    // Si el servicio de auth tiene método para obtener directamente el ID
+    // Obtenemos el ID de la discoteca solo mediante el servicio de autenticación
     this.idDiscoteca = this.authService.getDiscotecaId();
-    
-    // Si no está disponible desde el servicio, intentar obtenerlo directamente
-    if (!this.idDiscoteca && userData && userData.idDiscoteca) {
-      this.idDiscoteca = userData.idDiscoteca;
-    }
   }
 
   /**
@@ -89,9 +79,11 @@ export class GestionarEventosComponent implements OnInit {
    */
   ngOnInit(): void {
     if (this.idDiscoteca) {
-      this.cargarEventos(); // Carga los eventos si hay discoteca identificada
+      this.cargarEventos();
+    } else {
+      console.error('No se pudo obtener el ID de la discoteca');
     }
-    this.cargarDjsDirectamente(); // Carga la lista de DJs disponibles
+    this.cargarDjs(); // Usar método renombrado para consistencia
   }
 
   /**
@@ -108,22 +100,17 @@ export class GestionarEventosComponent implements OnInit {
   }
 
   /**
-   * Carga la lista de DJs disponibles usando el servicio DjService
-   * Reemplaza la implementación anterior que usaba HTTP directamente
+   * Carga la lista de DJs disponibles desde el servicio
    */
-  cargarDjsDirectamente(): void {
-    this.djService.getDjs().subscribe({ // Llama al método getDjs() del servicio DjService
-      next: (djs) => { // Cuando se reciban los DJs, almacena los recibidos
-        this.djs = djs; // Almacena los DJs recibidos
-      },
-      error: (error) => {
-        this.handleError(error); // Maneja cualquier error
-      }
+  private cargarDjs(): void {
+    this.djService.getDjs().subscribe({
+      next: (djs) => this.djs = djs,
+      error: (error) => this.handleError(error)
     });
   }
 
   /**
-   * Prepara el formulario para crear un nuevo evento
+   * Prepara el formulario para crear un nuevo evento se usa en el html
    * Resetea el formulario y muestra la interfaz de creación
    */
   mostrarCrear(): void {
@@ -144,64 +131,59 @@ export class GestionarEventosComponent implements OnInit {
   }
 
   /**
-   * Crea un nuevo evento con los datos del formulario
+   * Crea un nuevo evento con los datos del formulario se usa en el html
    * Valida los datos y envía petición al servidor
    */
   crearEvento(): void {
-    if (!this.validarFormulario()) {
-      return; // Detiene el proceso si la validación falla
-    }
-    
-    if (!this.idDiscoteca) {
-      return; // Detiene si no hay ID de discoteca
+    if (!this.validarFormulario() || !this.idDiscoteca) {
+      return;
     }
 
-    // Asegurarse de que se asigna la discoteca
+    // Asignar discoteca y valores por defecto
     this.nuevoEvento.idDiscoteca = this.idDiscoteca;
-    
-    // Asignar tipo de evento si está vacío
-    if (!this.nuevoEvento.tipoEvento) {
-      this.nuevoEvento.tipoEvento = 'REGULAR';
-    }
+    this.nuevoEvento.tipoEvento = this.nuevoEvento.tipoEvento || 'REGULAR';
     
     // Asegurarse de que la fecha está en formato ISO
     if (this.nuevoEvento.fechaHora && typeof this.nuevoEvento.fechaHora === 'string') {
       this.nuevoEvento.fechaHora = new Date(this.nuevoEvento.fechaHora).toISOString();
     }
     
-    // Asignar el usuario actual
-    const userData = JSON.parse(localStorage.getItem('user_data') || '{}');
-    if (userData && userData.idUsuario) {
-      this.nuevoEvento.idUsuario = userData.idUsuario;
-    } else {
+    // Obtener ID de usuario a través del servicio de autenticación
+    const userId = this.authService.getUserId();
+    if (!userId) {
       this.formErrors.general = 'Error: No se pudo identificar al usuario actual';
-      return; // Detiene si no hay ID de usuario
+      return;
     }
+    
+    this.nuevoEvento.idUsuario = userId;
     
     // Envía solicitud de creación al servidor
     this.eventosService.createEvento(this.nuevoEvento).subscribe({
       next: evento => {
-        // Si la creación es exitosa, añade al principio de la lista
         this.eventos.unshift(evento);
-        this.cerrarFormulario(); // Cierra el formulario
+        this.cerrarFormulario();
       },
-      error: error => {
-        // Manejo específico de errores por código HTTP
-        if (error.status === 400) {
-          this.formErrors.general = 'Datos incorrectos. Verifique la información del evento.';
-        } else if (error.status === 403) {
-          this.formErrors.general = 'No tiene permisos para crear eventos.';
-        } else {
-          this.formErrors.general = `Error al crear el evento: ${error.message || 'Error desconocido'}`;
-        }
-        
-        this.handleError(error); // Registro adicional del error
-      }
+      error: error => this.manejarErrorCreacion(error)
     });
   }
 
   /**
-   * Prepara el formulario para editar un evento existente
+   * Maneja errores específicos de la creación de eventos
+   */
+  private manejarErrorCreacion(error: any): void {
+    if (error.status === 400) {
+      this.formErrors.general = 'Datos incorrectos. Verifique la información del evento.';
+    } else if (error.status === 403) {
+      this.formErrors.general = 'No tiene permisos para crear eventos.';
+    } else {
+      this.formErrors.general = `Error al crear el evento: ${error.message || 'Error desconocido'}`;
+    }
+    
+    this.handleError(error);
+  }
+
+  /**
+   * Prepara el formulario para editar un evento existente se usa en el html
    * @param evento Evento a editar
    */
   editarEvento(evento: Evento): void {
@@ -218,7 +200,7 @@ export class GestionarEventosComponent implements OnInit {
   }
 
   /**
-   * Actualiza un evento existente con los nuevos datos
+   * Actualiza un evento existente con los nuevos datos se usa en el html
    * Valida y envía la solicitud de actualización al servidor
    */
   actualizarEvento(): void {
@@ -245,7 +227,7 @@ export class GestionarEventosComponent implements OnInit {
   }
 
   /**
-   * Elimina un evento del sistema
+   * Elimina un evento del sistema se usa en el html
    * Solicita confirmación antes de proceder
    * @param id ID del evento a eliminar
    */
@@ -264,7 +246,7 @@ export class GestionarEventosComponent implements OnInit {
   }
 
   /**
-   * Busca y devuelve un DJ por su ID
+   * Busca y devuelve un DJ por su ID se usa en el html
    * @param idDj ID del DJ a buscar
    * @returns Objeto DJ o undefined si no se encuentra
    */
@@ -273,7 +255,7 @@ export class GestionarEventosComponent implements OnInit {
   }
 
   /**
-   * Selecciona o deselecciona un DJ para el evento
+   * Selecciona o deselecciona un DJ para el evento se usa en el html
    * @param idDj ID del DJ a seleccionar
    */
   seleccionarDj(idDj: number): void {
@@ -285,7 +267,7 @@ export class GestionarEventosComponent implements OnInit {
   }
 
   /**
-   * Filtra eventos según el término de búsqueda
+   * Filtra eventos según el término de búsqueda se usa en el html
    * @param event Evento del input de búsqueda
    */
   buscar(event: any): void {
@@ -308,7 +290,7 @@ export class GestionarEventosComponent implements OnInit {
   }
 
   /**
-   * Filtra la lista de DJs según el término de búsqueda
+   * Filtra la lista de DJs según el término de búsqueda se usa en el html
    * @returns Array de DJs filtrado
    */
   filtrarDjs(): any[] {
@@ -329,7 +311,7 @@ export class GestionarEventosComponent implements OnInit {
   }
 
   /**
-   * Actualiza el estado de un evento (ACTIVO/CANCELADO)
+   * Actualiza el estado de un evento (ACTIVO/CANCELADO) se usa en el html
    * @param evento Evento cuyo estado se va a cambiar
    */
   cambiarEstadoEvento(evento: Evento): void {
@@ -345,7 +327,7 @@ export class GestionarEventosComponent implements OnInit {
   }
 
   /**
-   * Maneja la selección de una imagen para el evento
+   * Maneja la selección de una imagen para el evento se usa en el html
    * Convierte la imagen a Base64 para almacenamiento
    * @param event Evento del input de tipo file
    */

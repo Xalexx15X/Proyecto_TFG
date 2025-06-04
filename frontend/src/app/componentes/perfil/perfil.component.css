@@ -185,6 +185,18 @@ form .form-control {
   color: white;
   border-radius: 8px;
   padding: 0.75rem 1rem;
+  caret-color: white !important; /* Hace que el cursor (caret) sea blanco */
+}
+
+/* Cambiar color de selección de texto */
+form .form-control::selection {
+  background-color: rgba(255, 215, 64, 0.3); /* Fondo amarillo semitransparente al seleccionar texto */
+  color: white; /* Texto blanco cuando está seleccionado */
+}
+
+form .form-control::-moz-selection {
+  background-color: rgba(255, 215, 64, 0.3);
+  color: white;
 }
 
 form .form-control:focus {
@@ -302,4 +314,25 @@ form .form-control:disabled {
   .action-buttons .ms-2 {
     margin-left: 0 !important;
   }
+}
+
+::placeholder {
+  color: rgba(255, 255, 255, 0.7) !important;
+  opacity: 1;
+}
+
+::-webkit-input-placeholder {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+::-moz-placeholder {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+:-ms-input-placeholder {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+:-moz-placeholder {
+  color: rgba(255, 255, 255, 0.7) !important;
 }

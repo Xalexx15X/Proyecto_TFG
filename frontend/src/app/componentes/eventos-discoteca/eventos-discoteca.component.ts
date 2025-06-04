@@ -1,27 +1,23 @@
 // Importaciones del framework Angular
-import { Component, OnInit } from '@angular/core'; // Decorador de componente y ciclo de vida
-import { CommonModule } from '@angular/common'; // Módulo para directivas comunes
-import { FormsModule } from '@angular/forms'; // Módulo para trabajar con formularios
-import { RouterModule, ActivatedRoute } from '@angular/router'; // Módulos para navegación
-
-// Importaciones de servicios propios de la aplicación
-import { EventosService } from '../../service/eventos.service'; // Servicio para gestionar eventos
-import { DiscotecaService } from '../../service/discoteca.service'; // Servicio para información de discotecas
-import { DjService } from '../../service/dj.service'; // Servicio para información de DJs
-
-// Importaciones RxJS
-import { forkJoin } from 'rxjs'; // Operador para combinar múltiples observables
+import { Component, OnInit } from '@angular/core'; 
+import { CommonModule } from '@angular/common'; 
+import { FormsModule } from '@angular/forms'; 
+import { RouterModule, ActivatedRoute } from '@angular/router'; 
+import { EventosService } from '../../service/eventos.service';
+import { DiscotecaService } from '../../service/discoteca.service'; 
+import { DjService } from '../../service/dj.service'; 
+import { forkJoin } from 'rxjs';
 
 /**
  * Componente para visualizar los eventos de una discoteca específica
  * Permite a los usuarios explorar y filtrar eventos por tipo
  */
 @Component({
-  selector: 'app-eventos-discoteca', // Selector CSS para usar este componente
-  standalone: true, // Indica que es un componente independiente
-  imports: [CommonModule, FormsModule, RouterModule], // Módulos necesarios importados
-  templateUrl: './eventos-discoteca.component.html', // Ruta al archivo HTML asociado
-  styleUrl: './eventos-discoteca.component.css' // Ruta al archivo CSS asociado
+  selector: 'app-eventos-discoteca', 
+  standalone: true, 
+  imports: [CommonModule, FormsModule, RouterModule],
+  templateUrl: './eventos-discoteca.component.html', 
+  styleUrl: './eventos-discoteca.component.css'
 })
 export class EventosDiscotecaComponent implements OnInit {
   idDiscoteca: number = 0; // ID de la discoteca cuyos eventos se están mostrando
@@ -29,7 +25,6 @@ export class EventosDiscotecaComponent implements OnInit {
   eventos: any[] = []; // Lista completa de eventos de la discoteca
   eventosFiltrados: any[] = []; // Lista de eventos después de aplicar filtros
   filtroActual: string = 'TODOS'; // Tipo de filtro actualmente aplicado
-  cargando: boolean = true; // Indica si se están cargando datos
   error: string = ''; // Mensaje de error para mostrar al usuario
 
   /**
@@ -58,8 +53,7 @@ export class EventosDiscotecaComponent implements OnInit {
         this.cargarDiscoteca(); // Carga datos de la discoteca
         this.cargarEventos(); // Carga eventos de la discoteca
       } else {
-        this.error = 'No se encontró la discoteca solicitada'; // Mensaje de error
-        this.cargando = false; // Termina estado de carga
+        this.error = 'No se encontró la discoteca solicitada'; 
       }
     });
   }
@@ -81,95 +75,120 @@ export class EventosDiscotecaComponent implements OnInit {
   }
 
   /**
-   * Carga los eventos de la discoteca y los datos relacionados de DJs
-   * Implementa un patrón avanzado para optimizar peticiones al servidor
+   * Carga los eventos de la discoteca y sus DJs asociados
+   * Versión simplificada para mejor legibilidad y mantenimiento
    */
   cargarEventos(): void {
-    this.cargando = true; // Indica que la carga está en proceso
-
-    // 1. Cargar los eventos de la discoteca
-    this.eventosService.getEventosByDiscoteca(this.idDiscoteca, 'TODOS').subscribe({ // Llama al servicio para obtener eventos
+    // Paso 1: Cargar todos los eventos de la discoteca
+    this.eventosService.getEventosByDiscoteca(this.idDiscoteca, 'TODOS').subscribe({
       next: (eventos) => { // Cuando se reciben eventos
-        // Guardamos los eventos
-        this.eventos = eventos;
+        this.eventos = eventos; // Almacena los eventos recibidos
         
-        // 2. Vemos qué eventos tienen DJ asignado
-        const eventosDjIds = eventos // Filtra eventos para obtener solo aquellos con DJ
-          .filter(e => e.idDj) // Filtra eventos que tienen un ID de DJ
-          .map(e => e.idDj); // Mapea para obtener solo los IDs de DJ
-        
-        // Si no hay DJs para cargar, terminamos
-        if (eventosDjIds.length === 0) {
-          this.filtrarEventosIniciales(); // Filtra según criterios iniciales
-          this.cargando = false; // Termina estado de carga
-          return;
-        }
-        
-        // 3. Cargar todos los DJs a la vez (optimización de peticiones)
-        forkJoin( // Combina múltiples observables  
-          eventosDjIds.map(id => this.djService.getDj(id)) // Llama al servicio para cada ID de DJ
-        ).subscribe({
-          next: (djs) => { // Cuando todos los DJs se han cargado
-            // Creamos un mapa simple para buscar DJs por ID
-            const mapaDjs: { [key: number]: any } = {}; // Crea un objeto vacío para almacenar los DJs
-            djs.forEach(dj => { // Recorre cada objeto DJ
-              if (dj && dj.idDj !== undefined) { // Si tiene ID
-                mapaDjs[dj.idDj] = dj; // Almacena en el mapa
-              }
-            });
-            
-            // Asignamos cada DJ a su evento correspondiente
-            this.eventos.forEach(evento => { // Recorre cada evento
-              if (evento.idDj && mapaDjs[evento.idDj]) { // Si tiene ID y existe en el mapa
-                evento.dj = mapaDjs[evento.idDj]; // Añade objeto DJ completo
-              }
-            });
-            
-            this.filtrarEventosIniciales(); // Aplica filtro inicial
-          },
-          complete: () => { // Cuando todas las peticiones se completan
-            this.cargando = false; // Termina estado de carga
-          },
-          error: (error) => {
-            console.error('Error al cargar los DJs:', error); // Log para depuración
-            this.filtrarEventosIniciales(); // Aplica filtro a pesar del error
-            this.cargando = false; // Termina estado de carga
-          }
-        });
+        // Cargar información de DJs solo si hay eventos con DJs asignados
+        this.cargarDatosDeLosDjs(eventos);
       },
       error: (error) => {
-        console.error('Error al cargar eventos:', error); // Log para depuración
-        this.error = 'No se pudieron cargar los eventos. Intenta nuevamente más tarde.'; // Mensaje de error
-        this.cargando = false; // Termina estado de carga
+        console.error('Error al cargar eventos:', error);
+        this.error = 'No se pudieron cargar los eventos. Intenta nuevamente más tarde.';
       }
     });
   }
 
   /**
-   * Filtra la lista de eventos según el tipo seleccionado
+   * Carga los datos de los DJs asociados a los eventos
+   */
+  private cargarDatosDeLosDjs(eventos: any[]): void {
+    // Este método recibe los eventos y carga los datos de los DJs asociados
+    
+    // Paso 1: Extraer los IDs únicos de DJs de los eventos
+    const idsDeLosDjs = eventos
+      .filter(evento => evento.idDj)
+      // filter: Selecciona solo los eventos que tienen un DJ asignado
+      .map(evento => evento.idDj);
+      // map: Transforma cada evento en solo el ID de su DJ
+      // Resultado: un array con solo los IDs de los DJs [1, 2, 3]
+    
+    // Paso 2: Verificar si hay DJs para cargar
+    if (idsDeLosDjs.length === 0) {
+      // Si no hay DJs para cargar...
+      this.filtrarEventosIniciales();
+      // Aplico el filtro inicial a los eventos
+      return;
+    }
+    
+    // Paso 3: Cargar datos de todos los DJs con una sola operación combinada
+    forkJoin(
+      idsDeLosDjs.map(id => this.djService.getDj(id)) //Creamos un array de Observables, uno por cada ID de DJ
+    ).subscribe({
+      // 1. Toma un array de Observables (en este caso, cada getDj(id) devuelve un Observable)
+      // 2. Ejecuta todos los Observables en paralelo
+      // 3. Espera a que TODOS terminen
+      // 4. Emite un array con los resultados en el mismo orden que los Observables originales
+          
+      next: (djs) => {
+        // Cuando todos los datos de DJs llegan exitosamente...
+        // djs es un array con los datos de todos los DJs [dj1, dj2, dj3]
+        
+        // Paso 4: Crear un diccionario para acceso rápido a los DJs por su ID
+        const djsPorId: {[key: number]: any} = {};
+        // Este objeto funcionará como un diccionario: {1: dj1, 2: dj2, 3: dj3}
+        
+        // Paso 5: Llenar el diccionario
+        djs.forEach(dj => {
+          if (dj && dj.idDj !== undefined) {
+            // Si el DJ existe y tiene un ID válido...
+            djsPorId[dj.idDj] = dj;
+            // Lo guardamos en el diccionario usando su ID como clave
+            // Esto nos permitirá acceder directamente: djsPorId[5] nos da el DJ con ID 5
+          }
+        });
+        // Paso 6: Asignar cada DJ a su evento correspondiente
+        this.eventos.forEach(evento => {
+          // Para cada evento en nuestra lista
+          if (evento.idDj && djsPorId[evento.idDj]) {
+            // Si el evento tiene un DJ asignado y ese DJ existe en nuestro diccionario
+            evento.dj = djsPorId[evento.idDj];
+            // Añadimos el objeto DJ completo al evento
+            // Ahora cada evento tiene una propiedad .dj con todos los datos del DJ
+          }
+        });
+        // Paso 7: Finalizar la carga
+        this.filtrarEventosIniciales();
+        // Aplicamos el filtro inicial a los eventos
+      },
+      
+      error: (error) => {        
+        this.filtrarEventosIniciales();
+        // A pesar del error, aplicamos el filtro inicial con los datos que tengamos
+      }
+    });
+  }
+
+  /**
+   * Filtra la lista de eventos según el tipo seleccionado se usa en el html
    * @param tipo Tipo de filtro a aplicar (TODOS, REGULAR, ESPECIAL, CANCELADO)
    */
-  filtrarPorTipo(tipo: string): void {
+  filtrarPorTipo(tipo: string): void { 
     this.filtroActual = tipo; // Actualiza el filtro actual
     
     if (tipo === 'TODOS') {
       // Muestra todos los eventos sin filtrar
-      this.eventosFiltrados = [...this.eventos];
-    } else if (tipo === 'CANCELADO') {
+      this.eventosFiltrados = [...this.eventos]; // Copia todos los eventos
+    } else if (tipo === 'CANCELADO') { 
       // Filtra solo los eventos cancelados
-      this.eventosFiltrados = this.eventos.filter(evento => 
-        evento.estado === 'CANCELADO'
+      this.eventosFiltrados = this.eventos.filter(evento =>  // Verifica si el evento está cancelado
+        evento.estado === 'CANCELADO' // Solo muestra eventos con estado CANCELADO
       );
-    } else {
+    } else { // Si es REGULAR o ESPECIAL
       // Filtra por tipo específico (REGULAR o ESPECIAL) y que no estén cancelados
-      this.eventosFiltrados = this.eventos.filter(evento => 
-        evento.tipoEvento === tipo && evento.estado !== 'CANCELADO'
+      this.eventosFiltrados = this.eventos.filter(evento => // Verifica el tipo de evento
+        evento.tipoEvento === tipo && evento.estado !== 'CANCELADO' // Solo muestra eventos del tipo seleccionado que no estén cancelados
       );
     }
   }
 
   /**
-   * Formatea una fecha para mostrarla en formato local español
+   * Formatea una fecha para mostrarla en formato local español se usa en el html
    * @param dateString Fecha en formato string (ISO)
    * @returns Fecha formateada como texto legible
    */
@@ -191,7 +210,6 @@ export class EventosDiscotecaComponent implements OnInit {
   /**
    * Aplica el filtro inicial a los eventos (excluye cancelados)
    * Se ejecuta después de cargar los datos
-   * Método privado usado internamente
    */
   private filtrarEventosIniciales(): void {
     // Al inicio, mostramos todos los eventos excepto los cancelados

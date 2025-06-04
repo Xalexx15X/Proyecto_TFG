@@ -1,67 +1,71 @@
 <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top">
-  <!-- Cambiar de px-5 a px-2 para reducir el padding lateral -->
-  <div class="container px-2"> 
+  <div class="container">
     <a class="navbar-brand" routerLink="/">
       <img src="assets/images/logo.png" alt="ClubSync" class="navbar-logo">
     </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive">
+    
+    <button class="navbar-toggler" type="button" (click)="toggleNavbar()">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarResponsive">
-      <ul class="navbar-nav me-auto">
+    
+    <div class="collapse navbar-collapse" [ngClass]="{'show': !isNavbarCollapsed}">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <!-- Menú común solo para usuarios sin registrar y clientes -->
         <li class="nav-item" *ngIf="!isAdmin() && !isAdminDiscoteca()">
-          <a class="nav-link" routerLink="/discotecas" routerLinkActive="active">Discotecas</a>
+          <a class="nav-link" routerLink="/discotecas" routerLinkActive="active" (click)="closeNavbar()">Discotecas</a>
         </li>
+        
         <!-- Menú para usuarios registrados (ROLE_CLIENTE) -->
         <li class="nav-item" *ngIf="isCliente()">
-          <a class="nav-link" routerLink="/wallet" routerLinkActive="active">Mi Wallet</a>
+          <a class="nav-link" routerLink="/wallet" routerLinkActive="active" (click)="closeNavbar()">Mi Wallet</a>
         </li>
         <li class="nav-item" *ngIf="isCliente()">
-          <a class="nav-link" routerLink="/recompensas" routerLinkActive="active">Recompensas</a>
+          <a class="nav-link" routerLink="/recompensas" routerLinkActive="active" (click)="closeNavbar()">Recompensas</a>
         </li>
 
         <!-- Menú para administradores de discoteca -->
         <li class="nav-item dropdown" *ngIf="isAdminDiscoteca()">
-          <details class="custom-dropdown">
-            <summary class="nav-link">Gestión Eventos y Dj</summary>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" routerLink="/admin-discoteca/eventos" routerLinkActive="active">Eventos</a></li>
-              <li><a class="dropdown-item" routerLink="/admin-discoteca/djs" routerLinkActive="active">DJs</a></li>
-            </ul>
-          </details>
+          <a class="nav-link dropdown-toggle" href="javascript:void(0);" (click)="toggleDropdown('eventosDropdown', $event)">
+            Gestión Eventos y Dj
+          </a>
+          <ul class="dropdown-menu" [ngClass]="{'show': openDropdowns['eventosDropdown']}">
+            <li><a class="dropdown-item" routerLink="/admin-discoteca/eventos" routerLinkActive="active" (click)="closeNavbar()">Eventos</a></li>
+            <li><a class="dropdown-item" routerLink="/admin-discoteca/djs" routerLinkActive="active" (click)="closeNavbar()">DJs</a></li>
+          </ul>
         </li>
 
         <li class="nav-item" *ngIf="isAdminDiscoteca()">
-          <a class="nav-link" routerLink="/admin-discoteca/tramos">Gestión Tramos Horarios</a>
+          <a class="nav-link" routerLink="/admin-discoteca/tramos" routerLinkActive="active" (click)="closeNavbar()">Gestión Tramos Horarios</a>
         </li>
 
         <li class="nav-item dropdown" *ngIf="isAdminDiscoteca()">
-          <details class="custom-dropdown">
-            <summary class="nav-link">Catálogo Reservados y Botellas</summary>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" routerLink="/admin-discoteca/botellas">Gestión Botellas</a></li>
-              <li><a class="dropdown-item" routerLink="/admin-discoteca/zonas-vip">Zonas VIP</a></li>
-            </ul>
-          </details>
+          <a class="nav-link dropdown-toggle" href="javascript:void(0);" (click)="toggleDropdown('catalogoDropdown', $event)">
+            Catálogo Reservados y Botellas
+          </a>
+          <ul class="dropdown-menu" [ngClass]="{'show': openDropdowns['catalogoDropdown']}">
+            <li><a class="dropdown-item" routerLink="/admin-discoteca/botellas" routerLinkActive="active" (click)="closeNavbar()">Gestión Botellas</a></li>
+            <li><a class="dropdown-item" routerLink="/admin-discoteca/zonas-vip" routerLinkActive="active" (click)="closeNavbar()">Zonas VIP</a></li>
+          </ul>
         </li>
+        
         <li class="nav-item" *ngIf="isAdminDiscoteca()">
-          <a class="nav-link" routerLink="/admin-discoteca/estadisticas" routerLinkActive="active">
+          <a class="nav-link" routerLink="/admin-discoteca/estadisticas" routerLinkActive="active" (click)="closeNavbar()">
             <i class="bi bi-graph-up"></i> Estadísticas
           </a>
         </li>
 
         <!-- Menú para administradores del sistema -->
         <li class="nav-item" *ngIf="isAdmin()">
-          <a class="nav-link" routerLink="/admin-usuarios" routerLinkActive="active">Gestión Usuarios</a>
+          <a class="nav-link" routerLink="/admin-usuarios" routerLinkActive="active" (click)="closeNavbar()">Gestión Usuarios</a>
         </li>
         <li class="nav-item" *ngIf="isAdmin()">
-          <a class="nav-link" routerLink="/admin/discotecas" routerLinkActive="active">Gestión Discotecas</a>
+          <a class="nav-link" routerLink="/admin/discotecas" routerLinkActive="active" (click)="closeNavbar()">Gestión Discotecas</a>
         </li>
         <li class="nav-item" *ngIf="isAdmin()">
-          <a class="nav-link" routerLink="/admin/ciudades" routerLinkActive="active">Gestión Ciudades</a>
+          <a class="nav-link" routerLink="/admin/ciudades" routerLinkActive="active" (click)="closeNavbar()">Gestión Ciudades</a>
+        </li>
         <li class="nav-item" *ngIf="isAdmin()">
-          <a class="nav-link" routerLink="/admin/recompensas" routerLinkActive="active">Gestión Recompensas</a>
+          <a class="nav-link" routerLink="/admin/recompensas" routerLinkActive="active" (click)="closeNavbar()">Gestión Recompensas</a>
         </li>
       </ul>
 
@@ -69,21 +73,21 @@
       <ul class="navbar-nav ms-auto">
         <!-- Usuario no autenticado -->
         <li class="nav-item" *ngIf="!isLoggedIn()">
-          <a class="nav-link" routerLink="/registro" routerLinkActive="active">Registro</a>
+          <a class="nav-link" routerLink="/registro" routerLinkActive="active" (click)="closeNavbar()">Registro</a>
         </li>
         <li class="nav-item" *ngIf="!isLoggedIn()">
-          <a class="nav-link" routerLink="/login" routerLinkActive="active">Login</a>
+          <a class="nav-link" routerLink="/login" routerLinkActive="active" (click)="closeNavbar()">Login</a>
         </li>
 
         <!-- Monedero y Carrito para usuarios registrados -->
         <li class="nav-item" *ngIf="isCliente()">
-          <a class="nav-link wallet-link" routerLink="/monedero">
+          <a class="nav-link wallet-link" routerLink="/monedero" (click)="closeNavbar()">
             <i class="bi bi-wallet2"></i>
             <span class="wallet-amount">{{userData?.monedero | currency:'EUR':'symbol':'1.2-2'}}</span>
           </a>
         </li>
         <li class="nav-item" *ngIf="isCliente()">
-          <a class="nav-link position-relative" routerLink="/carrito">
+          <a class="nav-link position-relative" routerLink="/carrito" (click)="closeNavbar()">
             <i class="bi bi-cart3"></i>
             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark">
               {{cantidadCarrito}}
@@ -93,14 +97,14 @@
 
         <!-- Usuario autenticado -->
         <li class="nav-item dropdown" *ngIf="isLoggedIn()">
-          <details class="custom-dropdown">
-            <summary class="nav-link">{{ userData?.nombre}}</summary>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" routerLink="/perfil">Mi Perfil</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" (click)="onLogout()">Cerrar Sesión</a></li>
-            </ul>
-          </details>
+          <a class="nav-link dropdown-toggle" href="javascript:void(0);" (click)="toggleDropdown('userDropdown', $event)">
+            {{ userData?.nombre }}
+          </a>
+          <ul class="dropdown-menu" [ngClass]="{'show': openDropdowns['userDropdown']}">
+            <li><a class="dropdown-item" routerLink="/perfil" (click)="closeNavbar()">Mi Perfil</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" (click)="onLogout(); closeNavbar()">Cerrar Sesión</a></li>
+          </ul>
         </li>
       </ul>
     </div>

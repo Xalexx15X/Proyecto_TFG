@@ -54,7 +54,7 @@ export class GestionarCiudadesComponent implements OnInit {
   }
 
   /**
-   * Filtra ciudades según el término de búsqueda
+   * Filtra ciudades según el término de búsqueda se usa en el html
    * @param event Evento del input de búsqueda
    */
   buscar(event: any): void {
@@ -85,7 +85,7 @@ export class GestionarCiudadesComponent implements OnInit {
   }
 
   /**
-   * Crea una nueva ciudad con los datos del formulario
+   * Crea una nueva ciudad con los datos del formulario se usa en el html
    * Valida los datos y envía petición al servidor
    */
   crearCiudad(): void {
@@ -111,7 +111,7 @@ export class GestionarCiudadesComponent implements OnInit {
   }
 
   /**
-   * Prepara el formulario para editar una ciudad existente
+   * Prepara el formulario para editar una ciudad existente se usa en el html
    * @param ciudad Ciudad a editar
    */
   editarCiudad(ciudad: Ciudad): void {
@@ -122,7 +122,7 @@ export class GestionarCiudadesComponent implements OnInit {
   }
 
   /**
-   * Actualiza una ciudad existente con los nuevos datos
+   * Actualiza una ciudad existente con los nuevos datos se usa en el html
    * Valida y envía la solicitud de actualización al servidor
    */
   actualizarCiudad(): void {
@@ -158,7 +158,7 @@ export class GestionarCiudadesComponent implements OnInit {
   }
 
   /**
-   * Elimina una ciudad del sistema
+   * Elimina una ciudad del sistema se usa en el html
    * Solicita confirmación antes de proceder
    * @param id ID de la ciudad a eliminar
    */
@@ -181,7 +181,7 @@ export class GestionarCiudadesComponent implements OnInit {
   }
 
   /**
-   * Prepara el formulario para crear una nueva ciudad
+   * Prepara el formulario para crear una nueva ciudad se usa en el html
    * Resetea el formulario y muestra la interfaz de creación
    */
   mostrarCrear(): void {
@@ -191,7 +191,7 @@ export class GestionarCiudadesComponent implements OnInit {
   }
 
   /**
-   * Cierra el formulario y resetea todos los estados
+   * Cierra el formulario y resetea todos los estados se usa en el html
    * Se usa para cancelar operaciones
    */
   cancelar(): void {
@@ -214,7 +214,7 @@ export class GestionarCiudadesComponent implements OnInit {
   }
 
   /**
-   * Valida que solo se ingresen letras y espacios en ciertos campos
+   * Valida que solo se ingresen letras y espacios en ciertos campos se usa en el html
    * Previene la entrada de caracteres no deseados
    * @param event Evento de teclado a validar
    * @returns booleano indicando si el carácter es permitido

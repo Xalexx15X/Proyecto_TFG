@@ -23,7 +23,6 @@ export class MonederoComponent implements OnInit {
   opcionesRapidas: number[] = [5, 10, 20, 50, 100]; // Opciones rápidas de recarga
   errorMensaje: string = ''; // Mensaje de error para mostrar al usuario
   exitoMensaje: string = ''; // Mensaje de éxito para mostrar al usuario
-  cargando: boolean = false; // Indicador de carga para mostrar spinner
   historialTransacciones: any[] = []; // Array para almacenar historial de transacciones
 
   /**
@@ -66,7 +65,7 @@ export class MonederoComponent implements OnInit {
   }
 
   /**
-   * Establece el monto a recargar cuando el usuario selecciona una opción rápida
+   * Establece el monto a recargar cuando el usuario selecciona una opción rápida se usa en el html
    * @param cantidad Monto en euros seleccionado por el usuario
    */
   seleccionarCantidad(cantidad: number): void {
@@ -74,7 +73,7 @@ export class MonederoComponent implements OnInit {
   }
 
   /**
-   * Valida que la cantidad a recargar esté dentro de los límites permitidos
+   * Valida que la cantidad a recargar esté dentro de los límites permitidos se usa en el html
    * @returns true si la cantidad es válida, false si está fuera de rango
    */
   esCantidadValida(): boolean {
@@ -83,7 +82,7 @@ export class MonederoComponent implements OnInit {
   }
 
   /**
-   * Procesa la solicitud de agregar fondos al monedero
+   * Procesa la solicitud de agregar fondos al monedero se usa en el html
    * Valida la cantidad, actualiza el saldo y notifica al usuario
    */
   agregarFondos(): void {
@@ -93,8 +92,7 @@ export class MonederoComponent implements OnInit {
       return; // Detiene el proceso si la cantidad no es válida
     }
 
-    // Activar indicador de carga y limpiar mensajes
-    this.cargando = true;
+    // Limpiar mensajes previos
     this.errorMensaje = '';
     this.exitoMensaje = '';
 
@@ -104,7 +102,6 @@ export class MonederoComponent implements OnInit {
     // Verificar que se obtuvo un ID válido
     if (!idUsuario) {
       this.errorMensaje = 'Usuario no identificado';
-      this.cargando = false;
       return; // Detiene el proceso si no hay ID de usuario
     }
 
@@ -127,9 +124,6 @@ export class MonederoComponent implements OnInit {
         
         // Resetear el formulario
         this.cantidadSaldo = 10; // Volver al valor predeterminado
-        
-        // Desactivar indicador de carga
-        this.cargando = false;
       },
       error: (error: any) => {
         // Callback para manejo de errores
@@ -139,9 +133,6 @@ export class MonederoComponent implements OnInit {
         
         // Mostrar mensaje de error al usuario
         this.errorMensaje = 'Error al añadir fondos. Por favor, inténtalo de nuevo.';
-        
-        // Desactivar indicador de carga
-        this.cargando = false;
       }
     });
   }

@@ -7,12 +7,12 @@
 }
 
 .estadisticas-container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 2rem;
+  background: linear-gradient(135deg, #673ab7 0%, #9c27b0 100%);
+  min-height: 100vh;
+  color: #fff;
+  padding-top: 76px;
 }
 
-/* Encabezado */
 .main-title {
   font-size: 2.5rem;
   font-weight: 700;
@@ -30,7 +30,6 @@
   text-align: center;
 }
 
-/* Filtros */
 .filter-section {
   margin-bottom: 2rem;
 }
@@ -65,7 +64,6 @@
   color: #333;
 }
 
-/* Tarjetas de estadísticas */
 .stats-card {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 15px;
@@ -111,7 +109,6 @@
   margin: 0;
 }
 
-/* Tablas */
 .table {
   background: rgba(255, 255, 255, 0.1);
   color: white;
@@ -137,14 +134,12 @@
   background: rgba(255, 255, 255, 0.05);
 }
 
-/* Secciones de contenido */
 .section-title {
   color: #ffd740;
   font-size: 1.5rem;
   margin: 0 0 1rem;
 }
 
-/* Card para gráficos y tablas */
 .card {
   background: rgba(255, 255, 255, 0.1);
   border: none;
@@ -156,7 +151,6 @@
   padding: 1.5rem;
 }
 
-/* Barra de progreso mejorada */
 .progress-wrapper {
   display: flex;
   align-items: center;
@@ -183,7 +177,6 @@
   text-align: right;
 }
 
-/* Colores para las barras de progreso */
 .bg-success {
   background-color: #28a745 !important;
 }
@@ -196,17 +189,57 @@
   background-color: #dc3545 !important;
 }
 
-/* Gráfico de barras personalizado */
-.chart-card {
-  height: auto;
-  min-height: 300px;
+.chart-container {
+  position: relative;
+  height: 450px !important;
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px 10px;
 }
 
-.chart-container {
-  height: 250px;
-  display: flex;
-  flex-direction: column;
-  padding: 1rem 0;
+.card-body:has(canvas[data-type="doughnut"]) .chart-container {
+  height: 450px !important;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .chart-container {
+    height: 350px !important;
+  }
+  
+  .card-body:has(canvas[data-type="doughnut"]) .chart-container {
+    height: 400px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .chart-container {
+    height: 300px !important;
+  }
+}
+
+.chart-card {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(40, 40, 40, 0.3);
+  margin-bottom: 2.5rem;
+}
+
+.chart-card .card-body {
+  padding: 1.75rem;
+}
+
+.chart-card .section-title {
+  font-size: 1.6rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+canvas {
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .chart-bars {
@@ -261,7 +294,6 @@
   color: rgba(255, 255, 255, 0.8);
 }
 
-/* Estado vacío */
 .no-results {
   background: rgba(255, 255, 255, 0.05);
   border-radius: 15px;
@@ -285,7 +317,6 @@
   color: rgba(255, 255, 255, 0.7);
 }
 
-/* Spinner de carga */
 .spinner-container {
   display: flex;
   justify-content: center;
@@ -297,7 +328,6 @@
   color: #ffd740;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .main-title {
     font-size: 2rem;
@@ -316,19 +346,5 @@
   .stats-icon {
     margin-right: 0;
     margin-bottom: 1rem;
-  }
-  
-  .chart-bar {
-    min-width: 25px;
-  }
-  
-  .chart-value {
-    font-size: 0.7rem;
-    transform: rotate(-45deg);
-  }
-  
-  .chart-label {
-    font-size: 0.7rem;
-    transform: rotate(-45deg);
   }
 }

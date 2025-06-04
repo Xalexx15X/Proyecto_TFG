@@ -1,147 +1,135 @@
-import { Component, OnInit } from '@angular/core'; 
-import { CommonModule } from '@angular/common'; 
-import { FormsModule } from '@angular/forms'; 
-import { RouterModule, Router } from '@angular/router'; 
-import { CarritoService, ItemCarrito } from '../../service/carrito.service'; // Servicio y modelo para gestión del carrito
-import { AuthService } from '../../service/auth.service'; // Servicio para autenticación y datos de usuario
-import { UsuarioService } from '../../service/usuario.service'; // Servicio para actualizar datos de usuario
-import { EntradaService } from '../../service/entrada.service'; // Servicio para crear entradas
-import { ReservaBotellaService } from '../../service/reserva-botella.service'; // Servicio para crear reservas VIP
-import { DetalleReservaBotellaService } from '../../service/detalle-reserva-botella.service'; // Servicio para detalles de botellas
-import { EventosService } from '../../service/eventos.service'; // Servicio para verificar disponibilidad de eventos
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterModule, Router } from '@angular/router';
+import { CarritoService, ItemCarrito } from '../../service/carrito.service';
+import { AuthService } from '../../service/auth.service';
+import { UsuarioService } from '../../service/usuario.service';
+import { EntradaService } from '../../service/entrada.service';
+import { ReservaBotellaService } from '../../service/reserva-botella.service';
+import { DetalleReservaBotellaService } from '../../service/detalle-reserva-botella.service';
+import { EventosService } from '../../service/eventos.service';
 
-// Importaciones RxJS para manejo asíncrono avanzado
-import { forkJoin, of, Observable } from 'rxjs'; // Operadores para combinar observables y crear observables simples
-import { finalize, switchMap, map, tap, catchError } from 'rxjs/operators'; // Operadores para manipular flujos de datos
-
-/**
- * Componente para gestionar el carrito de compras
- * Permite visualizar, modificar y finalizar compras de entradas y reservas
- */
 @Component({
-  selector: 'app-carrito', // Selector CSS para usar este componente en plantillas HTML
-  standalone: true, // Define que es un componente independiente sin necesidad de un módulo
-  imports: [CommonModule, FormsModule, RouterModule], // Módulos necesarios importados directamente al componente
-  templateUrl: './carrito.component.html', // Ruta al archivo HTML de la plantilla
-  styleUrl: './carrito.component.css' // Ruta al archivo CSS con estilos específicos
+  selector: 'app-carrito',
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterModule],
+  templateUrl: './carrito.component.html',
+  styleUrl: './carrito.component.css'
 })
-export class CarritoComponent implements OnInit { // Implementa OnInit para usar su ciclo de vida
-  // Estado del carrito - Propiedades para almacenar los datos principales
-  itemsCarrito: ItemCarrito[] = []; // Array de items en el carrito, inicializado como vacío
-  total: number = 0; // Importe total a pagar, inicializado en 0
+export class CarritoComponent implements OnInit {
+  // Estado del carrito
+  itemsCarrito: ItemCarrito[] = []; // Lista de items en el carrito
+  total: number = 0; // Importe total a pagar
   
-  // Estados de UI - Propiedades para controlar la interfaz de usuario
-  cargando: boolean = false; // Indica si hay operaciones en progreso, controla spinners de carga
-  error: string = ''; // Almacena mensajes de error para mostrar al usuario
-  exito: string = ''; // Almacena mensajes de éxito para mostrar al usuario
-  procesandoPago: boolean = false; // Indica específicamente si se está procesando un pago
+  // Estados de UI
+  error: string = ''; // Mensaje de error
+  exito: string = ''; // Mensaje de éxito
   
-  // Datos del usuario - Propiedades relacionadas con el usuario que realiza la compra
+  // Datos del usuario
   saldoActual: number = 0; // Saldo disponible en el monedero del usuario
-  saldoSuficiente: boolean = true; // Indica si el saldo cubre el total (inicialmente verdadero)
-  
-  // Sistema de recompensas - Propiedades para gestionar puntos de fidelización
+  saldoSuficiente: boolean = true; // Indica si el saldo cubre el total
   puntosActuales: number = 0; // Puntos que tiene actualmente el usuario
-  puntosGanados: number = 0; // Puntos adicionales que ganará con esta compra
+  puntosGanados: number = 0; // Puntos que se ganarán con la compra
 
-  /**
-   * Constructor con inyección de dependencias
-   * Recibe todos los servicios necesarios para el funcionamiento del componente
-   */
   constructor(
-    private carritoService: CarritoService, // Para gestionar los items del carrito
-    private authService: AuthService, // Para obtener información del usuario autenticado
-    private usuarioService: UsuarioService, // Para actualizar saldo y puntos
-    private entradaService: EntradaService, // Para crear entradas tras la compra
-    private reservaBotellaService: ReservaBotellaService, // Para crear reservas VIP
-    private detalleReservaBotellaService: DetalleReservaBotellaService, // Para detalles de botellas
-    private eventosService: EventosService, // Para verificar disponibilidad de eventos
-    private router: Router // Para redireccionar tras completar acciones
+    private carritoService: CarritoService,
+    private authService: AuthService,
+    private usuarioService: UsuarioService,
+    private entradaService: EntradaService,
+    private reservaBotellaService: ReservaBotellaService,
+    private detalleReservaBotellaService: DetalleReservaBotellaService,
+    private eventosService: EventosService,
+    private router: Router
   ) {}
 
-  /**
-   * Método del ciclo de vida que se ejecuta al inicializar el componente
-   * Carga datos iniciales y se suscribe a cambios en el carrito
-   */
   ngOnInit(): void {
-    this.cargando = true; // Activa el indicador de carga al iniciar
-    
-    // Carga el saldo y puntos del usuario actual
+    // Primero cargo los datos del usuario actual (saldo y puntos)
     this.cargarDatosUsuario();
-    
-    // Se suscribe al observable de items del carrito para actualizar automáticamente
-    // cuando cambia cualquier aspecto del carrito (agregar, eliminar, actualizar cantidades)
+    // Me suscribo al observable de items del carrito para mantenerme actualizado
+    // Cada vez que cambia algo en el carrito, este código se ejecuta
     this.carritoService.items$.subscribe(items => {
-      this.itemsCarrito = items; // Actualiza la lista local de items
-      this.total = this.carritoService.obtenerTotal(); // Actualiza el total
-      this.calcularPuntosGanados(); // Recalcula puntos a ganar
-      this.verificarSaldo(); // Verifica si el saldo es suficiente
-      this.cargando = false; // Desactiva indicador de carga
+      // Actualizo mi array local de items
+      this.itemsCarrito = items;
+      // Calculo el total del carrito usando el servicio
+      this.total = this.carritoService.obtenerTotal();
+      // Actualizo los puntos que ganará el usuario con esta compra
+      this.calcularPuntosGanados();
+      // Verifico si el usuario tiene saldo suficiente
+      this.verificarSaldo();
     });
-  }
-  
-  /**
-   * Carga el saldo y puntos del usuario actual desde localStorage
-   * Optimiza rendimiento evitando peticiones al servidor innecesarias
-   */
-  cargarDatosUsuario(): void {
-    const usuario = this.authService.getCurrentUser(); // Obtiene datos del usuario de localStorage
-    if (usuario) {
-      this.saldoActual = usuario.monedero || 0; // Asigna saldo, con 0 como valor predeterminado
-      this.puntosActuales = usuario.puntosRecompensa || 0; // Asigna puntos, con 0 como valor predeterminado
-      this.calcularPuntosGanados(); // Calcula puntos a ganar con la compra actual
-      this.verificarSaldo(); // Verifica si el saldo cubre el total
-    }
-  }
-  
-  /**
-   * Calcula los puntos de recompensa que el usuario ganará con esta compra
-   * Aplica una fórmula de conversión de euros a puntos
-   */
-  calcularPuntosGanados(): void {
-    // Fórmula: 0.5 puntos por cada euro gastado, redondeando hacia abajo
-    this.puntosGanados = Math.floor(this.total * 0.5);
-  }
-  
-  /**
-   * Verifica si el saldo del usuario es suficiente para cubrir el total actual
-   * Actualiza la bandera saldoSuficiente que controla opciones de UI
-   */
-  verificarSaldo(): void {
-    this.saldoSuficiente = this.saldoActual >= this.total; // True si el saldo es mayor o igual que el total
   }
 
   /**
-   * Formatea fechas ISO a formato legible en español
-   * @param dateString Fecha en formato ISO (ej: "2025-05-15T20:30:00")
-   * @returns Fecha formateada (ej: "15 de mayo de 2025, 20:30")
+   * Cargo los datos del usuario desde el localStorage
+   */
+  cargarDatosUsuario(): void {
+    // Obtengo los datos del usuario del servicio de autenticación
+    const usuario = this.authService.getCurrentUser();
+    if (usuario) {
+      // Si hay un usuario, guardo su saldo (con 0 como valor por defecto si no tiene)
+      this.saldoActual = usuario.monedero || 0;
+      // Guardo sus puntos actuales (con 0 como valor por defecto)
+      this.puntosActuales = usuario.puntosRecompensa || 0;
+      // Calculo cuántos puntos ganará con la compra actual
+      this.calcularPuntosGanados();
+      // Verifico si tiene saldo suficiente para la compra
+      this.verificarSaldo();
+    }
+  }
+
+  /**
+   * Calculo los puntos que ganará el usuario con esta compra
+   * La fórmula es: 0.5 puntos por cada euro gastado
+   */
+  calcularPuntosGanados(): void {
+    // Multiplico el total por 0.5 y redondeo hacia abajo
+    this.puntosGanados = Math.floor(this.total * 0.5);
+  }
+
+  /**
+   * Verifico si el usuario tiene saldo suficiente
+   * Esto actualiza la variable saldoSuficiente que uso en la interfaz
+   */
+  verificarSaldo(): void {
+    // Comparo el saldo actual con el total de la compra
+    this.saldoSuficiente = this.saldoActual >= this.total;
+  }
+
+  /**
+   * Formateo una fecha para mostrarla de forma legible
+   * Lo uso en el HTML para mostrar fechas de eventos
    */
   formatDate(dateString: string): string {
-    if (!dateString) return ''; // Si no hay fecha, devuelve cadena vacía
+    // Si no hay fecha, devuelvo cadena vacía
+    if (!dateString) return '';
     
-    const date = new Date(dateString); // Convierte string a objeto Date
+    // Convierto el string a objeto Date
+    const date = new Date(dateString);
+    // Configuro las opciones de formato
     const options: Intl.DateTimeFormatOptions = {
-      year: 'numeric', // Formato de año completo (2025)
-      month: 'long', // Nombre completo del mes (mayo)
-      day: 'numeric', // Día del mes sin ceros iniciales (15)
-      hour: '2-digit', // Hora en formato 2 dígitos (20)
-      minute: '2-digit' // Minutos en formato 2 dígitos (30)
+      year: 'numeric', // Año completo 
+      month: 'long',   // Nombre del mes 
+      day: 'numeric',  // Día sin ceros 
+      hour: '2-digit', // Hora en formato 2 dígitos (
+      minute: '2-digit' // Minutos en formato 2 dígitos 
     };
     
-    // Formatea la fecha según configuración regional española
+    // Devuelvo la fecha formateada en español
     return date.toLocaleDateString('es-ES', options);
   }
 
   /**
-   * Incrementa la cantidad de un item específico en el carrito
-   * @param index Posición del item en el array itemsCarrito
+   * Incremento la cantidad de un item en el carrito
+   * Lo llamo desde los botones "+" en la interfaz
    */
   incrementarCantidad(index: number): void {
-    const item = this.itemsCarrito[index]; // Obtiene el item específico por su índice
-    // Llama al servicio para actualizar la cantidad, incrementando en 1
+    // Obtengo el item específico usando su índice en el array
+    const item = this.itemsCarrito[index];
+    // Llamo al servicio para incrementar su cantidad en 1
     this.carritoService.actualizarCantidad(item.id, item.cantidad + 1).subscribe({
+      // Si hay error, lo muestro en la consola y en la interfaz
       error: (err) => {
-        // Si hay un error, lo registra en consola y muestra mensaje al usuario
         console.error('Error al incrementar cantidad:', err);
         this.error = 'No se pudo actualizar la cantidad. Intente de nuevo.';
       }
@@ -149,16 +137,18 @@ export class CarritoComponent implements OnInit { // Implementa OnInit para usar
   }
 
   /**
-   * Decrementa la cantidad de un item específico en el carrito
-   * @param index Posición del item en el array itemsCarrito
+   * Decremento la cantidad de un item en el carrito
+   * Lo llamo desde los botones "-" en la interfaz
    */
   decrementarCantidad(index: number): void {
-    const item = this.itemsCarrito[index]; // Obtiene el item específico por su índice
-    if (item.cantidad > 1) { // Solo permite decrementar si hay más de una unidad
-      // Llama al servicio para actualizar la cantidad, decrementando en 1
+    // Obtengo el item específico usando su índice en el array
+    const item = this.itemsCarrito[index];
+    // Solo permito decrementar si hay más de una unidad
+    if (item.cantidad > 1) {
+      // Llamo al servicio para decrementar su cantidad en 1
       this.carritoService.actualizarCantidad(item.id, item.cantidad - 1).subscribe({
+        // Si hay error, lo muestro en la consola y en la interfaz
         error: (err) => {
-          // Si hay un error, lo registra en consola y muestra mensaje al usuario
           console.error('Error al decrementar cantidad:', err);
           this.error = 'No se pudo actualizar la cantidad. Intente de nuevo.';
         }
@@ -167,17 +157,18 @@ export class CarritoComponent implements OnInit { // Implementa OnInit para usar
   }
 
   /**
-   * Elimina un item completo del carrito independientemente de su cantidad
-   * @param index Posición del item en el array itemsCarrito
+   * Elimino un item completo del carrito
+   * Lo llamo desde los botones de eliminar en la interfaz
    */
   eliminarItem(index: number): void {
-    // Solicita confirmación antes de eliminar para prevenir acciones accidentales
+    // Pido confirmación al usuario para prevenir eliminaciones accidentales
     if (confirm('¿Estás seguro de que deseas eliminar este item del carrito?')) {
-      const item = this.itemsCarrito[index]; // Obtiene el item específico
-      // Llama al servicio para eliminar el item completamente
+      // Obtengo el item específico usando su índice
+      const item = this.itemsCarrito[index];
+      // Llamo al servicio para eliminarlo
       this.carritoService.eliminarItem(item.id).subscribe({
+        // Si hay error, lo muestro en la consola y en la interfaz
         error: (err) => {
-          // Si hay un error, lo registra en consola y muestra mensaje al usuario
           console.error('Error al eliminar item:', err);
           this.error = 'No se pudo eliminar el item. Intente de nuevo.';
         }
@@ -186,16 +177,16 @@ export class CarritoComponent implements OnInit { // Implementa OnInit para usar
   }
 
   /**
-   * Elimina todos los items del carrito, vaciándolo completamente
-   * Solicita confirmación al usuario antes de proceder
+   * Vacío completamente el carrito
+   * Lo llamo desde el botón "Vaciar carrito" en la interfaz
    */
   vaciarCarrito(): void {
-    // Solicita confirmación para prevenir acciones accidentales
+    // Pido confirmación al usuario para prevenir acciones accidentales
     if (confirm('¿Estás seguro de que deseas vaciar todo el carrito?')) {
-      // Llama al servicio para vaciar completamente el carrito
+      // Llamo al servicio para vaciar el carrito
       this.carritoService.vaciarCarrito().subscribe({
+        // Si hay error, lo muestro en la consola y en la interfaz
         error: (err) => {
-          // Si hay un error, lo registra en consola y muestra mensaje al usuario
           console.error('Error al vaciar carrito:', err);
           this.error = 'No se pudo vaciar el carrito. Intente de nuevo.';
         }
@@ -204,100 +195,98 @@ export class CarritoComponent implements OnInit { // Implementa OnInit para usar
   }
 
   /**
-   * Redirecciona a la página de eventos para continuar comprando
-   * Mantiene el estado actual del carrito
+   * Redirijo al usuario a la página de discotecas para seguir comprando
+   * Lo llamo desde el botón "Continuar comprando" en la interfaz
    */
   continuarComprando(): void {
-    this.router.navigate(['/eventos']); // Navega a la ruta de eventos
+    // Uso el router para navegar a la página de discotecas
+    this.router.navigate(['/discotecas']);
   }
 
   /**
-   * Calcula el precio total de las botellas seleccionadas para una reserva VIP
-   * Suma el precio unitario multiplicado por cantidad para cada botella
-   * @param botellas Array de botellas seleccionadas con precio y cantidad
-   * @returns Precio total de todas las botellas
+   * Calculo el precio total de las botellas seleccionadas para una reserva VIP
+   * Lo uso en el HTML y en otros métodos para calcular precios totales
    */
   calcularTotalBotellas(botellas: any[]): number {
-    // Si no hay botellas o el array es vacío, devuelve 0
+    // Si no hay botellas, devuelvo 0
     if (!botellas || botellas.length === 0) {
       return 0;
     }
-    // Usa reduce para sumar el producto de precio y cantidad de cada botella
+    // Uso reduce para sumar el precio de cada botella multiplicado por su cantidad
     return botellas.reduce(
-      (total, botella) => total + (botella.precio * botella.cantidad), 
+      (total, botella) => total + (botella.precio * botella.cantidad),
       0 // Valor inicial del acumulador
     );
   }
 
   /**
-   * Inicia el proceso de finalización de compra completa
-   * Valida condiciones iniciales antes de procesar el pago
+   * Inicio el proceso de finalización de compra
+   * Lo llamo desde el botón "Finalizar compra" en la interfaz
    */
   finalizarCompra(): void {
-    // Validación: carrito no vacío
+    // Verifico que haya items en el carrito
     if (this.itemsCarrito.length === 0) {
       this.error = 'Tu carrito está vacío';
-      return; // Termina la ejecución si el carrito está vacío
+      return; // Salgo del método si no hay items
     }
     
-    // Validación: saldo suficiente para completar la compra
+    // Verifico que el saldo sea suficiente
     if (!this.saldoSuficiente) {
       this.error = 'No tienes suficiente saldo en tu monedero. Por favor, añade fondos.';
-      return; // Termina la ejecución si no hay saldo suficiente
+      return; // Salgo del método si no hay saldo suficiente
     }
 
-    // Inicialización del proceso de compra
-    this.procesandoPago = true; // Activa indicador específico de procesamiento de pago
-    this.cargando = true; // Activa indicador general de carga
-    this.error = ''; // Limpia mensajes de error previos
-    this.exito = ''; // Limpia mensajes de éxito previos
+    // Limpio mensajes previos
+    this.error = '';
+    this.exito = '';
     
-    // Inicia la verificación de eventos antes de proceder con el pago
-    this.verificarEventosActivos(); // Verifica que todos los eventos sigan disponibles
+    // Empiezo verificando que los eventos sigan disponibles
+    this.verificarEventos();
   }
 
   /**
-   * Verifica que todos los eventos en el carrito sigan activos y disponibles
-   * Previene compras de eventos cancelados o ya realizados
+   * Verifico que todos los eventos en el carrito sigan disponibles
+   * Evita comprar entradas para eventos cancelados o ya realizados
    */
-  private verificarEventosActivos(): void {
-    // Obtiene IDs únicos de eventos en el carrito usando Set para eliminar duplicados
-    const idsEventos = [...new Set(this.itemsCarrito.map(item => item.idEvento))];
+  verificarEventos(): void {
+    // Obtengo los IDs únicos de eventos en el carrito usando Set
+    const eventosIds = [...new Set(this.itemsCarrito.map(item => item.idEvento))];
     let eventosVerificados = 0; // Contador de eventos verificados
-    let eventosInvalidos: {id: number, nombre: string}[] = []; // Lista para eventos no disponibles
+    let eventosInvalidos: {id: number, nombre: string}[] = []; // Lista de eventos no disponibles
     
-    // Verifica cada evento individualmente con peticiones al servidor
-    idsEventos.forEach(idEvento => {
+    // Para cada ID de evento, verifico su disponibilidad
+    eventosIds.forEach(idEvento => {
+      // Llamo al servicio para obtener los datos del evento
       this.eventosService.getEvento(idEvento).subscribe({
         next: (evento) => {
-          // Validación 1: Verifica si el estado del evento es activo
+          // Verifico si el evento está activo
           if (evento.estado !== 'ACTIVO') {
+            // Si no está activo, lo agrego a la lista de inválidos
             eventosInvalidos.push({id: idEvento, nombre: evento.nombre});
           } else {
-            // Validación 2: Verifica si el evento ya pasó (considerando duración máxima de 7 horas)
+            // Verifico si el evento ya pasó (considerando duración de 7 horas)
             const fechaEvento = new Date(evento.fechaHora);
-            fechaEvento.setHours(fechaEvento.getHours() + 7); // Añade 7 horas a la fecha/hora inicial
-            if (new Date() > fechaEvento) { // Si la fecha actual es posterior al evento + 7h
+            fechaEvento.setHours(fechaEvento.getHours() + 7);
+            if (new Date() > fechaEvento) {
+              // Si ya pasó, lo agrego a la lista de inválidos
               eventosInvalidos.push({id: idEvento, nombre: evento.nombre});
             }
           }
           
-          // Incrementa contador de eventos verificados
+          // Incremento el contador de eventos verificados
           eventosVerificados++;
-          
-          // Si ya verificamos todos los eventos, procesa el resultado
-          if (eventosVerificados === idsEventos.length) {
-            this.procesarResultadoVerificacion(eventosInvalidos);
+          // Si ya verifiqué todos, proceso el resultado
+          if (eventosVerificados === eventosIds.length) {
+            this.procesarVerificacion(eventosInvalidos);
           }
         },
         error: () => {
-          // Si hay error al verificar, considera el evento como inválido
+          // Si hay error al obtener el evento, lo considero inválido
           eventosInvalidos.push({id: idEvento, nombre: `Evento #${idEvento}`});
-          eventosVerificados++; // Incrementa contador a pesar del error
-          
-          // Si ya verificamos todos los eventos, procesa el resultado
-          if (eventosVerificados === idsEventos.length) {
-            this.procesarResultadoVerificacion(eventosInvalidos);
+          eventosVerificados++;
+          // Si ya verifiqué todos, proceso el resultado
+          if (eventosVerificados === eventosIds.length) {
+            this.procesarVerificacion(eventosInvalidos);
           }
         }
       });
@@ -305,285 +294,357 @@ export class CarritoComponent implements OnInit { // Implementa OnInit para usar
   }
 
   /**
-   * Procesa el resultado de la verificación de eventos
-   * Continúa con el pago o muestra error según corresponda
-   * @param eventosInvalidos Lista de eventos que no pasaron la verificación
+   * Proceso el resultado de la verificación de eventos
+   * Continúo con el pago o muestro error según corresponda
    */
-  private procesarResultadoVerificacion(eventosInvalidos: {id: number, nombre: string}[]): void {
-    // Si hay eventos inválidos, muestra error detallado y detiene el proceso
+  procesarVerificacion(eventosInvalidos: {id: number, nombre: string}[]): void {
+    // Si hay eventos inválidos, muestro un mensaje de error
     if (eventosInvalidos.length > 0) {
-      // Construye un mensaje detallado con los eventos no disponibles
       let mensaje = 'No puedes completar la compra porque los siguientes eventos ya no están disponibles:';
+      // Agrego cada evento inválido al mensaje
       eventosInvalidos.forEach(e => {
         mensaje += `\n- ${e.nombre}`;
       });
       mensaje += '\n\nPor favor, elimínalos del carrito para continuar.';
       
-      // Finaliza con error mostrando el mensaje construido
-      this.finalizarError(mensaje);
-      return;
+      // Muestro el mensaje de error
+      this.error = mensaje;
+      return; // Salgo del método
     }
     
-    // Si todos los eventos son válidos, procede con el pago
+    // Si todos los eventos están disponibles, continúo con el pago
     this.procesarPago();
   }
 
   /**
-   * Procesa el pago completo en un flujo encadenado de operaciones
-   * Utiliza operadores RxJS para gestionar la secuencia de operaciones asíncronas
+   * Proceso el pago actualizando el saldo del usuario
+   * Este es el primer paso en la secuencia de finalización de compra
    */
-  private procesarPago(): void {
-    // Obtiene el ID del usuario autenticado
+  procesarPago(): void {
+    // Obtengo el ID del usuario autenticado
     const idUsuario = this.authService.getUserId();
     if (!idUsuario) {
-      // Si no hay ID de usuario, finaliza con error
-      this.finalizarError('Debes iniciar sesión para completar tu compra');
+      // Si no hay usuario autenticado, muestro error
+      this.error = 'Debes iniciar sesión para completar tu compra';
+      return; // Salgo del método
+    }
+    
+    // Guardo una copia de los items para procesarlos después
+    // Esto es importante porque el carrito se vacía al finalizar
+    const itemsParaProcesar = [...this.itemsCarrito];
+    
+    // Calculo el nuevo saldo restando el total de la compra
+    const nuevoSaldo = this.saldoActual - this.total;
+    // Actualizo el saldo en la base de datos
+    this.usuarioService.actualizarMonedero(idUsuario, nuevoSaldo).subscribe({
+      next: (usuarioActualizado) => {
+        // Actualizo los datos del usuario en localStorage
+        this.authService.updateUserData(usuarioActualizado);
+        // Actualizo el saldo en mi variable local
+        this.saldoActual = usuarioActualizado.monedero;
+        
+        // Continúo con la actualización de puntos
+        this.actualizarPuntos(idUsuario, itemsParaProcesar);
+      },
+      error: (error) => {
+        // Si hay error, lo muestro
+        console.error('Error al actualizar saldo:', error);
+        this.error = 'Error al actualizar tu saldo. Por favor, inténtalo de nuevo.';
+      }
+    });
+  }
+
+  /**
+   * Actualizo los puntos de recompensa del usuario
+   * Este es el segundo paso en la secuencia de finalización
+   */
+  actualizarPuntos(idUsuario: number, items: ItemCarrito[]): void {
+    // Calculo los nuevos puntos sumando los ganados
+    const nuevosPuntos = this.puntosActuales + this.puntosGanados;
+    
+    // Actualizo los puntos en la base de datos
+    this.usuarioService.actualizarPuntosRecompensa(idUsuario, nuevosPuntos).subscribe({
+      next: (usuarioActualizado) => {
+        // Actualizo los datos del usuario en localStorage
+        this.authService.updateUserData(usuarioActualizado);
+        // Actualizo los puntos en mi variable local
+        this.puntosActuales = usuarioActualizado.puntosRecompensa;
+        
+        // Continúo con la finalización del pedido
+        this.finalizarPedido(idUsuario, items);
+      },
+      error: (error) => {
+        // Si hay error, revierto la transacción (devuelvo el saldo)
+        this.revertirTransaccion(idUsuario);
+        console.error('Error al actualizar puntos:', error);
+        this.error = 'Error al actualizar tus puntos. Se ha revertido el cargo.';
+      }
+    });
+  }
+
+  /**
+   * Finalizo el pedido en el sistema
+   * Este es el tercer paso en la secuencia de finalización
+   */
+  finalizarPedido(idUsuario: number, items: ItemCarrito[]): void {
+    // Llamo al servicio para marcar el pedido como completado
+    this.carritoService.finalizarCompra().subscribe({
+      next: () => {
+        // Continúo con la creación de entradas y reservas
+        this.crearEntradasYReservas(idUsuario, items);
+      },
+      error: (error) => {
+        // Si hay error, revierto la transacción
+        this.revertirTransaccion(idUsuario);
+        console.error('Error al finalizar pedido:', error);
+        this.error = 'Error al finalizar el pedido. Se ha revertido el cargo.';
+      }
+    });
+  }
+
+  /**
+   * Creo las entradas y reservas para cada item
+   * Este es el cuarto paso en la secuencia de finalización
+   */
+  crearEntradasYReservas(idUsuario: number, items: ItemCarrito[]): void {
+    // Inicializo contadores para seguir el progreso
+    let tareasCompletadas = 0;
+    let tareasConError = 0;
+    // Calculo el total de entradas a crear
+    let totalTareas = this.contarTareasTotales(items);
+    
+    // Si no hay tareas, muestro éxito directamente
+    if (totalTareas === 0) {
+      this.mostrarExito();
       return;
     }
     
-    // Guarda una copia de los items para procesarlos después
-    // (evita problemas si el carrito cambia durante el proceso)
-    const itemsParaProcesar = [...this.itemsCarrito];
-    
-    // Calcula el nuevo saldo después de la compra
-    const nuevoSaldo = this.saldoActual - this.total;
-    
-    // Calcula los nuevos puntos de recompensa sumando los ganados
-    const nuevosPuntos = this.puntosActuales + this.puntosGanados;
-    
-    // Flujo de compra con operadores RxJS para gestionar operaciones encadenadas
-    this.usuarioService.actualizarMonedero(idUsuario, nuevoSaldo)
-      .pipe(
-        // 1. Después de actualizar saldo, actualiza los datos en localStorage
-        tap(usuarioActualizado => {
-          this.authService.updateUserData(usuarioActualizado); // Actualiza datos en localStorage
-          this.saldoActual = usuarioActualizado.monedero; // Actualiza variable local
-        }),
-        
-        // 2. Luego actualiza puntos de recompensa (encadenando observables)
-        switchMap(() => this.usuarioService.actualizarPuntosRecompensa(idUsuario, nuevosPuntos)),
-        
-        // 3. Actualiza datos de usuario en localStorage con nuevos puntos
-        tap(usuarioActualizado => {
-          this.authService.updateUserData(usuarioActualizado); // Actualiza datos en localStorage
-          this.puntosActuales = usuarioActualizado.puntosRecompensa; // Actualiza variable local
-        }),
-        
-        // 4. Marca el pedido como COMPLETADO en sistema
-        switchMap(() => this.carritoService.finalizarCompra()),
-        
-        // 5. Crea las entradas y reservas para cada item comprado
-        switchMap(() => this.crearEntradasYReservas(itemsParaProcesar, idUsuario)),
-        
-        // Captura y maneja errores en cualquier punto del flujo
-        catchError(error => {
-          // Revierte la transacción en caso de error
-          this.revertirTransaccion(idUsuario);
-          console.error('Error en la compra:', error);
-          return of({ error: true, message: error.message || 'Error en la compra' });
-        }),
-        
-        // Ejecuta esto siempre al final, independientemente de éxito o error
-        finalize(() => {
-          this.cargando = false; // Desactiva indicador general de carga
-          this.procesandoPago = false; // Desactiva indicador específico de pago
-        })
-      )
-      .subscribe({
-        // Maneja el resultado final de todo el proceso
-        next: (resultados) => this.procesarResultadosCompra(resultados),
-        // Maneja error en la suscripción (poco probable dado el catchError anterior)
-        error: (error) => this.finalizarError('Error al procesar la compra. Por favor, inténtalo de nuevo.')
-      });
-  }
-
-  /**
-   * Revierte una transacción fallida devolviendo saldo y puntos a valores originales
-   * Implementa un mecanismo de "rollback" manual para transacciones
-   * @param idUsuario ID del usuario para revertir su transacción
-   */
-  private revertirTransaccion(idUsuario: number): void {
-    // Revierte el saldo al valor original
-    this.usuarioService.actualizarMonedero(idUsuario, this.saldoActual).subscribe({
-      next: (usuario) => {
-        // Verifica si es necesario revertir también los puntos
-        if (usuario.puntosRecompensa !== this.puntosActuales) {
-          // Si los puntos ya se actualizaron, los revierte
-          this.usuarioService.actualizarPuntosRecompensa(idUsuario, this.puntosActuales).subscribe({
-            next: (usuarioFinal) => this.authService.updateUserData(usuarioFinal), // Actualiza localStorage
-            error: (err) => console.error('Error al reembolsar puntos:', err) // Registra error
-          });
-        } else {
-          // Si solo se actualizó el saldo, actualiza localStorage con esos datos
-          this.authService.updateUserData(usuario);
-        }
-      },
-      error: (err) => console.error('Error al reembolsar saldo:', err) // Registra error
-    });
-  }
-
-  /**
-   * Crea las entradas y reservas para todos los items del carrito
-   * Genera múltiples peticiones en paralelo y las combina
-   * @param items Lista de items del carrito a procesar
-   * @param idUsuario ID del usuario que realiza la compra
-   * @returns Observable con los resultados de todas las creaciones
-   */
-  private crearEntradasYReservas(items: ItemCarrito[], idUsuario: number): Observable<any> {
-    const tareasCreacion: Observable<any>[] = []; // Array para almacenar todas las tareas
-    
-    // Recorre cada item del carrito
+    // Para cada item y por cada unidad, creo una entrada
     items.forEach(item => {
-      // Por cada unidad del item, crea una entrada individual (si cantidad=2, crea 2 entradas)
       for (let i = 0; i < item.cantidad; i++) {
-        // Crea una tarea de creación de entrada, posiblemente seguida de reserva VIP
-        const tareaEntrada = this.crearEntrada(item, idUsuario).pipe(
-          // Si la entrada se crea exitosamente y es una reserva VIP, crea la reserva
-          switchMap(entradaCreada => {
-            if (item.tipo === 'RESERVA_VIP' && item.idZonaVip) {
-              return this.crearReservaVIP(item, entradaCreada);
+        // Llamo al método para crear la entrada
+        this.crearEntrada(item, idUsuario, (resultado) => {
+          // Incremento el contador de tareas completadas
+          tareasCompletadas++;
+          // Si hubo error, incremento ese contador también
+          if (resultado.error) {
+            tareasConError++;
+          }
+          
+          // Si ya completé todas las tareas, verifico el resultado final
+          if (tareasCompletadas === totalTareas) {
+            if (tareasConError > 0) {
+              // Si hubo errores, muestro mensaje
+              this.error = 'Hubo errores al procesar algunas entradas. Contacte a soporte.';
+            } else {
+              // Si todo salió bien, muestro éxito
+              this.mostrarExito();
             }
-            return of({ entrada: entradaCreada }); // Si es entrada normal, simplemente la devuelve
-          }),
-          // Maneja errores a nivel de cada entrada/reserva individual
-          catchError(error => {
-            console.error('Error al procesar entrada/reserva:', error);
-            return of({ error: true, message: error.message || 'Error al procesar entrada' });
-          })
-        );
-        
-        // Agrega esta tarea al array de tareas
-        tareasCreacion.push(tareaEntrada);
+          }
+        });
       }
     });
-    
-    // Si hay tareas, las combina con forkJoin; si no, devuelve array vacío
-    return tareasCreacion.length ? forkJoin(tareasCreacion) : of([]);
   }
 
   /**
-   * Crea una entrada individual en el sistema
-   * @param item Item del carrito con datos para la entrada
-   * @param idUsuario ID del usuario que compra
-   * @returns Observable con la entrada creada
+   * Cuento el número total de entradas a crear
+   * Es la suma de las cantidades de todos los items
    */
-  private crearEntrada(item: ItemCarrito, idUsuario: number): Observable<any> {
-    // Crea el objeto de datos para la nueva entrada
-    const nuevaEntrada = {
-      fechaReservada: item.fechaEvento, // Fecha del evento
-      estado: 'ACTIVA', // Estado inicial de la entrada
-      tipo: item.tipo === 'ENTRADA' ? 'NORMAL' : 'RESERVADO', // Tipo según selección
-      fechaCompra: new Date().toISOString(), // Fecha actual como fecha de compra
-      precio: item.precioUnitario * item.multiplicadorPrecio, // Precio con multiplicador aplicado
-      idEvento: item.idEvento, // Evento asociado
-      idUsuario: idUsuario, // Usuario que compra
-      idTramoHorario: item.idTramoHorario // Tramo horario seleccionado
+  contarTareasTotales(items: ItemCarrito[]): number {
+    // Uso reduce para sumar las cantidades de todos los items
+    return items.reduce((total, item) => total + item.cantidad, 0);
+  }
+
+  /**
+   * Creo una entrada individual
+   * Puede ser una entrada normal o una reserva VIP
+   */
+  crearEntrada(item: ItemCarrito, idUsuario: number, callback: (resultado: any) => void): void {
+    // Preparo los datos para crear la entrada
+    const datosEntrada = {
+      fechaReservada: item.fechaEvento,
+      estado: 'ACTIVA',
+      tipo: item.tipo === 'ENTRADA' ? 'NORMAL' : 'RESERVADO',
+      fechaCompra: new Date().toISOString(),
+      precio: item.precioUnitario * item.multiplicadorPrecio,
+      idEvento: item.idEvento,
+      idUsuario: idUsuario,
+      idTramoHorario: item.idTramoHorario
     };
     
-    // Envía la petición al servicio y devuelve el observable resultante
-    return this.entradaService.createEntrada(nuevaEntrada);
+    // Llamo al servicio para crear la entrada
+    this.entradaService.createEntrada(datosEntrada).subscribe({
+      next: (entradaCreada) => {
+        // Si es una entrada normal, termino aquí
+        if (item.tipo !== 'RESERVA_VIP' || !item.idZonaVip) {
+          callback({ success: true, entrada: entradaCreada });
+          return;
+        }
+        
+        // Si es una reserva VIP, continúo creando la reserva
+        this.crearReservaVIP(item, entradaCreada, callback);
+      },
+      error: (error) => {
+        // Si hay error, lo registro y notifico
+        console.error('Error al crear entrada:', error);
+        callback({ error: true, mensaje: 'Error al crear entrada' });
+      }
+    });
   }
-  
+
   /**
-   * Crea una reserva VIP asociada a una entrada
-   * @param item Item del carrito con datos para la reserva
-   * @param entradaCreada Entrada a la que se asociará la reserva
-   * @returns Observable con el resultado de la creación
+   * Creo una reserva VIP asociada a una entrada
+   * Solo se llama para items de tipo RESERVA_VIP
    */
-  private crearReservaVIP(item: ItemCarrito, entradaCreada: any): Observable<any> {
-    // Crea el objeto de datos para la nueva reserva VIP
-    const nuevaReserva = {
-      aforo: item.aforoZona || 1, // Aforo requerido para la reserva
+  crearReservaVIP(item: ItemCarrito, entradaCreada: any, callback: (resultado: any) => void): void {
+    // Preparo los datos para crear la reserva
+    const datosReserva = {
+      aforo: item.aforoZona || 1, // Personas que ocuparán la reserva
       precioTotal: item.precioUnitario * item.multiplicadorPrecio + 
                  this.calcularTotalBotellas(item.botellas || []), // Precio total con botellas
-      tipoReserva: 'ZONA_VIP', // Tipo de reserva
-      idEntrada: entradaCreada.idEntrada, // Entrada asociada a esta reserva
+      tipoReserva: 'ZONA_VIP',
+      idEntrada: entradaCreada.idEntrada, // Entrada a la que se asocia
       idZonaVip: item.idZonaVip // Zona VIP seleccionada
     };
     
-    // Envía la petición al servicio y encadena la creación de detalles de botellas
-    return this.reservaBotellaService.createReservaBotella(nuevaReserva).pipe(
-      switchMap(reservaCreada => {
-        // Si hay botellas seleccionadas, crea los detalles correspondientes
-        if (item.botellas && item.botellas.length > 0 && reservaCreada.idReservaBotella) {
-          return this.crearDetallesBotellas(item.botellas, reservaCreada.idReservaBotella)
-            .pipe(map(() => ({ entrada: entradaCreada, reserva: reservaCreada }))); // Devuelve entrada y reserva
+    // Llamo al servicio para crear la reserva
+    this.reservaBotellaService.createReservaBotella(datosReserva).subscribe({
+      next: (reservaCreada) => {
+        // Si no hay botellas o la reserva no se creó bien, termino aquí
+        if (!item.botellas || item.botellas.length === 0 || !reservaCreada.idReservaBotella) {
+          callback({ success: true, entrada: entradaCreada, reserva: reservaCreada });
+          return;
         }
-        return of({ entrada: entradaCreada, reserva: reservaCreada }); // Si no hay botellas, solo devuelve entrada y reserva
-      })
-    );
-  }
-  
-  /**
-   * Crea los detalles de botellas para una reserva
-   * @param botellas Lista de botellas seleccionadas
-   * @param idReservaBotella ID de la reserva a la que se asocian
-   * @returns Observable con el resultado de todas las creaciones
-   */
-  private crearDetallesBotellas(botellas: any[], idReservaBotella: number): Observable<any> {
-    // Transforma cada botella en una tarea de creación de detalle
-    const tareasDetalles = botellas.map(botella => {
-      // Crea objeto de datos para el detalle de botella
-      const detalle = {
-        cantidad: botella.cantidad, // Cantidad de botellas de este tipo
-        precioUnidad: botella.precio, // Precio unitario de la botella
-        idBotella: botella.idBotella, // Tipo de botella
-        idReservaBotella: idReservaBotella // Reserva a la que se asocia
-      };
-      
-      // Envía la petición al servicio
-      return this.detalleReservaBotellaService.createDetalleReservaBotella(detalle);
+        
+        // Si hay botellas, creo los detalles de botellas
+        this.crearDetallesBotellas(
+          item.botellas, 
+          reservaCreada.idReservaBotella, 
+          // Callback de éxito
+          () => {
+            callback({ success: true, entrada: entradaCreada, reserva: reservaCreada });
+          }, 
+          // Callback de error
+          (error) => {
+            console.error('Error al crear detalles de botellas:', error);
+            callback({ error: true, mensaje: 'Error al crear detalles de botellas' });
+          }
+        );
+      },
+      error: (error) => {
+        // Si hay error, lo registro y notifico
+        console.error('Error al crear reserva:', error);
+        callback({ error: true, mensaje: 'Error al crear reserva' });
+      }
     });
-    
-    // Combina todas las tareas en un solo observable
-    return forkJoin(tareasDetalles);
-  }
-  
-  /**
-   * Procesa los resultados de la compra completa
-   * @param resultados Resultados de la creación de entradas y reservas
-   */
-  private procesarResultadosCompra(resultados: any): void {
-    // Si hay un error directo (no un array de resultados)
-    if (resultados && !Array.isArray(resultados) && resultados.error) {
-      this.finalizarError(resultados.message || 'Error en la compra');
-      return;
-    }
-    
-    // Verifica si hay errores en alguno de los resultados individuales
-    const hayErrores = Array.isArray(resultados) && 
-                      resultados.some(r => r && r.error);
-    
-    if (hayErrores) {
-      // Si hay errores en al menos una entrada/reserva
-      this.finalizarError('Hubo errores al procesar algunas entradas. Contacte a soporte.');
-    } else {
-      // Todo se procesó correctamente
-      this.exito = `¡Compra realizada con éxito! Has ganado ${this.puntosGanados} puntos de recompensa.`;
-      
-      // Redirige a la página de entradas después de un breve retraso
-      setTimeout(() => {
-        this.router.navigate(['/perfil/entradas']); // Navega a la vista de entradas del usuario
-      }, 2000); // Espera 2 segundos para que el usuario vea el mensaje de éxito
-    }
-  }
-  
-  /**
-   * Finaliza el proceso con un error
-   * @param mensaje Mensaje de error a mostrar
-   */
-  private finalizarError(mensaje: string): void {
-    this.error = mensaje; // Establece el mensaje de error
-    this.cargando = false; // Desactiva el indicador general de carga
-    this.procesandoPago = false; // Desactiva el indicador específico de pago
   }
 
   /**
-   * Formatea mensajes de error para mostrar correctamente en HTML
+   * Creo los detalles de botellas para una reserva VIP
+   * Cada botella seleccionada genera un detalle
+   */
+  crearDetallesBotellas(
+    botellas: any[], 
+    idReservaBotella: number, 
+    onExito: () => void, 
+    onError: (error: any) => void
+  ): void {
+    // Inicializo contadores para seguir el progreso
+    let completadas = 0;
+    let errores = 0;
+    
+    // Si no hay botellas, llamo al callback de éxito y termino
+    if (!botellas || botellas.length === 0) {
+      onExito();
+      return;
+    }
+    
+    // Para cada botella, creo un detalle
+    botellas.forEach(botella => {
+      // Preparo los datos del detalle
+      const detalle = {
+        cantidad: botella.cantidad,
+        precioUnidad: botella.precio,
+        idBotella: botella.idBotella,
+        idReservaBotella: idReservaBotella
+      };
+      
+      // Llamo al servicio para crear el detalle
+      this.detalleReservaBotellaService.createDetalleReservaBotella(detalle).subscribe({
+        next: () => {
+          // Incremento el contador de completadas
+          completadas++;
+          // Verifico si ya terminé todas
+          verificarFinalizacion();
+        },
+        error: (error) => {
+          // Incremento ambos contadores
+          completadas++;
+          errores++;
+          // Verifico si ya terminé todas
+          verificarFinalizacion();
+        }
+      });
+    });
+    
+    // Función interna para verificar si ya terminé todas las botellas
+    function verificarFinalizacion() {
+      if (completadas === botellas.length) {
+        if (errores === 0) {
+          // Si no hubo errores, llamo al callback de éxito
+          onExito();
+        } else {
+          // Si hubo errores, llamo al callback de error
+          onError({ mensaje: 'Hubo errores al crear algunos detalles de botellas' });
+        }
+      }
+    }
+  }
+
+  /**
+   * Muestro mensaje de éxito y redirijo a la página de entradas
+   * Se llama cuando todo el proceso de compra finaliza correctamente
+   */
+  mostrarExito(): void {
+    // Muestro mensaje con los puntos ganados
+    this.exito = `¡Compra realizada con éxito! Has ganado ${this.puntosGanados} puntos de recompensa.`;
+    
+    // Después de 2 segundos, redirijo a la página de entradas
+    setTimeout(() => {
+      this.router.navigate(['/perfil/entradas']);
+    }, 2000);
+  }
+
+  /**
+   * Revierto una transacción fallida
+   * Devuelve el saldo y puntos a sus valores originales
+   */
+  revertirTransaccion(idUsuario: number): void {
+    // Devuelvo el saldo original
+    this.usuarioService.actualizarMonedero(idUsuario, this.saldoActual).subscribe({
+      next: (usuario) => {
+        // Verifico si también debo revertir los puntos
+        if (usuario.puntosRecompensa !== this.puntosActuales) {
+          // Si los puntos ya se actualizaron, los revierto
+          this.usuarioService.actualizarPuntosRecompensa(idUsuario, this.puntosActuales).subscribe({
+            next: (usuarioFinal) => this.authService.updateUserData(usuarioFinal),
+            error: (err) => console.error('Error al reembolsar puntos:', err)
+          });
+        } else {
+          // Si solo se actualizó el saldo, guardo eso
+          this.authService.updateUserData(usuario);
+        }
+      },
+      error: (err) => console.error('Error al reembolsar saldo:', err)
+    });
+  }
+
+  /**
+   * Formateo mensajes de error para mostrarlos en HTML
    * Convierte saltos de línea en <br> para preservar formato
-   * @returns Mensaje formateado para HTML
    */
   formatErrorMessage(): string {
-    return this.error.replace(/\n/g, '<br>'); // Reemplaza cada salto de línea por <br>
+    // Reemplazo cada salto de línea por un <br>
+    return this.error.replace(/\n/g, '<br>');
   }
 }

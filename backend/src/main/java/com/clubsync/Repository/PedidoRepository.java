@@ -44,7 +44,7 @@ public interface PedidoRepository extends JpaRepository<Pedido, Integer> {
     List<Pedido> findByEstadoAndUsuarioIdUsuario(String estado, Integer idUsuario);
 
     /**
-     * Consulta nativa SQL que genera estadísticas de ingresos mensuales
+     * Consulta SQL que genera estadísticas de ingresos mensuales
      * 
      * Esta consulta:
      * 1. Selecciona el nombre del mes de cada pedido usando la función MONTHNAME
