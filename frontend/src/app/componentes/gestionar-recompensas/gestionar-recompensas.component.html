@@ -1,0 +1,142 @@
+<div class="container-fluid py-5 mt-5">
+  <!-- Header con título y botón -->
+  <div class="page-header">
+    <h2 class="page-title">Gestión de Recompensas</h2>
+    <button class="btn btn-create" (click)="mostrarCrear()" *ngIf="!mostrarFormulario">
+      <i class="bi bi-plus-lg"></i> Nueva Recompensa
+    </button>
+  </div>
+
+  <!-- Búsqueda -->
+  <div class="search-container" *ngIf="!mostrarFormulario">
+    <div class="input-group">
+      <span class="input-group-text">
+        <i class="bi bi-search"></i>
+      </span>
+      <input type="text" 
+             class="form-control search-input" 
+             placeholder="Buscar recompensa..." 
+             [(ngModel)]="terminoBusqueda"
+             (input)="buscar($event)">
+    </div>
+  </div>
+  
+  <!-- Formulario -->
+  <div class="row justify-content-center" *ngIf="mostrarFormulario">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-body p-4">
+          <h3 class="card-title mb-4">{{modoEdicion ? 'Editar' : 'Nueva'}} Recompensa</h3>
+          
+          <form (ngSubmit)="modoEdicion ? actualizarRecompensa() : crearRecompensa()">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Nombre</label>
+                <input type="text" 
+                       class="form-control" 
+                       [(ngModel)]="nuevaRecompensa.nombre" 
+                       name="nombre"
+                       [class.is-invalid]="formErrors.nombre">
+                <div class="invalid-feedback">{{formErrors.nombre}}</div>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Tipo de Recompensa</label>
+                <select class="form-control"
+                        [(ngModel)]="nuevaRecompensa.tipo"
+                        name="tipo"
+                        [class.is-invalid]="formErrors.tipo">
+                  <option *ngFor="let tipo of tiposRecompensa" [value]="tipo.id">
+                    {{tipo.nombre}}
+                  </option>
+                </select>
+                <div class="invalid-feedback">{{formErrors.tipo}}</div>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Puntos Necesarios</label>
+                <input type="number" 
+                       class="form-control" 
+                       [(ngModel)]="nuevaRecompensa.puntosNecesarios" 
+                       name="puntosNecesarios"
+                       [class.is-invalid]="formErrors.puntosNecesarios">
+                <div class="invalid-feedback">{{formErrors.puntosNecesarios}}</div>
+              </div>
+
+              <div class="col-12 mb-3">
+                <label class="form-label">Descripción</label>
+                <textarea class="form-control" 
+                         rows="3"
+                         [(ngModel)]="nuevaRecompensa.descripcion" 
+                         name="descripcion"
+                         [class.is-invalid]="formErrors.descripcion">
+                </textarea>
+                <div class="invalid-feedback">{{formErrors.descripcion}}</div>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Fecha Inicio</label>
+                <input type="datetime-local" 
+                       class="form-control" 
+                       [(ngModel)]="nuevaRecompensa.fechaInicio" 
+                       name="fechaInicio">
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Fecha Fin</label>
+                <input type="datetime-local" 
+                       class="form-control" 
+                       [(ngModel)]="nuevaRecompensa.fechaFin" 
+                       name="fechaFin">
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+              <button type="button" class="btn btn-secondary" (click)="cerrarFormulario()">
+                Cancelar
+              </button>
+              <button type="submit" class="btn btn-create">
+                {{modoEdicion ? 'Actualizar' : 'Crear'}}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla -->
+  <div class="table-responsive" *ngIf="!mostrarFormulario">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Tipo</th>
+          <th>Puntos</th>
+          <th>Descripción</th>
+          <th>Fecha Inicio</th>
+          <th>Fecha Fin</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let recompensa of recompensas">
+          <td>{{recompensa.nombre}}</td>
+          <td>{{getTipoNombre(recompensa.tipo)}}</td>
+          <td>{{recompensa.puntosNecesarios}}</td>
+          <td>{{recompensa.descripcion}}</td>
+          <td>{{recompensa.fechaInicio | date}}</td>
+          <td>{{recompensa.fechaFin | date}}</td>
+          <td>
+            <button class="btn btn-icon me-2" (click)="editarRecompensa(recompensa)">
+              <i class="bi bi-pencil"></i>
+            </button>
+            <button class="btn btn-icon btn-danger" (click)="eliminarRecompensa(recompensa.idRecompensa!)">
+              <i class="bi bi-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

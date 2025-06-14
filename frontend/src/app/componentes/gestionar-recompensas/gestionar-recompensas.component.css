@@ -1,0 +1,392 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #673ab7 0%, #9c27b0 100%);
+  padding-top: 76px;
+}
+
+.container-fluid {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Header y búsqueda */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.page-title {
+  color: white;
+  font-size: 2rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.search-container {
+  max-width: 500px;
+  margin: 2rem auto;
+}
+
+.search-input {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 25px;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.input-group-text {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  border-radius: 25px 0 0 25px;
+}
+
+/* Formulario */
+.card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.card-body {
+  padding: 2rem;
+}
+
+.card-title {
+  color: #ffd740;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  color: white;
+  margin-bottom: 0.5rem;
+}
+
+.form-control {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+}
+
+.form-control:focus {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: #ffd740;
+  box-shadow: 0 0 0 0.2rem rgba(255, 215, 64, 0.25);
+  color: white;
+}
+
+/* Tabla */
+.table-responsive {
+  margin-top: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.table {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-radius: 10px;
+  overflow: hidden;
+  font-size: 0.95rem;
+}
+
+.table thead th {
+  background: rgba(0, 0, 0, 0.2);
+  color: white;
+  border: none;
+  font-size: 1.2rem;
+  font-weight: 500;
+  padding: 1rem;
+}
+
+.table td {
+  border-color: rgba(255, 255, 255, 0.1);
+  padding: 1rem;
+  vertical-align: middle;
+}
+
+.table th {
+  background: linear-gradient(135deg, #673ab7 0%, #9c27b0 100%);
+  color: white;
+}
+
+.table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Desplegables - SOLO EL BUENO */
+.form-select {
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+}
+
+.form-select option {
+  background-color: #494949;
+  color: #ffffff;
+  padding: 10px;
+}
+
+.form-select:focus {
+  background-color: rgba(0, 0, 0, 0.3);
+  border-color: #ffd740;
+  box-shadow: 0 0 0 0.2rem rgba(255, 215, 64, 0.25);
+  color: white;
+}
+
+.form-select:active {
+  border-left: 4px solid #ffd740;
+}
+
+/* Botones */
+.btn-create {
+  background-color: #ffd740;
+  color: #000;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-create:hover {
+  background-color: #ffec8b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.btn-icon {
+  background-color: #673ab7;
+  border: none;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.btn-icon i {
+  font-size: 1.2rem;
+}
+
+.btn-icon:hover {
+  background-color: #563098;
+  color: #ffd740;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.btn-icon.btn-danger {
+  background-color: #dc3545;
+}
+
+.btn-icon.btn-danger:hover {
+  background-color: #bb2d3b;
+  color: #ffd740;
+}
+
+/* Mensajes de error */
+.invalid-feedback {
+  color: #ff8a8a;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container-fluid {
+    padding: 1rem;
+  }
+  
+  /* Mantenemos el botón a la derecha del título */
+  .page-header {
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Ajustamos el tamaño del título */
+  .page-title {
+    font-size: 1.7rem;
+    max-width: 60%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  /* Reducimos tamaño del botón */
+  .btn-create {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    white-space: nowrap;
+  }
+  
+  /* Ajustamos el buscador */
+  .search-container {
+    max-width: 100%;
+    margin: 1.5rem 0;
+  }
+  
+  /* Implementación de tabla con desplazamiento horizontal */
+  .table-responsive {
+    margin-top: 1.5rem;
+    padding: 0.5rem;
+    border-radius: 10px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+  }
+  
+  /* Forzamos ancho mínimo para asegurar desplazamiento horizontal */
+  .table {
+    min-width: 900px;
+    font-size: 0.95rem;
+  }
+  
+  /* Optimizamos espacio en celdas */
+  .table th, .table td {
+    white-space: nowrap;
+    padding: 0.75rem;
+  }
+  
+  /* Reducimos tamaño de fuente en los encabezados */
+  .table thead th {
+    font-size: 1rem;
+    padding: 0.75rem;
+  }
+  
+  /* Compactamos botones de acción */
+  .btn-icon {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .btn-icon i {
+    font-size: 1rem;
+  }
+  
+  /* Indicador visual de scroll */
+  .table-responsive::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, 
+      rgba(255,215,64,0.5) 0%, 
+      rgba(255,215,64,0.2) 50%, 
+      rgba(255,215,64,0.5) 100%);
+    border-radius: 0 0 10px 10px;
+    pointer-events: none;
+  }
+  
+  /* Mejoramos el formulario */
+  .card-body {
+    padding: 1rem !important;
+  }
+  
+  .card-title {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+  }
+  
+  /* Ajustes para los inputs */
+  .form-control, .form-select {
+    padding: 0.6rem 0.75rem;
+  }
+  
+  /* Mejor espaciado para elementos del formulario */
+  .mb-3 {
+    margin-bottom: 0.75rem !important;
+  }
+}
+
+/* Ajustes para móviles pequeños */
+@media (max-width: 480px) {
+  .page-title {
+    font-size: 1.5rem;
+    max-width: 55%;
+  }
+  
+  .btn-create {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.8rem;
+  }
+  
+  /* Hacer botones más fáciles de tocar */
+  .btn-icon {
+    width: 40px;
+    height: 40px;
+  }
+  
+  /* Ajustar el espaciado del formulario */
+  .form-label {
+    margin-bottom: 0.3rem;
+  }
+  
+  /* Optimizar las columnas del formulario */
+  .row .col-md-6 {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}
+
+/* Mejoras para la experiencia táctil */
+@media (hover: none) {
+  /* Personalizar scrollbar para táctil */
+  .table-responsive::-webkit-scrollbar {
+    height: 6px;
+  }
+  
+  .table-responsive::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+  }
+  
+  .table-responsive::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 215, 64, 0.5);
+    border-radius: 3px;
+  }
+  
+  /* Scrollbar para Firefox */
+  .table-responsive {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 215, 64, 0.5) rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Asegurar tamaño mínimo para elementos táctiles */
+  .btn, .form-control, .form-select, .input-group-text {
+    min-height: 44px;
+  }
+  
+  .btn-icon {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}

@@ -1,0 +1,517 @@
+:host {
+    display: block;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #673ab7 0%, #9c27b0 100%);
+    color: #fff;
+    padding-top: 76px;
+  }
+  
+  .comprar-entrada-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  /* Encabezado y título */
+  .main-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #ffd740;
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    text-align: center;
+  }
+  
+  /* Breadcrumbs */
+  .breadcrumb-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 2rem auto;
+    max-width: 500px;
+  }
+  
+  .breadcrumb-item {
+    padding: 0.5rem 1rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    color: rgba(255, 255, 255, 0.7);
+    flex: 1;
+    text-align: center;
+  }
+  
+  .breadcrumb-item.active {
+    background-color: rgba(255, 215, 64, 0.2);
+    color: #ffd740;
+  }
+  
+  .breadcrumb-separator {
+    margin: 0 0.5rem;
+    color: rgba(255, 255, 255, 0.5);
+  }
+  
+  /* Cards y contenedores */
+  .card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  }
+  
+  .card-title {
+    color: #ffd740;
+    font-weight: 600;
+    font-size: 1.8rem;
+  }
+  
+  .section-title {
+    color: #ffd740;
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 0.5rem;
+  }
+  
+  /* Información del evento */
+  .evento-info {
+    display: flex;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+  
+  .evento-image {
+    width: 120px;
+    height: 120px;
+    flex-shrink: 0;
+  }
+  
+  .evento-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .evento-details {
+    padding: 1rem;
+    flex-grow: 1;
+  }
+  
+  .evento-name {
+    color: white;
+    margin-bottom: 0.5rem;
+    font-size: 1.4rem;
+  }
+  
+  .evento-date {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1rem;
+  }
+  
+  .evento-date i {
+    margin-right: 0.5rem;
+    color: #ffd740;
+  }
+  
+  /* Opciones de tipo de entrada */
+  .option-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 1.5rem;
+    height: 100%;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-align: center;
+  }
+  
+  .option-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  }
+  
+  .option-icon {
+    font-size: 3rem;
+    color: #ffd740;
+    margin-bottom: 1rem;
+  }
+  
+  .option-title {
+    font-size: 1.4rem;
+    color: white;
+    margin-bottom: 0.75rem;
+  }
+  
+  .option-description {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+  }
+  
+  .option-price {
+    font-size: 1.2rem;
+    color: #ffd740;
+    font-weight: 700;
+  }
+  
+  /* Selección de tramos horarios */
+  .tramos-container {
+    margin-bottom: 1.5rem;
+  }
+  
+  .tramo-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+  }
+  
+  .tramo-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  .tramo-card.selected {
+    background: rgba(255, 215, 64, 0.2);
+    border-color: #ffd740;
+    box-shadow: 0 0 15px rgba(255, 215, 64, 0.3);
+  }
+  
+  .tramo-time {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  
+  .tramo-price {
+    font-size: 0.9rem;
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    display: inline-block;
+  }
+  
+  .tramo-price.discount {
+    background-color: rgba(76, 175, 80, 0.3);
+    color: #81c784;
+  }
+  
+  .tramo-price.regular {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+  }
+  
+  .tramo-price.premium {
+    background-color: rgba(255, 193, 7, 0.3);
+    color: #ffca28;
+  }
+  
+  /* Selector de cantidad */
+  .quantity-selector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1rem 0;
+  }
+  
+  .btn-quantity {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .btn-quantity:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+  
+  .quantity-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    width: 50px;
+    text-align: center;
+  }
+  
+  /* Zonas VIP */
+  .zona-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 1.25rem;
+    height: 100%;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .zona-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  .zona-card.selected {
+    background: rgba(255, 215, 64, 0.15);
+    border-color: #ffd740;
+    box-shadow: 0 0 15px rgba(255, 215, 64, 0.3);
+  }
+  
+  .zona-name {
+    color: white;
+    font-size: 1.2rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .zona-capacity {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .zona-capacity i {
+    margin-right: 0.5rem;
+    color: #ffd740;
+  }
+  
+  .zona-description {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    margin-bottom: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  
+  /* Botellas */
+  .botella-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 1rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .botella-image {
+    height: 120px;
+    object-fit: contain;
+    margin-bottom: 0.75rem;
+  }
+  
+  .botella-name {
+    color: white;
+    font-size: 1rem;
+    margin-bottom: 0.3rem;
+  }
+  
+  .botella-details {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .botella-price {
+    color: #ffd740;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+  
+  .botella-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-top: auto;
+  }
+  
+  .btn-botella {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+  }
+  
+  .btn-botella:hover:not(:disabled) {
+    color: #ffd740;
+  }
+  
+  .btn-botella:disabled {
+    color: rgba(255, 255, 255, 0.3);
+    cursor: not-allowed;
+  }
+  
+  .botella-quantity {
+    font-size: 1.2rem;
+    font-weight: 600;
+    min-width: 30px;
+    text-align: center;
+  }
+  
+  /* Resumen de botellas */
+  .selected-botellas {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 1.25rem;
+    margin-top: 1.5rem;
+  }
+  
+  .botellas-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .botella-item {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 1rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .botella-item-name {
+    color: white;
+  }
+  
+  .botella-item-quantity {
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  .botella-item-price {
+    color: #ffd740;
+    font-weight: 600;
+    text-align: right;
+  }
+  
+  /* Resumen de precio */
+  .price-summary {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 1rem 1.5rem;
+    margin-top: 2rem;
+  }
+  
+  .price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.2rem;
+  }
+  
+  .price-label {
+    font-weight: 600;
+  }
+  
+  .price-value {
+    color: #ffd740;
+    font-weight: 700;
+    font-size: 1.5rem;
+  }
+  
+  /* Botones */
+  .btn-primary {
+    background-color: #ffd740;
+    border: none;
+    color: #333;
+    padding: 0.6rem 1.5rem;
+    font-weight: 600;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-primary:hover:not(:disabled) {
+    background-color: #ffecb3;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .btn-outline-primary {
+    background-color: transparent;
+    border: 1px solid #ffd740;
+    color: #ffd740;
+    padding: 0.6rem 1.5rem;
+    font-weight: 600;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-outline-primary:hover {
+    background-color: rgba(255, 215, 64, 0.1);
+    transform: translateY(-2px);
+  }
+  
+  .btn-outline-secondary {
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.8);
+    padding: 0.6rem 1.5rem;
+    font-weight: 600;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-outline-secondary:hover {
+    border-color: white;
+    color: white;
+  }
+  
+  /* Responsive */
+  @media (max-width: 767px) {
+    .main-title {
+      font-size: 2rem;
+    }
+    
+    .breadcrumb-section {
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .breadcrumb-separator {
+      transform: rotate(90deg);
+    }
+    
+    .evento-info {
+      flex-direction: column;
+    }
+    
+    .evento-image {
+      width: 100%;
+      height: 150px;
+    }
+    
+    .actions {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    
+    .actions .btn {
+      width: 100%;
+      margin: 0 0 0.5rem 0 !important;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .botella-controls {
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+  }

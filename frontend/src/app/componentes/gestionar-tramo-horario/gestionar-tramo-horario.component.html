@@ -1,0 +1,161 @@
+<div class="container-fluid py-5 mt-5">
+  <!-- Header con título y botón -->
+  <div class="page-header">
+    <h2 class="page-title">Gestión de Tramos Horarios</h2>
+    <button class="btn btn-create" (click)="mostrarCrear()" *ngIf="!mostrarFormulario">
+      <i class="bi bi-plus-lg"></i> Nuevo Tramo Horario
+    </button>
+  </div>
+
+  <!-- Formulario -->
+  <div class="row justify-content-center" *ngIf="mostrarFormulario">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-body p-4">
+          <h3 class="card-title mb-4">{{modoEdicion ? 'Editar' : 'Nuevo'}} Tramo Horario</h3>
+          
+          <form (ngSubmit)="modoEdicion ? actualizarTramoHorario() : crearTramoHorario()" #tramoForm="ngForm">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Fecha y hora de inicio</label>
+                  <input 
+                    type="datetime-local" 
+                    class="form-control" 
+                    [class.is-invalid]="formErrors.horaInicio"
+                    [(ngModel)]="nuevoTramoHorario.horaInicio" 
+                    name="horaInicio">
+                  <div class="invalid-feedback" *ngIf="formErrors.horaInicio">
+                    {{formErrors.horaInicio}}
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Fecha y hora de fin</label>
+                  <input 
+                    type="datetime-local" 
+                    class="form-control" 
+                    [class.is-invalid]="formErrors.horaFin"
+                    [(ngModel)]="nuevoTramoHorario.horaFin" 
+                    name="horaFin">
+                  <div class="invalid-feedback" *ngIf="formErrors.horaFin">
+                    {{formErrors.horaFin}}
+                  </div>
+                  <small class="text-muted">
+                    Puedes establecer tramos en el mismo día o en días diferentes.
+                  </small>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Multiplicador de precio</label>
+                  <div class="input-group">
+                    <input 
+                      type="number" 
+                      step="0.1" 
+                      min="0.1" 
+                      max="5" 
+                      class="form-control" 
+                      [class.is-invalid]="formErrors.multiplicadorPrecio"
+                      [(ngModel)]="nuevoTramoHorario.multiplicadorPrecio" 
+                      name="multiplicadorPrecio"
+                      required>
+                    <span class="input-group-text">x</span>
+                    <div class="invalid-feedback" *ngIf="formErrors.multiplicadorPrecio">
+                      {{formErrors.multiplicadorPrecio}}
+                    </div>
+                  </div>
+                  <small class="text-muted">
+                    Factor por el que se multiplicará el precio base.<br>
+                    • 1.0x: Precio normal<br>
+                    • 0.5x: 50% de descuento<br>
+                    • 2.0x: El doble del precio base
+                  </small>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Tipo de precio</label>
+                  <div class="price-indicator mt-2">
+                    <div class="price-indicator-label" 
+                        [class.active]="parseFloat(nuevoTramoHorario.multiplicadorPrecio) < 1">
+                      Descuento
+                    </div>
+                    <div class="price-indicator-label" 
+                        [class.active]="parseFloat(nuevoTramoHorario.multiplicadorPrecio) == 1">
+                      Estándar
+                    </div>
+                    <div class="price-indicator-label" 
+                        [class.active]="parseFloat(nuevoTramoHorario.multiplicadorPrecio) > 1">
+                      Recargo
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="alert alert-danger" *ngIf="formErrors.general">
+              {{formErrors.general}}
+            </div>
+
+            <!-- Botones -->
+            <div class="mt-4 text-center">
+              <button type="submit" class="btn btn-create me-2">
+                {{modoEdicion ? 'Actualizar' : 'Crear'}}
+              </button>
+              <button type="button" class="btn btn-secondary" (click)="cerrarFormulario()">
+                Cancelar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de tramos horarios -->
+  <div class="table-responsive" *ngIf="!mostrarFormulario">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Fecha y Hora Inicio</th>
+          <th>Fecha y Hora Fin</th>
+          <th>Multiplicador</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let tramo of tramosHorarios">
+          <td>{{tramo.horaInicio | date:'dd/MM/yyyy HH:mm'}}</td>
+          <td>{{tramo.horaFin | date:'dd/MM/yyyy HH:mm'}}</td>
+          <td>
+            <div class="multiplicador" [ngClass]="{
+              'descuento': parseFloat(tramo.multiplicadorPrecio) < 1,
+              'estandar': parseFloat(tramo.multiplicadorPrecio) == 1,
+              'recargo': parseFloat(tramo.multiplicadorPrecio) > 1
+            }">
+              {{tramo.multiplicadorPrecio}}x
+            </div>
+          </td>
+          <td>
+            <div class="d-flex gap-2">
+              <button class="btn btn-icon" (click)="editarTramoHorario(tramo)">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button class="btn btn-icon btn-danger" (click)="eliminarTramoHorario(tramo.idTramoHorario!)">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="tramosHorarios.length === 0">
+          <td colspan="4" class="text-center">No hay tramos horarios definidos</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

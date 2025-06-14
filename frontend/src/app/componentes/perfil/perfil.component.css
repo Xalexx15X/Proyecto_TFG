@@ -1,0 +1,338 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #673ab7 0%, #9c27b0 100%);
+  padding-top: 76px; /* Altura del navbar */
+}
+
+.profile-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  padding-bottom: 2rem;
+}
+
+h1, p.text-muted {
+  color: #ffd740 !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+p.text-muted {
+  opacity: 0.8;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem; /* Reducido de 2rem a 1.5rem */
+}
+
+.page-header h1 {
+  color: #ffd740 !important; /* Color amarillo para el título */
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.main-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #ffd740;
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  text-align: center;
+}
+
+.profile-card {
+  border-radius: 15px;
+  overflow: hidden;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  color: white;
+  margin-bottom: 1.5rem; /* Reducido de 2rem a 1.5rem */
+}
+
+.card-body {
+  padding: 1.5rem; /* Reducido de 2rem a 1.5rem */
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.avatar-container {
+  margin-right: 1.5rem;
+}
+
+.avatar-placeholder {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #ffd740;
+  color: #673ab7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.profile-info h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: white;
+}
+
+.profile-info .text-muted {
+  color: rgba(255, 255, 255, 0.7) !important;
+  margin-bottom: 0.5rem;
+}
+
+.profile-info .badge {
+  font-size: 0.8rem;
+  padding: 0.35em 0.65em;
+  background-color: rgba(255, 215, 64, 0.2);
+  color: #ffd740;
+  border: 1px solid rgba(255, 215, 64, 0.3);
+}
+
+.detail-card {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1rem;
+  border-radius: 10px;
+  height: 100%;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.detail-card:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+}
+
+.icon-box i {
+  font-size: 1.5rem;
+  color: #673ab7;
+}
+
+.bg-primary-light {
+  background-color: #ffd740;
+}
+
+.bg-warning-light {
+  background-color: #ff9800;
+}
+
+.bg-info-light {
+  background-color: #2196f3;
+}
+
+.detail-info h4 {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 0.25rem;
+}
+
+.detail-info .value {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 0;
+}
+
+.action-buttons {
+  margin-top: 1.5rem; /* Reducido de 2rem a 1.5rem */
+  display: flex;
+}
+
+form h3 {
+  color: #ffd740;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+form label {
+  color: white;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+form .form-control {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  caret-color: white !important; /* Hace que el cursor (caret) sea blanco */
+}
+
+/* Cambiar color de selección de texto */
+form .form-control::selection {
+  background-color: rgba(255, 215, 64, 0.3); /* Fondo amarillo semitransparente al seleccionar texto */
+  color: white; /* Texto blanco cuando está seleccionado */
+}
+
+form .form-control::-moz-selection {
+  background-color: rgba(255, 215, 64, 0.3);
+  color: white;
+}
+
+form .form-control:focus {
+  background-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 0 0.25rem rgba(255, 215, 64, 0.25);
+  border-color: #ffd740;
+  color: white;
+}
+
+form .form-control:disabled {
+  background-color: rgba(0, 0, 0, 0.2);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.form-text {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+.btn-primary {
+  background-color: #ffd740;
+  color: #333;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #ffec8b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.btn-primary:disabled {
+  background-color: rgba(255, 215, 64, 0.5);
+  color: #333;
+}
+
+.btn-secondary, .btn-outline-secondary {
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.8);
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover, .btn-outline-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: white;
+  color: white;
+}
+
+.alert {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 8px;
+}
+
+.alert-success {
+  background-color: rgba(76, 175, 80, 0.2);
+  color: #81c784;
+}
+
+.alert-danger {
+  background-color: rgba(244, 67, 54, 0.2);
+  color: #e57373;
+}
+
+.password-form {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-top: 1.5rem; /* Reducido de 2rem a 1.5rem */
+}
+
+.password-form h4 {
+  color: #ffd740;
+  margin-bottom: 1.5rem;
+}
+
+.spinner-border {
+  color: #ffd740;
+}
+
+.spinner-small {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .avatar-container {
+    margin-right: 0;
+    margin-bottom: 1rem;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .action-buttons button {
+    width: 100%;
+  }
+  
+  .action-buttons .ms-2 {
+    margin-left: 0 !important;
+  }
+}
+
+::placeholder {
+  color: rgba(255, 255, 255, 0.7) !important;
+  opacity: 1;
+}
+
+::-webkit-input-placeholder {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+::-moz-placeholder {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+:-ms-input-placeholder {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+:-moz-placeholder {
+  color: rgba(255, 255, 255, 0.7) !important;
+}

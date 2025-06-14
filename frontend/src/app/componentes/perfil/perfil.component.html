@@ -1,0 +1,155 @@
+<div class="profile-container py-5 mt-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <!-- Título de la sección -->
+        <div class="page-header mb-4">
+          <h1>Mi Perfil</h1>
+        </div>
+
+        <!-- Alertas -->
+        <div class="alert alert-danger" *ngIf="error">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ error }}
+        </div>
+
+        <div class="alert alert-success" *ngIf="exito">
+          <i class="bi bi-check-circle-fill me-2"></i> {{ exito }}
+        </div>
+
+        <!-- Contenido del perfil -->
+        <div class="card profile-card shadow-sm">
+          <div class="card-body">
+            <!-- Vista del perfil (modo lectura) -->
+            <div *ngIf="!editando">
+              <!-- Información personal -->
+              <div class="profile-header">
+                <div class="avatar-container">
+                  <div class="avatar-placeholder">
+                    {{ usuario.nombre?.charAt(0).toUpperCase() }}
+                  </div>
+                </div>
+                <div class="profile-info">
+                  <h2>{{ usuario.nombre }}</h2>
+                  <p class="text-muted">{{ usuario.email }}</p>
+                  <p class="badge" [ngClass]="getClaseRol()">
+                    {{ getNombreRol() }}
+                  </p>
+                </div>
+              </div>
+
+              <hr>
+
+              <!-- Detalles adicionales -->
+              <div class="row mt-4">
+                <!-- Monedero (solo visible para clientes) -->
+                <div class="col-md-6 mb-3" *ngIf="usuario.role === 'ROLE_CLIENTE'">
+                  <div class="detail-card">
+                    <div class="icon-box bg-primary-light">
+                      <i class="bi bi-wallet2"></i>
+                    </div>
+                    <div class="detail-info">
+                      <h4>Saldo en Monedero</h4>
+                      <p class="value">{{ usuario.monedero | currency:'EUR':'symbol':'1.2-2' }}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Puntos de recompensa (solo visible para clientes) -->
+                <div class="col-md-6 mb-3" *ngIf="usuario.role === 'ROLE_CLIENTE'">
+                  <div class="detail-card">
+                    <div class="icon-box bg-warning-light">
+                      <i class="bi bi-star-fill"></i>
+                    </div>
+                    <div class="detail-info">
+                      <h4>Puntos de Recompensa</h4>
+                      <p class="value">{{ usuario.puntosRecompensa }} pts</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ID de Usuario (visible para todos) -->
+                <div class="col-md-6 mb-3">
+                  <div class="detail-card">
+                    <div class="icon-box bg-info-light">
+                      <i class="bi bi-person-badge"></i>
+                    </div>
+                    <div class="detail-info">
+                      <h4>ID de Usuario</h4>
+                      <p class="value">{{ usuario.idUsuario }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Botones de acción -->
+              <div class="action-buttons mt-4">
+                <button class="btn btn-primary" (click)="toggleEdicion(true)">
+                  <i class="bi bi-pencil"></i> Editar Perfil
+                </button>
+              </div>
+            </div>
+
+            <!-- Formulario de edición -->
+            <div *ngIf="editando">
+              <h3>Editar Perfil</h3>
+              
+              <form (ngSubmit)="guardarCambios()">
+                <div class="mb-3">
+                  <label for="nombre" class="form-label">Nombre</label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="nombre" 
+                    name="nombre"
+                    [(ngModel)]="usuario.nombre"
+                    required
+                  >
+                </div>
+
+                <div class="mb-3">
+                  <label for="email" class="form-label">Email</label>
+                  <input 
+                    type="email" 
+                    class="form-control" 
+                    id="email" 
+                    name="email"
+                    [(ngModel)]="usuario.email"
+                    required
+                  >
+                </div>
+
+                <!-- Nuevo campo de contraseña -->
+                <div class="mb-3">
+                  <label for="password" class="form-label">Nueva contraseña</label>
+                  <div class="input-group">
+                    <input 
+                      type="password" 
+                      class="form-control" 
+                      id="password" 
+                      name="password"
+                      [(ngModel)]="nuevaPassword"
+                      placeholder="Dejar en blanco para mantener la actual"
+                    >
+                    <span class="input-group-text text-muted">
+                      <i class="bi bi-key"></i>
+                    </span>
+                  </div>
+                  <div class="form-text">La contraseña debe tener al menos 6 caracteres</div>
+                </div>
+
+                <div class="action-buttons">
+                  <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save"></i> Guardar Cambios
+                  </button>
+                  <button type="button" class="btn btn-outline-secondary ms-2" (click)="toggleEdicion(false)">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

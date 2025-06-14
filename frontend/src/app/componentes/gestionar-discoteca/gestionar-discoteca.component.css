@@ -1,0 +1,793 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #673ab7 0%, #9c27b0 100%);
+  padding-top: 76px; /* Altura del navbar */
+}
+
+.container {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.container-fluid {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Estilos para la búsqueda */
+.search-container {
+  max-width: 500px;
+  margin: 2rem auto;
+}
+
+.search-input {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 0 25px 25px 0;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.input-group-text {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  border-radius: 25px 0 0 25px;
+}
+
+/* Header y búsqueda */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.page-title {
+  color: white;
+  font-size: 2rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Formulario */
+.card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.card-body {
+  padding: 2rem;
+}
+
+.card-title {
+  color: #ffd740;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.section-title {
+  color: #ffd740;
+  font-size: 1.1rem;
+  margin: 1.5rem 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Ajustes para alineación de formularios y labels */
+.form-label {
+  color: white !important; /* Forzar color blanco para todos los labels */
+  margin-bottom: 0.5rem;
+  font-weight: 400; /* Peso de fuente uniforme */
+}
+
+label {
+  color: white !important;
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+/* Ajuste para los inputs, selects y otros controles de formulario */
+.form-control,
+.form-select {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  height: calc(3rem + 2px); /* Altura uniforme para todos los controles */
+  line-height: 1.5;
+  font-size: 1rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: #ffd740;
+  box-shadow: 0 0 0 0.2rem rgba(255, 215, 64, 0.25);
+  color: white;
+}
+
+/* Ajuste específico para los selects */
+.form-select {
+  padding-right: 2.5rem;
+  background-position: right 1rem center;
+  appearance: none; /* Elimina los estilos nativos del navegador */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' class='bi bi-chevron-down' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 16px;
+}
+
+.form-select option {
+  background-color: #2b2b2b;
+  color: white;
+}
+
+/* Personalización del dropdown cuando está abierto */
+.form-select option:hover,
+.form-select option:focus,
+.form-select option:active,
+.form-select option:checked {
+  background-color: #673ab7;
+  color: white;
+}
+
+/* Alineación vertical para todos los elementos de formulario */
+.mb-3 {
+  margin-bottom: 1rem !important; /* Espaciado uniforme entre elementos */
+}
+
+/* Asegurar que los grupos de formulario tengan el mismo espaciado */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+/* Ajuste para los contenedores de input-group */
+.input-group {
+  align-items: stretch;
+}
+
+.input-group .form-control,
+.input-group .input-group-text,
+.input-group .form-select {
+  height: calc(3rem + 2px);
+}
+
+/* Tabla */
+.table-responsive {
+  margin-top: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 1.5rem;
+}
+
+.table {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-radius: 10px;
+  overflow: hidden;
+  font-size: 1.1em;
+}
+
+.table thead th {
+  background: rgba(0, 0, 0, 0.2);
+  color: white;
+  border: none;
+  font-size: 1.2rem;
+  font-weight: 500;
+  padding: 1rem;
+}
+
+.table th {
+  background: linear-gradient(135deg, #673ab7 0%, #9c27b0 100%);
+  color: white;
+}
+
+.table td {
+  border-color: rgba(255, 255, 255, 0.1);
+  padding: 1rem;
+  vertical-align: middle;
+}
+
+.table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.table-thumbnail {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* Admin badges en la tabla */
+.table td .admin-badge {
+  background-color: rgba(0, 0, 0, 0.6); /* Fondo negro semitransparente */
+  color: white; /* Texto blanco */
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  display: inline-block;
+  font-size: 0.9rem;
+}
+
+/* Botones */
+.btn-create {
+  background-color: #ffd740;
+  color: #000;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  margin-right: 1rem;
+}
+
+.btn-create:hover {
+  background-color: #ffec8b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.btn-info {
+  background-color: #673ab7;
+  border-color: #673ab7;
+  color: white;
+}
+
+.btn-info:hover {
+  background-color: #563098;
+  border-color: #563098;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+.btn-danger:hover {
+  background-color: #bb2d3b;
+  border-color: #bb2d3b;
+}
+
+.btn-icon {
+  background-color: #673ab7;
+  border: none;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.btn-icon i {
+  font-size: 1.2rem;
+}
+
+.btn-icon:hover {
+  background-color: #563098;
+  color: #ffd740;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.btn-icon.btn-danger {
+  background-color: #dc3545;
+}
+
+.btn-icon.btn-danger:hover {
+  background-color: #bb2d3b;
+  color: #ffd740;
+}
+
+/* Previsualización de imágenes */
+.image-preview-section {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  padding: 1rem;
+  height: 100%;
+  min-height: 300px;
+}
+
+.image-preview-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.image-preview-item {
+  position: relative;
+  width: 100%;
+  height: 120px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.preview-item {
+  position: relative;
+}
+
+.preview-image {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.image-preview {
+  position: relative;
+  width: 100%;
+  padding-top: 100%;
+  overflow: hidden;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.image-preview img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-preview .btn-delete {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.image-preview .btn-delete:hover {
+  background: rgba(220, 53, 69, 0.8);
+}
+
+.btn-remove-image {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: rgba(220, 53, 69, 0.8);
+  border: none;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  opacity: 0.8;
+  transition: all 0.2s;
+}
+
+.btn-remove-image:hover {
+  opacity: 1;
+  background-color: #dc3545;
+}
+
+.no-images-message {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 120px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+/* Estilos para la lista de administradores */
+.admin-search .form-control {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.admin-list {
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: rgba(0, 0, 0, 0.4); /* Fondo negro más oscuro */
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.admin-item {
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.1); /* Un poco más claro que el fondo */
+  border-radius: 8px;
+  margin: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white; /* Texto blanco para mejor contraste */
+}
+
+.admin-item:hover {
+  background: rgba(255, 255, 255, 0.2); /* Más claro al pasar el ratón */
+}
+
+.admin-item.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.admin-item i {
+  color: #ffd740; /* Mantener el icono amarillo */
+}
+
+.admin-item:last-child {
+  border-bottom: none;
+}
+
+.selected-admins {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.selected-admins .admin-badge {
+  display: inline-block;
+  background: rgba(255, 215, 64, 0.2);
+  color: #ffd740;
+  border-radius: 25px;
+  padding: 0.5rem 1rem;
+  margin: 0.25rem;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+}
+
+.selected-admins .btn-remove {
+  background: none;
+  border: none;
+  color: #ffd740;
+  margin-left: 0.5rem;
+  padding: 0;
+  cursor: pointer;
+}
+
+.selected-admins .btn-remove:hover {
+  color: white;
+}
+
+/* Estilos para la tabla */
+.table td .badge {
+  background-color: rgba(103, 58, 183, 0.5);
+  color: white;
+  margin-right: 0.25rem;
+  font-weight: normal;
+}
+
+.admin-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.badge {
+  background: rgba(103, 58, 183, 0.3);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 15px;
+  font-weight: normal;
+}
+
+/* Mejora de estilo para administradores en la tabla */
+
+/* Cambiamos el estilo actual */
+.admin-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* Nuevo estilo con fondo amarillo y texto negro */
+.table td .badge,
+.admin-badges .badge,
+.table td .admin-badge {
+  background-color: #ffd740; /* Amarillo */
+  color: #000; /* Negro */
+  margin-right: 0.25rem;
+  font-weight: 500; /* Un poco más gruesa para mejor legibilidad */
+  padding: 0.4rem 0.8rem;
+  border-radius: 15px;
+}
+
+/* Efecto hover para mejorar la interacción */
+.admin-badges .badge:hover {
+  background-color: #ffec8b; /* Amarillo más claro al pasar el ratón */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Ajuste específico para el admin-badge en la tabla */
+.table td .admin-badge {
+  background-color: #ffd740; /* Amarillo */
+  color: #000; /* Negro */
+  padding: 0.4rem 0.8rem;
+  border-radius: 15px;
+  display: inline-block;
+  font-size: 0.9rem;
+}
+
+/* Mantenemos el estilo de los administradores seleccionados */
+.selected-admins .admin-badge {
+  background-color: #ffd740;
+  color: #000;
+  border-radius: 25px;
+  padding: 0.5rem 1rem;
+  margin: 0.25rem;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+}
+
+/* El botón de eliminar dentro del badge de administrador */
+.selected-admins .btn-remove {
+  background: none;
+  border: none;
+  color: #000; /* Cambiado a negro para mejor contraste */
+  margin-left: 0.5rem;
+  padding: 0;
+  cursor: pointer;
+}
+
+.selected-admins .btn-remove:hover {
+  color: #673ab7; /* Cambiado a morado para mejor contraste */
+}
+
+/* Ajuste responsivo */
+@media (max-width: 768px) {
+  .table td .badge,
+  .admin-badges .badge,
+  .table td .admin-badge {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* Mensajes de error */
+.invalid-feedback {
+  display: block;
+  color: #ffc107 !important;
+  margin-top: 0.25rem;
+}
+
+.form-control.is-invalid,
+.form-select.is-invalid {
+  border-color: #ffc107 !important;
+}
+
+.form-control.is-invalid:focus,
+.form-select.is-invalid:focus {
+  box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25) !important;
+}
+
+.alert {
+  background-color: rgba(255, 193, 7, 0.1);
+  border-color: rgba(255, 193, 7, 0.3);
+  color: #ffd740;
+  border-radius: 8px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container-fluid {
+    padding: 1rem;
+  }
+  
+  /* Corregimos el header para mantener el botón a la derecha del título */
+  .page-header {
+    flex-direction: row !important; /* Sobreescribimos la regla existente */
+    flex-wrap: nowrap !important; /* Evitamos que los elementos bajen */
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Ajustamos el tamaño del título */
+  .page-title {
+    font-size: 1.7rem;
+    max-width: 60%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Muestra "..." si el texto es muy largo */
+  }
+  
+  /* Reducimos el tamaño del botón */
+  .btn-create {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    margin-right: 0;
+  }
+  
+  /* Ajustamos el buscador */
+  .search-container {
+    max-width: 100%;
+    margin: 1.5rem 0;
+  }
+  
+  /* Mejorar visualización de tabla en móvil con scroll horizontal */
+  .table-responsive {
+    margin-top: 1.5rem;
+    padding: 0.5rem;
+    border-radius: 10px;
+    overflow-x: auto; /* Habilita el desplazamiento horizontal */
+    -webkit-overflow-scrolling: touch; /* Scroll suave para iOS */
+  }
+  
+  /* Forzamos ancho mínimo para asegurar desplazamiento horizontal */
+  .table {
+    min-width: 900px;
+    font-size: 1rem;
+  }
+  
+  /* Optimizamos espacio en celdas */
+  .table th, .table td {
+    white-space: nowrap; /* Evita saltos de línea */
+    padding: 0.75rem;
+  }
+  
+  /* Reducimos tamaño de la miniatura */
+  .table-thumbnail {
+    width: 45px;
+    height: 45px;
+  }
+  
+  /* Compactamos botones de acción */
+  .btn-icon {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .btn-icon i {
+    font-size: 1rem;
+  }
+  
+  /* Indicador visual de scroll */
+  .table-responsive::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, 
+      rgba(255,215,64,0.5) 0%, 
+      rgba(255,215,64,0.2) 50%, 
+      rgba(255,215,64,0.5) 100%);
+    border-radius: 0 0 10px 10px;
+    pointer-events: none;
+  }
+  
+  /* Mejoramos formulario en móvil */
+  .card-body {
+    padding: 1rem !important;
+  }
+  
+  .section-title {
+    margin: 1rem 0 0.75rem;
+  }
+  
+  /* Ajustamos vista previa de imágenes */
+  .image-preview-container {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+  
+  .image-preview {
+    height: auto;
+  }
+}
+
+/* Ajustes para móviles pequeños */
+@media (max-width: 480px) {
+  .page-title {
+    font-size: 1.5rem;
+    max-width: 55%;
+  }
+  
+  .btn-create {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.8rem;
+  }
+  
+  /* Hacer botones más fáciles de tocar */
+  .btn-icon {
+    width: 40px;
+    height: 40px;
+  }
+  
+  /* Ajustamos columnas para formulario */
+  .border-end-md {
+    border-right: none;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  /* Mejoramos visualización de imágenes en móvil pequeño */
+  .image-preview-container {
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 0.5rem;
+  }
+  
+  .image-preview {
+    padding-top: 100%;
+  }
+}
+
+/* Mejoras para la experiencia táctil */
+@media (hover: none) {
+  /* Personalizar scrollbar para táctil */
+  .table-responsive::-webkit-scrollbar {
+    height: 6px;
+  }
+  
+  .table-responsive::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+  }
+  
+  .table-responsive::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 215, 64, 0.5);
+    border-radius: 3px;
+  }
+  
+  /* Scrollbar para Firefox */
+  .table-responsive {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 215, 64, 0.5) rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Asegurar tamaño mínimo para elementos táctiles */
+  .btn, .form-control, .input-group-text, .form-select {
+    min-height: 44px;
+  }
+  
+  .btn-icon, .btn-delete {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  
+  /* Mejor feedback para los elementos seleccionables */
+  .admin-item {
+    padding: 0.8rem 1rem;
+  }
+  
+  .admin-item:active {
+    background: rgba(255, 215, 64, 0.2);
+  }
+}

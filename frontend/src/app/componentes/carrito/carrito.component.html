@@ -1,0 +1,139 @@
+<div class="carrito-container py-5 mt-5">
+    <div class="container">
+      <!-- Encabezado -->
+      <div class="header-section text-center mb-4">
+        <h1 class="main-title">Carrito de Compras</h1>
+      </div>
+  
+      <!-- Mensaje de error -->
+      <div class="alert alert-danger" *ngIf="error">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <span [innerHTML]="formatErrorMessage()"></span>
+      </div>
+  
+      <!-- Mensaje de éxito -->
+      <div class="alert alert-success" *ngIf="exito">
+        <i class="bi bi-check-circle-fill me-2"></i> {{ exito }}
+      </div>
+  
+      <!-- Carrito vacío -->
+      <div class="empty-cart text-center py-5" *ngIf="itemsCarrito.length === 0 && !exito">
+        <i class="bi bi-cart-x display-1"></i>
+        <h3 class="mt-4">Tu carrito está vacío</h3>
+        <p>No tienes productos agregados a tu carrito de compras.</p>
+        <button class="btn btn-primary mt-3" (click)="continuarComprando()">
+          Explorar discotecas y eventos
+        </button>
+      </div>
+  
+      <!-- Contenido del carrito -->
+      <div class="row" *ngIf="itemsCarrito.length > 0 && !exito">
+        <div class="col-lg-8">
+          <!-- Lista de items -->
+          <div class="card cart-card mb-4">
+            <div class="card-header">
+              <h3 class="mb-0">Tus Entradas</h3>
+            </div>
+            <div class="card-body p-0">
+              <div class="cart-items">
+                <div class="cart-item" *ngFor="let item of itemsCarrito; let i = index">
+                  <!-- Tipo de entrada -->
+                  <div class="item-badge" [ngClass]="{'vip': item.tipo === 'RESERVA_VIP'}">
+                    {{item.tipo === 'ENTRADA' ? 'Entrada General' : 'Zona VIP'}}
+                  </div>
+  
+                  <!-- Info del evento -->
+                  <div class="item-info">
+                    <div class="item-image">
+                      <img [src]="item.imagen || 'assets/images/default-event.jpg'" alt="Evento">
+                    </div>
+                    <div class="item-details">
+                      <h4 class="item-title">{{item.nombre}}</h4>
+                      <div class="item-date">
+                        <i class="bi bi-calendar-event"></i>
+                        {{formatDate(item.fechaHora)}}
+                      </div>
+                      <div *ngIf="item.tipo === 'RESERVA_VIP' && item.nombreZonaVip" class="item-zone">
+                        <i class="bi bi-star-fill"></i>
+                        {{item.nombreZonaVip}}
+                      </div>
+                    </div>
+                  </div>
+  
+                  <!-- Controles de cantidad y precio -->
+                  <div class="item-controls">
+                    <div class="quantity-control">
+                      <button (click)="decrementarCantidad(i)" class="btn-quantity">
+                        <i class="bi bi-dash"></i>
+                      </button>
+                      <span class="quantity">{{item.cantidad}}</span>
+                      <button (click)="incrementarCantidad(i)" class="btn-quantity">
+                        <i class="bi bi-plus"></i>
+                      </button>
+                    </div>
+                    <div class="item-price">
+                      {{(item.precioUnitario * item.multiplicadorPrecio * item.cantidad) | currency:'EUR':'symbol':'1.2-2'}}
+                    </div>
+                    <button class="btn-remove" (click)="eliminarItem(i)">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+  
+                  <!-- Detalles de botellas (VIP) -->
+                  <div class="item-bottles" *ngIf="item.tipo === 'RESERVA_VIP' && item.botellas && item.botellas.length > 0">
+                    <h5>Botellas seleccionadas:</h5>
+                    <ul class="bottles-list">
+                      <li *ngFor="let botella of item.botellas" class="bottle-item">
+                        <span class="bottle-name">{{botella.nombre}}</span>
+                        <span class="bottle-quantity">x{{botella.cantidad}}</span>
+                        <span class="bottle-price">{{botella.precio * botella.cantidad | currency:'EUR':'symbol':'1.2-2'}}</span>
+                      </li>
+                    </ul>
+                    <div class="bottles-total">
+                      Total botellas: {{calcularTotalBotellas(item.botellas) | currency:'EUR':'symbol':'1.2-2'}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer">
+              <button class="btn btn-outline-danger" (click)="vaciarCarrito()">
+                <i class="bi bi-trash"></i> Vaciar carrito
+              </button>
+            </div>
+          </div>
+        </div>
+  
+        <div class="col-lg-4">
+          <!-- Resumen del pedido -->
+          <div class="card cart-summary-card">
+            <div class="card-header">
+              <h3 class="mb-0">Resumen del pedido</h3>
+            </div>
+            <div class="card-body">
+              <div class="summary-item">
+                <span>Subtotal</span>
+                <span>{{total | currency:'EUR':'symbol':'1.2-2'}}</span>
+              </div>
+              <div class="summary-divider"></div>
+              <div class="summary-total">
+                <span>Total a pagar</span>
+                <span>{{total | currency:'EUR':'symbol':'1.2-2'}}</span>
+              </div>
+              <div class="summary-item puntos-ganados" *ngIf="puntosGanados > 0">
+                <span>Puntos a ganar</span>
+                <span class="puntos-valor">+{{puntosGanados}} pts</span>
+              </div>
+  
+              <button class="btn btn-primary btn-block mt-4" (click)="finalizarCompra()">
+                <i class="bi bi-credit-card"></i> Finalizar compra
+              </button>
+              <button class="btn btn-outline-secondary btn-block mt-2" (click)="continuarComprando()">
+                <i class="bi bi-arrow-left"></i> Seguir comprando
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

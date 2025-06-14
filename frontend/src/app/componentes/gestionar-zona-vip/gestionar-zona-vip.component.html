@@ -1,0 +1,155 @@
+<div class="container-fluid py-5 mt-5">
+    <!-- Header con título y botón -->
+    <div class="page-header">
+      <h2 class="page-title">Gestión de Zonas VIP</h2>
+      <button class="btn btn-create" (click)="mostrarCrear()" *ngIf="!mostrarFormulario">
+        <i class="bi bi-plus-lg"></i> Nueva Zona VIP
+      </button>
+    </div>
+  
+    <!-- Búsqueda -->
+    <div class="search-container" *ngIf="!mostrarFormulario">
+      <div class="input-group">
+        <span class="input-group-text">
+          <i class="bi bi-search"></i>
+        </span>
+        <input type="text" 
+               class="form-control search-input" 
+               placeholder="Buscar zona VIP..." 
+               [(ngModel)]="terminoBusqueda"
+               (input)="buscar($event)">
+      </div>
+    </div>
+  
+    <!-- Formulario -->
+    <div class="row justify-content-center" *ngIf="mostrarFormulario">
+      <div class="col-md-10">
+        <div class="card">
+          <div class="card-body p-4">
+            <h3 class="card-title mb-4">{{modoEdicion ? 'Editar' : 'Nueva'}} Zona VIP</h3>
+            
+            <form (ngSubmit)="modoEdicion ? actualizarZonaVip() : crearZonaVip()" #zonaVipForm="ngForm">
+              <div class="row">
+                <!-- Información básica -->
+                <div class="col-md-6">
+                  <div class="section-title">Información Básica</div>
+                  <div class="mb-3">
+                    <label class="form-label">Nombre</label>
+                    <input type="text" 
+                           class="form-control" 
+                           [class.is-invalid]="formErrors.nombre"
+                           [(ngModel)]="nuevaZonaVip.nombre" 
+                           name="nombre">
+                    <div class="invalid-feedback" *ngIf="formErrors.nombre">
+                      {{formErrors.nombre}}
+                    </div>
+                  </div>
+  
+                  <div class="mb-3">
+                    <label class="form-label">Descripción</label>
+                    <textarea class="form-control" 
+                              rows="3"
+                              [class.is-invalid]="formErrors.descripcion"
+                              [(ngModel)]="nuevaZonaVip.descripcion" 
+                              name="descripcion"></textarea>
+                    <div class="invalid-feedback" *ngIf="formErrors.descripcion">
+                      {{formErrors.descripcion}}
+                    </div>
+                  </div>
+                </div>
+  
+                <div class="col-md-6">
+                  <div class="section-title">Configuración</div>
+                  <div class="mb-3">
+                    <label class="form-label">Aforo Máximo</label>
+                    <input type="number" 
+                           class="form-control" 
+                           [class.is-invalid]="formErrors.aforoMaximo"
+                           [(ngModel)]="nuevaZonaVip.aforoMaximo" 
+                           name="aforoMaximo"
+                           min="1">
+                    <div class="invalid-feedback" *ngIf="formErrors.aforoMaximo">
+                      {{formErrors.aforoMaximo}}
+                    </div>
+                  </div>
+  
+                  <div class="mb-3">
+                    <label class="form-label">Estado</label>
+                    <select class="form-select" 
+                            [class.is-invalid]="formErrors.estado"
+                            [(ngModel)]="nuevaZonaVip.estado" 
+                            name="estado">
+                      <option value="DISPONIBLE">Disponible</option>
+                      <option value="NO_DISPONIBLE">No Disponible</option>
+                      <option value="MANTENIMIENTO">En Mantenimiento</option>
+                    </select>
+                    <div class="invalid-feedback" *ngIf="formErrors.estado">
+                      {{formErrors.estado}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+  
+              <div class="alert alert-danger" *ngIf="formErrors.general">
+                {{formErrors.general}}
+              </div>
+  
+              <!-- Botones -->
+              <div class="mt-4 text-center">
+                <button type="submit" class="btn btn-create me-2">
+                  {{modoEdicion ? 'Actualizar' : 'Crear'}}
+                </button>
+                <button type="button" class="btn btn-secondary" (click)="cerrarFormulario()">
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Tabla de zonas VIP -->
+    <div class="table-responsive" *ngIf="!mostrarFormulario">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Aforo Máximo</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let zonaVip of zonasVip">
+            <td>{{zonaVip.nombre}}</td>
+            <td>{{zonaVip.descripcion}}</td>
+            <td>{{zonaVip.aforoMaximo}} personas</td>
+            <td>
+              <span class="badge" [ngClass]="{
+                'badge-success': zonaVip.estado === 'DISPONIBLE',
+                'badge-danger': zonaVip.estado === 'NO_DISPONIBLE',
+                'badge-warning': zonaVip.estado === 'MANTENIMIENTO'
+              }">
+                {{zonaVip.estado}}
+              </span>
+            </td>
+            <td>
+              <div class="d-flex gap-2">
+                <button class="btn btn-icon" (click)="editarZonaVip(zonaVip)">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-icon btn-danger" (click)="eliminarZonaVip(zonaVip.idZonaVip!)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="zonasVip.length === 0">
+            <td colspan="5" class="text-center">No hay zonas VIP registradas</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>

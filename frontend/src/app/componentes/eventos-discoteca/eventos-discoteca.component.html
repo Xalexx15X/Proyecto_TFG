@@ -1,0 +1,114 @@
+<div class="eventos-container py-5 mt-5">
+  <div class="container">
+    <!-- Título y descripción -->
+    <div class="header-section text-center mb-4">
+      <h1 class="main-title">Eventos en {{discoteca.nombre}}</h1>
+      <p class="subtitle">{{discoteca.direccion}}, {{discoteca.ciudad?.nombre}}</p>
+    </div>
+
+    <!-- Filtro con botones -->
+    <div class="filter-section mb-4">
+      <div class="filter-buttons">
+        <div class="filter-button" 
+             [class.active]="filtroActual === 'TODOS'"
+             (click)="filtrarPorTipo('TODOS')">
+          Todos los eventos
+        </div>
+        <div class="filter-button" 
+             [class.active]="filtroActual === 'REGULAR'"
+             (click)="filtrarPorTipo('REGULAR')">
+          Regulares
+        </div>
+        <div class="filter-button" 
+             [class.active]="filtroActual === 'ESPECIAL'"
+             (click)="filtrarPorTipo('ESPECIAL')">
+          Especiales
+        </div>
+        <div class="filter-button filter-button-cancelado" 
+             [class.active]="filtroActual === 'CANCELADO'"
+             (click)="filtrarPorTipo('CANCELADO')">
+          Cancelados
+        </div>
+      </div>
+    </div>
+
+    <!-- Mensaje de error -->
+    <div class="alert alert-danger" *ngIf="error">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i> {{error}}
+    </div>
+
+    <!-- Lista de eventos -->
+    <div class="eventos-list" *ngIf="!error">
+      <!-- Mensaje si no hay resultados -->
+      <div class="no-results text-center py-5" *ngIf="eventosFiltrados.length === 0">
+        <i class="bi bi-emoji-frown fs-1"></i>
+        <h4 class="mt-3">No se encontraron eventos</h4>
+        <p>No hay eventos disponibles con los filtros seleccionados.</p>
+      </div>
+
+      <!-- Grid de eventos (3 por fila en pantallas grandes) -->
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div class="col mb-4" *ngFor="let evento of eventosFiltrados">
+          <div class="evento-card h-100" [class.evento-cancelado]="evento.estado === 'CANCELADO'">
+            <!-- Imagen del evento como en detalle-discoteca -->
+            <div class="evento-image-container">
+              <img [src]="evento.imagen" 
+                   class="evento-image"
+                   [class.evento-cancelado-img]="evento.estado === 'CANCELADO'"
+                   alt="Imagen de {{evento.nombre}}">
+              <div class="evento-badge">
+                <span class="badge" [class.badge-cancelado]="evento.estado === 'CANCELADO'">
+                  {{evento.estado === 'CANCELADO' ? 'CANCELADO' : evento.tipoEvento}}
+                </span>
+              </div>
+            </div>
+            
+            <!-- Información del evento -->
+            <div class="evento-info">
+              <div class="evento-header">
+                <h3 class="evento-name">{{evento.nombre}}</h3>
+              </div>
+              
+              <div class="evento-date">
+                <i class="bi bi-calendar-event"></i> 
+                {{formatDate(evento.fechaHora)}}
+              </div>
+              
+              <!-- Mini título para DJ -->
+              <div class="section-title" *ngIf="evento.dj">
+                <i class="bi bi-music-note-beamed"></i> DJ del Evento
+              </div>
+              
+              <!-- DJ del evento -->
+              <div class="dj-info" *ngIf="evento.dj">
+                <div class="dj-image">
+                  <img [src]="evento.dj?.imagen || 'assets/images/dj-placeholder.jpg'" alt="DJ">
+                </div>
+                <div class="dj-details">
+                  <h4 class="dj-name">{{evento.dj?.nombre || 'DJ invitado'}}</h4>
+                  <span class="dj-genre">{{evento.dj?.generoMusical || 'Variado'}}</span>
+                </div>
+              </div>
+              
+              <div class="evento-description">
+                {{evento.descripcion || 'Sin descripción disponible.'}}
+              </div>
+              <!-- Mensaje de evento cancelado -->
+              <div class="evento-cancelado-msg" *ngIf="evento.estado === 'CANCELADO'">
+                <i class="bi bi-exclamation-triangle"></i>
+                Este evento ha sido cancelado
+              </div>
+              
+              <!-- Botones solo si el evento NO está cancelado -->
+              <div class="evento-actions" *ngIf="evento.estado !== 'CANCELADO'">
+                <a [routerLink]="['/eventos', evento.idEvento, 'comprar']" class="btn btn-primary btn-comprar">
+                  Comprar entrada <i class="bi bi-ticket-perforated"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,217 @@
+<div class="comprar-entrada-container py-5 mt-5">
+  <div class="container">
+    <!-- Encabezado -->
+    <div class="header-section text-center mb-4">
+      <h1 class="main-title">Compra de Entradas</h1>
+      <div class="breadcrumb-section">
+        <div class="breadcrumb-item" [class.active]="paso >= 1">1. Tipo de entrada</div>
+        <div class="breadcrumb-separator">→</div>
+        <div class="breadcrumb-item" [class.active]="paso >= 2">2. Detalles</div>
+      </div>
+    </div>
+
+    <!-- Mensajes al usuario -->
+    <div *ngIf="error" class="alert alert-danger mt-3">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      {{error}}
+    </div>
+
+    <div class="alert alert-success" *ngIf="exito">
+      <i class="bi bi-check-circle-fill me-2"></i> {{ exito }}
+    </div>
+
+    <!-- PASO 1: Selección de tipo de entrada -->
+    <div class="row justify-content-center" *ngIf="paso === 1 && !exito && evento">
+      <div class="col-md-10">
+        <div class="card">
+          <div class="card-body p-4">
+            <h2 class="card-title mb-4">Selecciona el tipo de entrada</h2>
+            
+            <div class="evento-info mb-4">
+              <div class="evento-image">
+                <img [src]="evento?.imagen || 'assets/images/default-event.jpg'" alt="Evento">
+              </div>
+              <div class="evento-details">
+                <h3 class="evento-name">{{evento?.nombre}}</h3>
+                <div class="evento-date">
+                  <i class="bi bi-calendar-event"></i> {{formatDate(evento?.fechaHora)}}
+                </div>
+              </div>
+            </div>
+            
+            <div class="row row-cols-1 row-cols-md-2 g-4">
+              <!-- Opción: Entrada normal -->
+              <div class="col">
+                <div class="option-card" (click)="seleccionarTipoEntrada('ENTRADA')">
+                  <div class="option-icon">
+                    <i class="bi bi-ticket-perforated-fill"></i>
+                  </div>
+                  <h3 class="option-title">Entrada General</h3>
+                  <p class="option-description">
+                    Acceso estándar al evento con todos los servicios básicos incluidos.
+                  </p>
+                  <div class="option-price">
+                    Desde {{evento?.precioBaseEntrada || 0}}€
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Opción: Entrada VIP -->
+              <div class="col">
+                <div class="option-card" (click)="seleccionarTipoEntrada('RESERVA_VIP')">
+                  <div class="option-icon">
+                    <i class="bi bi-star-fill"></i>
+                  </div>
+                  <h3 class="option-title">Zona VIP</h3>
+                  <p class="option-description">
+                    Acceso a áreas exclusivas con servicio personalizado y reserva de botellas premium.
+                  </p>
+                  <div class="option-price">
+                    Desde {{evento?.precioBaseReservado || 0}}€
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 2: Detalles de la entrada -->
+    <div class="row justify-content-center" *ngIf="paso === 2 && !exito && evento">
+      <div class="col-md-10">
+        <div class="card">
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h2 class="card-title mb-0">
+                {{tipoEntrada === 'ENTRADA' ? 'Entrada General' : 'Reserva VIP'}}
+              </h2>
+              <button class="btn btn-outline-secondary btn-sm" (click)="volverAlPaso(1)">
+                <i class="bi bi-arrow-left"></i> Cambiar tipo
+              </button>
+            </div>
+
+            <!-- Sección común: tramos horarios -->
+            <div class="section-title">Selecciona un horario</div>
+            <div class="tramos-container">
+              <div class="row row-cols-1 row-cols-md-3 g-3">
+                <div class="col" *ngFor="let tramo of tramosHorarios">
+                  <div class="tramo-card" 
+                       [class.selected]="tramoSeleccionado?.idTramoHorario === tramo.idTramoHorario"
+                       (click)="seleccionarTramo(tramo)">
+                    <div class="tramo-time">
+                      {{tramo.horaInicio | date:'HH:mm'}} - {{tramo.horaFin | date:'HH:mm'}}
+                    </div>
+                    <div class="tramo-price" 
+                         [ngClass]="{
+                           'discount': +tramo.multiplicadorPrecio < 1,
+                           'regular': +tramo.multiplicadorPrecio == 1,
+                           'premium': +tramo.multiplicadorPrecio > 1
+                         }">
+                      <ng-container *ngIf="+tramo.multiplicadorPrecio < 1">
+                        {{(1 - +tramo.multiplicadorPrecio) * 100}}% descuento
+                      </ng-container>
+                      <ng-container *ngIf="+tramo.multiplicadorPrecio == 1">
+                        Precio estándar
+                      </ng-container>
+                      <ng-container *ngIf="+tramo.multiplicadorPrecio > 1">
+                        {{+tramo.multiplicadorPrecio}}x precio (hora premium)
+                      </ng-container>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Cantidad -->
+            <div class="section-title mt-4">Cantidad</div>
+            <div class="quantity-selector mb-4">
+              <button class="btn-quantity" (click)="cantidad = cantidad > 1 ? cantidad - 1 : 1">
+                <i class="bi bi-dash-lg"></i>
+              </button>
+              <span class="quantity-value">{{cantidad}}</span>
+              <button class="btn-quantity" (click)="cantidad = cantidad + 1">
+                <i class="bi bi-plus-lg"></i>
+              </button>
+            </div>
+
+            <!-- Secciones específicas para VIP -->
+            <ng-container *ngIf="tipoEntrada === 'RESERVA_VIP'">
+              <!-- Zonas VIP -->
+              <div class="section-title mt-4">Selecciona una zona VIP</div>
+              <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+                <div class="col" *ngFor="let zona of zonasVip">
+                  <div class="zona-card"
+                       [class.selected]="zonaVipSeleccionada?.idZonaVip === zona.idZonaVip"
+                       (click)="seleccionarZonaVip(zona)">
+                    <h4 class="zona-name">{{zona.nombre}}</h4>
+                    <div class="zona-capacity">
+                      <i class="bi bi-people-fill"></i> Aforo: {{zona.aforoMaximo}} personas
+                    </div>
+                    <p class="zona-description">{{zona.descripcion}}</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Botellas -->
+              <div class="section-title mt-4">Selecciona botellas</div>
+              <div class="row row-cols-2 row-cols-md-4 g-3">
+                <div class="col" *ngFor="let botella of botellas">
+                  <div class="botella-card">
+                    <img [src]="botella.imagen || 'assets/images/bottle-default.jpg'" class="botella-image" alt="{{botella.nombre}}">
+                    <h5 class="botella-name">{{botella.nombre}}</h5>
+                    <div class="botella-details">
+                      {{botella.tipo}} - {{botella.tamano}}
+                    </div>
+                    <div class="botella-price">{{botella.precio}}€</div>
+                    <div class="botella-controls">
+                      <button class="btn-botella" 
+                              [disabled]="getCantidadBotella(botella.idBotella) === 0"
+                              (click)="quitarBotella(botella.idBotella)">
+                        <i class="bi bi-dash-circle"></i>
+                      </button>
+                      <span class="botella-quantity">{{getCantidadBotella(botella.idBotella)}}</span>
+                      <button class="btn-botella" (click)="agregarBotella(botella)">
+                        <i class="bi bi-plus-circle"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Resumen de botellas seleccionadas -->
+              <div class="selected-botellas mt-4" *ngIf="botellasSeleccionadas.length > 0">
+                <div class="section-title">Botellas seleccionadas</div>
+                <div class="botellas-list">
+                  <div class="botella-item" *ngFor="let botella of botellasSeleccionadas">
+                    <span class="botella-item-name">{{botella.nombre}}</span>
+                    <span class="botella-item-quantity">x{{botella.cantidad}}</span>
+                    <span class="botella-item-price">{{botella.precio * botella.cantidad}}€</span>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+
+            <!-- Precio total -->
+            <div class="price-summary mt-4">
+              <div class="price-row">
+                <div class="price-label">Total:</div>
+                <div class="price-value">{{calcularTotal()}}€</div>
+              </div>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="actions mt-4">
+              <button class="btn btn-outline-secondary me-2" (click)="volverAlPaso(1)">
+                <i class="bi bi-arrow-left"></i> Volver
+              </button>
+              <button class="btn btn-primary" (click)="agregarAlCarrito()" [disabled]="!tramoSeleccionado">
+                <i class="bi bi-cart-plus"></i> Añadir al carrito
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,186 @@
+<div class="wallet-container">
+  <div class="container py-5">
+    <!-- Título y descripción -->
+    <div class="row mb-4">
+      <div class="col-12 text-center">
+        <h1 class="main-title">Mi Wallet</h1>
+        <p class="text-light">Visualiza todas tus compras y reservas</p>
+      </div>
+    </div>
+    
+    <!-- Sección de filtros -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="filtros-header">
+          <h2 class="section-title">Mis Compras</h2>
+          
+          <!-- Filtros -->
+          <div class="filtros">
+            <div class="btn-group" role="group">
+              <button 
+                type="button" 
+                class="btn" 
+                [class.btn-active]="filtroActivo === 'todas'"
+                (click)="aplicarFiltro('todas')">
+                Todas
+              </button>
+              <button 
+                type="button" 
+                class="btn" 
+                [class.btn-active]="filtroActivo === 'activas'"
+                (click)="aplicarFiltro('activas')">
+                Activas
+              </button>
+              <button 
+                type="button" 
+                class="btn" 
+                [class.btn-active]="filtroActivo === 'pasadas'"
+                (click)="aplicarFiltro('pasadas')">
+                Pasadas
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Mensaje de error -->
+    <div class="alert alert-danger" *ngIf="error">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ error }}
+    </div>
+    
+    <!-- Mensaje sin compras -->
+    <div class="no-compras" *ngIf="!error && entradasFiltradas.length === 0 && reservasFiltradas.length === 0">
+      <div class="card text-center p-5">
+        <i class="bi bi-ticket-perforated display-1"></i>
+        <h3 class="mt-4">No tienes compras {{ filtroActivo !== 'todas' ? filtroActivo + 's' : '' }}</h3>
+        <p class="mb-4">Explora los eventos disponibles y adquiere tus entradas o realiza reservas</p>
+        <div>
+          <a routerLink="/discotecas" class="btn btn-primary">Ver eventos</a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Contenido del Wallet -->
+    <div>
+      <!-- Sección de entradas -->
+      <div class="row mb-4" *ngIf="entradasFiltradas.length > 0">
+        <div class="col-12">
+          <h3 class="subsection-title">Entradas ({{ entradasFiltradas.length }})</h3>
+        </div>
+        
+        <div class="col-md-6 col-lg-4 mb-4" *ngFor="let entrada of entradasFiltradas">
+          <!-- Entrada Card -->
+          <div class="card entrada-card" [ngClass]="{'entrada-pasada': entrada.estado === 'PASADA'}">
+            <div class="evento-img" [style.background-image]="'url(' + entrada.imagen + ')'">
+              <div class="evento-overlay"></div>
+              <div class="evento-estado" [ngClass]="entrada.estado === 'ACTIVA' ? 'estado-activa' : 'estado-pasada'">
+                {{ entrada.estado }}
+              </div>
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">{{ entrada.nombreEvento }}</h5>
+              
+              <div class="evento-info">
+                <i class="bi bi-calendar-event"></i>
+                {{ formatearFecha(entrada.fechaEvento) }}
+              </div>
+              
+              <div class="evento-info">
+                <i class="bi bi-clock"></i>
+                {{ formatearHora(entrada.fechaEvento) }}
+              </div>
+              
+              <div class="evento-info">
+                <i class="bi bi-geo-alt"></i>
+                {{ entrada.nombreDiscoteca || 'Sin ubicación' }}
+              </div>
+              
+              <hr>
+              
+              <div class="entrada-details">
+                <div class="detail-item">
+                  <span class="detail-label">Tipo:</span>
+                  <span class="detail-value">{{ entrada.tipo || 'Estándar' }}</span>
+                </div>
+                
+                <div class="detail-item">
+                  <span class="detail-label">Precio:</span>
+                  <span class="detail-value">{{ entrada.precio | currency:'EUR':'symbol':'1.2-2' }}</span>
+                </div>
+              </div>
+              
+              <div class="mt-3">
+                <button (click)="descargarEntrada(entrada)" class="btn btn-primary w-100">
+                  <i class="bi bi-download me-2"></i> Descargar entrada
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Sección de reservas VIP -->
+      <div class="row" *ngIf="reservasFiltradas.length > 0">
+        <div class="col-12">
+          <h3 class="subsection-title">Reservas VIP ({{ reservasFiltradas.length }})</h3>
+        </div>
+        
+        <div class="col-md-6 col-lg-4 mb-4" *ngFor="let reserva of reservasFiltradas">
+          <!-- Reserva VIP Card -->
+          <div class="card reserva-card" [ngClass]="{'reserva-pasada': reserva.estado === 'PASADA'}">
+            <div class="reserva-img" [style.background-image]="'url(' + reserva.imagen + ')'">
+              <div class="reserva-overlay"></div>
+              <div class="reserva-estado" [ngClass]="reserva.estado === 'ACTIVA' ? 'estado-activa' : 'estado-pasada'">
+                {{ reserva.estado }}
+              </div>
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">{{ reserva.nombreEvento || 'Reserva VIP' }}</h5>
+              
+              <div class="reserva-info">
+                <i class="bi bi-calendar-event"></i>
+                {{ formatearFecha(reserva.fechaReserva) }}
+              </div>
+              
+              <div class="reserva-info">
+                <i class="bi bi-clock"></i>
+                {{ formatearHora(reserva.fechaReserva) }}
+              </div>
+              
+              <div class="reserva-info">
+                <i class="bi bi-geo-alt"></i>
+                {{ reserva.discoteca?.nombre || reserva.nombreDiscoteca || 'Sin ubicación' }}
+              </div>
+              
+              <hr>
+              
+              <div class="reserva-details">
+                <div class="detail-item">
+                  <span class="detail-label">Zona:</span>
+                  <span class="detail-value">{{ reserva.nombreZonaVip || 'Zona VIP' }}</span>
+                </div>
+                
+                <div class="detail-item">
+                  <span class="detail-label">Botellas:</span>
+                  <span class="detail-value">{{ reserva.botellas.length || 0 }}</span>
+                </div>
+                
+                <div class="detail-item">
+                  <span class="detail-label">Precio:</span>
+                  <span class="detail-value">{{ reserva.precio | currency:'EUR':'symbol':'1.2-2' }}</span>
+                </div>
+              </div>
+
+              <div class="mt-3">
+                <button (click)="descargarReserva(reserva)" class="btn btn-primary w-100">
+                  <i class="bi bi-download me-2"></i> Descargar reserva
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

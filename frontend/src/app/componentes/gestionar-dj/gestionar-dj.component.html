@@ -1,0 +1,199 @@
+<div class="container-fluid py-5 mt-5">
+    <!-- Header con título y botón -->
+    <div class="page-header">
+      <h2 class="page-title">Gestión de DJs</h2>
+      <button class="btn btn-create" (click)="mostrarCrear()" *ngIf="!mostrarFormulario">
+        <i class="bi bi-plus-lg"></i> Nuevo DJ
+      </button>
+    </div>
+  
+    <!-- Búsqueda -->
+    <div class="search-container" *ngIf="!mostrarFormulario">
+      <div class="input-group">
+        <span class="input-group-text">
+          <i class="bi bi-search"></i>
+        </span>
+        <input type="text" 
+               class="form-control search-input" 
+               placeholder="Buscar DJ..." 
+               [(ngModel)]="terminoBusqueda"
+               (input)="buscar($event)">
+      </div>
+    </div>
+  
+    <!-- Formulario -->
+    <div class="row justify-content-center" *ngIf="mostrarFormulario">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-body p-4">
+            <h3 class="card-title mb-4">{{modoEdicion ? 'Editar' : 'Nuevo'}} DJ</h3>
+            
+            <form (ngSubmit)="modoEdicion ? actualizarDj() : crearDj()" #djForm="ngForm">
+              <div class="row">
+                <!-- Columna izquierda: Información y detalles -->
+                <div class="col-md-7 pe-md-4 border-end-md">
+                  <!-- Información básica -->
+                  <div class="section-title">Información Básica</div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="mb-3">
+                        <label class="form-label">Nombre Artístico</label>
+                        <input type="text" 
+                               class="form-control" 
+                               [class.is-invalid]="formErrors.nombre"
+                               [(ngModel)]="nuevoDj.nombre" 
+                               name="nombre">
+                        <div class="invalid-feedback" *ngIf="formErrors.nombre">
+                          {{formErrors.nombre}}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="mb-3">
+                        <label class="form-label">Nombre Real</label>
+                        <input type="text" 
+                               class="form-control"
+                               [class.is-invalid]="formErrors.nombreReal"
+                               [(ngModel)]="nuevoDj.nombreReal" 
+                               name="nombreReal">
+                        <div class="invalid-feedback" *ngIf="formErrors.nombreReal">
+                          {{formErrors.nombreReal}}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+  
+                  <!-- Detalles -->
+                  <div class="section-title mt-4">Detalles</div>
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="mb-3">
+                        <label class="form-label">Biografía</label>
+                        <textarea class="form-control" 
+                                  rows="3" 
+                                  [(ngModel)]="nuevoDj.biografia" 
+                                  name="biografia"
+                                  [class.is-invalid]="formErrors.biografia"></textarea>
+                        <div class="invalid-feedback" *ngIf="formErrors.biografia">
+                          {{formErrors.biografia}}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="mb-3">
+                        <label class="form-label">Género Musical</label>
+                        <input type="text" 
+                               class="form-control"
+                               [class.is-invalid]="formErrors.generoMusical"
+                               [(ngModel)]="nuevoDj.generoMusical" 
+                               name="generoMusical">
+                        <div class="invalid-feedback" *ngIf="formErrors.generoMusical">
+                          {{formErrors.generoMusical}}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="mb-3">
+                        <label class="form-label">Contacto</label>
+                        <input type="text" 
+                               class="form-control" 
+                               [class.is-invalid]="formErrors.contacto"
+                               [(ngModel)]="nuevoDj.contacto" 
+                               name="contacto">
+                        <div class="invalid-feedback" *ngIf="formErrors.contacto">
+                          {{formErrors.contacto}}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+  
+                <!-- Columna derecha: Imágenes y Preview -->
+                <div class="col-md-5 ps-md-4">
+                  <div class="section-title">Imagen</div>
+                  <div class="mb-4">
+                    <div class="mb-3">
+                      <label class="form-label">Subir imagen</label>
+                      <input type="file" 
+                             class="form-control" 
+                             (change)="onFileSelected($event)" 
+                             accept="image/*">
+                    </div>
+                    
+                    <div class="mb-3">
+                      <label class="form-label">Imagen</label>
+                      <input type="file" 
+                             class="form-control" 
+                             [class.is-invalid]="formErrors.imagen"
+                             (change)="onFileSelected($event)" 
+                             accept="image/*">
+                      <div class="invalid-feedback" *ngIf="formErrors.imagen">
+                        {{formErrors.imagen}}
+                      </div>
+                    </div>
+
+                    <div class="image-preview-section">
+                      <h5 class="text-white mb-3">Previsualización</h5>
+                      <div class="image-preview-container">
+                        <div *ngIf="!imagenPreview" class="no-image-message">
+                          <p class="text-white-50">No hay imagen seleccionada</p>
+                        </div>
+                        <div *ngIf="imagenPreview" class="single-image-preview">
+                          <img [src]="imagenPreview" class="preview-image" alt="Preview">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+  
+              <!-- Botones -->
+              <div class="mt-4 text-center">
+                <button type="submit" class="btn btn-create me-2">
+                  {{modoEdicion ? 'Actualizar' : 'Crear'}}
+                </button>
+                <button type="button" class="btn btn-secondary" (click)="cerrarFormulario()">
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Tabla de DJs -->
+    <div class="table-responsive" *ngIf="!mostrarFormulario">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Imagen</th>
+            <th>Nombre Artístico</th>
+            <th>Nombre Real</th>
+            <th>Género Musical</th>
+            <th>Contacto</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let dj of djs">
+            <td>
+              <img [src]="dj.imagen || '/assets/images/placeholder.jpg'" class="table-thumbnail" alt="DJ">
+            </td>
+            <td>{{dj.nombre}}</td>
+            <td>{{dj.nombreReal}}</td>
+            <td>{{dj.generoMusical}}</td>
+            <td>{{dj.contacto}}</td>
+            <td>
+              <button class="btn btn-icon me-2" (click)="editarDj(dj)">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button class="btn btn-icon btn-danger" (click)="eliminarDj(dj.idDj!)">
+                <i class="bi bi-trash"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
