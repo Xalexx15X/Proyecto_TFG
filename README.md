@@ -1,7 +1,5 @@
 # ClubSync - Plataforma de Gestión de Discotecas y Eventos
 
-![ClubSync Logo](ruta/a/logo.png)
-
 ## 📋 Descripción
 
 ClubSync es una plataforma integral para la gestión de discotecas, eventos y reservas, diseñada para ofrecer una experiencia completa tanto a usuarios finales como a administradores de establecimientos. El sistema permite la compra de entradas, reserva de zonas VIP, gestión de eventos, análisis estadístico y mucho más.
@@ -66,24 +64,41 @@ ClubSync es una plataforma integral para la gestión de discotecas, eventos y re
 1. Navegar al directorio del backend:
    ```bash
    cd backend
-   Configurar la conexión a la base de datos en src/main/resources/application.properties
-2. GitHub Copilot
-Configurar la conexión a la base de datos en src/main/resources/application.properties
+   ```
+
+2. Configurar la conexión a la base de datos en `src/main/resources/application.properties`
+
 3. Compilar el proyecto:
-./mvnw clean install
+   ```bash
+   ./mvnw clean install
+   ```
+
 4. Ejecutar el servidor:
- ./mvnw spring-boot:run
-Frontend
+   ```bash
+   ./mvnw spring-boot:run
+   ```
+
+### Frontend
 1. Navegar al directorio del frontend:
+   ```bash
    cd frontend
-3. Instalar dependencias:
+   ```
+
+2. Instalar dependencias:
+   ```bash
    npm install
-5. Ejecutar el servidor de desarrollo:
+   ```
+
+3. Ejecutar el servidor de desarrollo:
+   ```bash
    ng serve
-   La aplicación estará disponible en http://localhost:4200
+   ```
 
-📄 Estructura del proyecto
+La aplicación estará disponible en http://localhost:4200
 
+## 📄 Estructura del proyecto
+
+```
 clubsync/
 ├── backend/                  # Código del servidor Spring Boot
 │   ├── src/main/java/com/clubsync/
@@ -105,52 +120,56 @@ clubsync/
 │   │   └── service/          # Servicios de conexión con la API
 │   └── src/assets/           # Imágenes, iconos, etc.
 └── database/                 # Scripts SQL y modelo de datos
+```
 
-##🔐 Usuarios predeterminados
+## 🔐 Usuarios predeterminados
+
 Para facilitar las pruebas, el sistema incluye varios usuarios predefinidos:
 
 ### Administrador general:
-
-Email: admin@clubsync.com
-Contraseña: admin123
+- **Email**: admin@clubsync.com
+- **Contraseña**: admin123
 
 ### Administrador de discoteca:
-
-Email: adminclub@clubsync.com
-Contraseña: admin123
+- **Email**: adminclub@clubsync.com
+- **Contraseña**: admin123
 
 ### Cliente:
+- **Email**: cliente@clubsync.com
+- **Contraseña**: cliente123
 
-Email: cliente@clubsync.com
-Contraseña: cliente123
+## 📋 API REST
 
-##📋 API REST
 El backend expone una API REST completa. La documentación detallada está disponible a través de Swagger una vez que el servidor esté en ejecución:
 
 ### Los principales endpoints incluyen:
 
-/api/auth: Autenticación y registro
-/api/usuarios: Gestión de usuarios
-/api/discotecas: Gestión de discotecas
-/api/eventos: Gestión de eventos
-/api/pedidos: Gestión de pedidos y carritos
-/api/entradas: Gestión de entradas
-/api/estadisticas: Endpoints para datos estadísticos
+- `/api/auth`: Autenticación y registro
+- `/api/usuarios`: Gestión de usuarios
+- `/api/discotecas`: Gestión de discotecas
+- `/api/eventos`: Gestión de eventos
+- `/api/pedidos`: Gestión de pedidos y carritos
+- `/api/entradas`: Gestión de entradas
+- `/api/estadisticas`: Endpoints para datos estadísticos
 
-##✅ Testing
+## ✅ Testing
+
 ### Backend
 ```bash
-  cd backend
-  ./mvnw test
+cd backend
+./mvnw test
+```
+
 ### Frontend
- ```bash
-  cd frontend
-  ng test
-  
+```bash
+cd frontend
+ng test
+```
+
 ## 🔄 Flujo de trabajo recomendado para desarrollo
+
 1. Clonar el repositorio
 2. Crear una nueva rama para la funcionalidad a desarrollar
 3. Realizar cambios en el código
 4. Ejecutar pruebas para verificar el correcto funcionamiento
 5. Crear un pull request a la rama principal
-
