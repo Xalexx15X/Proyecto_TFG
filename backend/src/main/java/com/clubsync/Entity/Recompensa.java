@@ -1,18 +1,14 @@
 package com.clubsync.Entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ArrayList;
 
-/**
- * Entidad que representa las recompensas disponibles en el sistema de fidelización
- * Permite a los usuarios canjear puntos por beneficios como descuentos o entradas
- */
 @Entity
 @Table(name = "recompensa")
 @Data
@@ -23,23 +19,30 @@ public class Recompensa {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idRecompensa;
 
+    @NotBlank(message = "El nombre de la recompensa es obligatorio")
+    @Size(min = 3, max = 100, message = "El nombre debe tener entre 3 y 100 caracteres")
     @Column(nullable = false)
     private String nombre;
 
+    @NotBlank(message = "La descripción es obligatoria")
+    @Size(min = 10, max = 500, message = "La descripción debe tener entre 10 y 500 caracteres")
     @Column(nullable = false)
     private String descripcion;
 
+    @NotNull(message = "Los puntos necesarios son obligatorios")
+    @Positive(message = "Los puntos necesarios deben ser un valor positivo")
     @Column(name = "puntos_necesarios", nullable = false)
     private Integer puntosNecesarios;
 
+    @NotNull(message = "La fecha de inicio es obligatoria")
     @Column(name = "fecha_inicio", nullable = false)
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     private LocalDateTime fechaInicio;
 
+    @NotNull(message = "La fecha de fin es obligatoria")
     @Column(name = "fecha_fin", nullable = false)
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     private LocalDateTime fechaFin;
 
+    @NotBlank(message = "El tipo de recompensa es obligatorio")
     @Column(nullable = false)
     private String tipo;
 

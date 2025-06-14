@@ -66,7 +66,6 @@ export class DetalleDiscotecaComponent implements OnInit {
         this.discotecas = data;
       },
       error: (error) => {
-        console.error('Error al cargar discotecas:', error);
         this.error = 'No se pudieron cargar las discotecas. Intenta nuevamente más tarde.';
       }
     });
@@ -84,7 +83,6 @@ export class DetalleDiscotecaComponent implements OnInit {
           this.discotecas = discotecas;
         },
         error: (error) => {
-          console.error('Error al filtrar por ciudad:', error);
           this.error = 'No se pudieron cargar las discotecas para esta ciudad.';
         }
       });

@@ -103,6 +103,8 @@ export class CarritoService {
   /**
    * Busco el pedido activo entre todos los pedidos del usuario
    * Un pedido activo es el que está en estado "EN_PROCESO"
+   * @param pedidos Array de pedidos del usuario
+   * @returns El pedido activo más reciente o null si no hay ninguno
    */
   private encontrarPedidoActivo(pedidos: any[]): any {
     // Filtro solo los pedidos en proceso
@@ -119,6 +121,7 @@ export class CarritoService {
   /**
    * Cargo las líneas de un pedido y las convierto en items del carrito
    * Cada línea contiene un ItemCarrito serializado como JSON
+   * @param idPedido ID del pedido del que cargar las líneas
    */
   private cargarLineasDePedido(idPedido: number): void {
     // Solicito las líneas del pedido
@@ -159,6 +162,8 @@ export class CarritoService {
   /**
    * Agrego un nuevo item al carrito
    * Si ya existe un item similar, aumento su cantidad
+   * @param item Item a agregar
+   * @returns Observable con la respuesta del servidor
    */
   agregarItem(item: ItemCarrito): Observable<any> {
     // Obtengo el ID del usuario autenticado
@@ -194,6 +199,9 @@ export class CarritoService {
   /**
    * Busco un item similar al que quiero agregar
    * Items similares son del mismo tipo, evento y tramo horario
+   * @param items array de items a buscar
+   * @param item Item a buscar
+   * @returns Item similar o undefined si no existe
    */
   private buscarItemSimilar(items: ItemCarrito[], item: ItemCarrito): ItemCarrito | undefined {
     // Uso find para buscar el primer item que coincida
@@ -213,6 +221,9 @@ export class CarritoService {
   /**
    * Guardo los cambios del carrito en la base de datos
    * Actualizo un pedido existente o creo uno nuevo
+   * @param items array de items del carrito
+   * @param idUsuario ID del usuario
+   * @returns Observable con la respuesta del servidor
    */
   private guardarCambios(items: ItemCarrito[], idUsuario: number): Observable<any> {
     // Si ya hay un pedido activo, lo actualizo
@@ -227,6 +238,8 @@ export class CarritoService {
   /**
    * Actualizo un pedido existente con los nuevos datos
    * Actualizo el total y las líneas de pedido
+   * @param items array de items del carrito
+   * @returns Observable con la respuesta del servidor
    */
   private actualizarPedidoExistente(items: ItemCarrito[]): Observable<any> {
     // Verifico que haya un pedido activo
@@ -257,6 +270,9 @@ export class CarritoService {
   /**
    * Creo un nuevo pedido para el carrito actual
    * Establezco estado "EN_PROCESO" y guardo las líneas
+   * @param items array de items del carrito
+   * @param idUsuario ID del usuario
+   * @returns Observable con la respuesta del servidor
    */
   private crearNuevoPedido(items: ItemCarrito[], idUsuario: number): Observable<any> {
     // Preparo los datos para el nuevo pedido
@@ -310,6 +326,8 @@ export class CarritoService {
   /**
    * Creo o actualizo la línea de pedido para un item
    * Si ya existe una línea para el item, la actualizo
+   * @param item Item a procesar
+   * @param lineasActuales Array de líneas actuales del pedido
    */
   private crearOActualizarLinea(item: ItemCarrito, lineasActuales: any[]): void {
     // Verifico que haya un pedido activo
@@ -336,8 +354,8 @@ export class CarritoService {
         .subscribe({
           next: (linea) => {
             // Si la actualización fue exitosa, actualizo el ID de línea en el item
-            if (linea && linea.idLineaPedido) {
-              item.idLineaPedido = linea.idLineaPedido;
+            if (linea && linea.idLineaPedido) { // Verifico que la línea tenga ID
+              item.idLineaPedido = linea.idLineaPedido; // Actualizo el ID del item
             }
           },
           error: (err) => console.error('Error al actualizar línea:', err)
@@ -348,8 +366,8 @@ export class CarritoService {
         .subscribe({
           next: (linea) => {
             // Si la creación fue exitosa, asigno el ID de línea al item
-            if (linea && linea.idLineaPedido) {
-              item.idLineaPedido = linea.idLineaPedido;
+            if (linea && linea.idLineaPedido) { // Verifico que la línea tenga ID
+              item.idLineaPedido = linea.idLineaPedido; // Actualizo el ID del item
             }
           },
           error: (err) => console.error('Error al crear línea:', err)
@@ -360,6 +378,8 @@ export class CarritoService {
   /**
    * Busco si ya existe una línea para un item específico
    * Comparo los datos de la línea con los del item
+   * @param lineas Array de líneas del pedido
+   * @param item Item a buscar
    */
   private buscarLineaExistente(lineas: any[], item: ItemCarrito): any {
     // Uso find para buscar la primera línea que coincida
@@ -368,7 +388,7 @@ export class CarritoService {
       if (!linea.lineaPedidoJson) return false;
       
       try {
-        // Intento parsear los datos JSON
+        // Intento parsear los datos JSOn, si falla, no coincide
         const lineaItem = JSON.parse(linea.lineaPedidoJson) as ItemCarrito;
         // Verifico si los items son iguales
         return this.sonItemsIguales(lineaItem, item);
@@ -382,6 +402,8 @@ export class CarritoService {
   /**
    * Verifico si dos items son iguales (mismo evento, tipo y tramo)
    * Para reservas VIP también comparo la zona VIP
+   * @param item1 Primer item a comparar
+   * @param item2 Segundo item a comparar
    */
   private sonItemsIguales(item1: ItemCarrito, item2: ItemCarrito): boolean {
     // Verifico coincidencia en tipo, evento y tramo horario
@@ -398,11 +420,13 @@ export class CarritoService {
   /**
    * Elimino las líneas que ya no tienen item asociado
    * Esto sucede cuando se elimina un item del carrito
+   * @param lineas Array de líneas del pedido
+   * @param items Array de items actuales del carrito
    */
   private eliminarLineasSobrantes(lineas: any[], items: ItemCarrito[]): void {
     // Recorro todas las líneas
     lineas.forEach(linea => {
-      // Verifico si la línea corresponde a algún item actual
+      // Verifico si la línea corresponde a algún item actual el some sirve para verificar si al menos un item cumple la condición
       const tieneItem = items.some(item => item.idLineaPedido === linea.idLineaPedido);
       
       // Si no tiene item asociado y tiene ID, la elimino
@@ -418,6 +442,9 @@ export class CarritoService {
   /**
    * Actualizo la cantidad de un item en el carrito
    * Busco el item por su ID y cambio su cantidad
+   * @param itemId ID del item a actualizar
+   * @param cantidad Nueva cantidad del item
+   * @returns Observable con la respuesta del servidor
    */
   actualizarCantidad(itemId: string, cantidad: number): Observable<any> {
     // Hago una copia del array actual de items
@@ -449,6 +476,8 @@ export class CarritoService {
   /**
    * Elimino un item del carrito
    * Busco el item por su ID y lo quito del array
+   * @param itemId ID del item a eliminar
+   * @returns Observable con la respuesta del servidor
    */
   eliminarItem(itemId: string): Observable<any> {
     // Hago una copia del array actual de items
@@ -517,7 +546,7 @@ export class CarritoService {
       error: (err) => console.error('Error al eliminar pedido:', err)
     });
     
-    // Devuelvo éxito
+     
     return of({ success: true });
   }
 
@@ -569,6 +598,8 @@ export class CarritoService {
   /**
    * Calculo el total de un array de items
    * Sumo el precio de cada item y sus botellas
+   * @param items Array de items del carrito
+   * @returns Total acumulado de todos los items
    */
   private calcularTotal(items: ItemCarrito[]): number {
     // Uso reduce para sumar todos los items
@@ -577,10 +608,10 @@ export class CarritoService {
       let itemTotal = item.precioUnitario * item.multiplicadorPrecio * item.cantidad;
       
       // Si tiene botellas, añado su costo
-      if (item.botellas && item.botellas.length > 0) {
+      if (item.botellas && item.botellas.length > 0) { // Verifico si hay botellas
         // Sumo el precio de cada botella multiplicado por su cantidad
         itemTotal += item.botellas.reduce((sum, botella) => 
-          sum + (botella.precio * botella.cantidad), 0);
+          sum + (botella.precio * botella.cantidad), 0); // Valor inicial del acumulador es 0
       }
       
       // Añado el total de este item al acumulador

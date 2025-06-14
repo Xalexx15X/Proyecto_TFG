@@ -81,9 +81,9 @@ public class CiudadController {
     public ResponseEntity<List<DtoCiudad>> getAllCiudades() {
         List<Ciudad> ciudades = ciudadService.findAll();
         List<DtoCiudad> dtosCiudades = ciudades.stream()
-            .map(ciudadMapper::toDto)
-            .collect(Collectors.toList());
-        return ResponseEntity.ok(dtosCiudades);
+            .map(ciudadMapper::toDto) // Convertir cada entidad Ciudad a DtoCiudad
+            .collect(Collectors.toList()); // Recopilar todos los DTOs en una lista
+        return ResponseEntity.ok(dtosCiudades); // Devolver la lista de DTOs con estado 200 OK
     }
 
     /**

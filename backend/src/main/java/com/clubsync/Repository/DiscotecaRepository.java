@@ -14,7 +14,6 @@ public interface DiscotecaRepository extends JpaRepository<Discoteca, Integer> {
     
     /**
      * Busca una discoteca específica por su administrador asignado
-     * Método generado automáticamente por Spring Data basado en la convención de nombres
      * Facilita la identificación del establecimiento gestionado por un usuario administrador
      * 
      * @param administrador El usuario con rol de administrador de discoteca
@@ -24,8 +23,7 @@ public interface DiscotecaRepository extends JpaRepository<Discoteca, Integer> {
     
     /**
      * Recupera todas las discotecas ubicadas en una ciudad específica
-     * Método generado automáticamente por Spring Data basado en la convención de nombres
-     * Permite filtrar establecimientos por ubicación geográfica
+     * Permite filtrar establecimientos por ubicación
      * 
      * @param idCiudad El identificador único de la ciudad
      * @return Lista de discotecas ubicadas en la ciudad especificada

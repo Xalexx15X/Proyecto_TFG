@@ -40,7 +40,6 @@ public class CiudadMapper implements GenericMapper<Ciudad, DtoCiudad> {
                     .map(d -> d.getIdDiscoteca())
                     .collect(Collectors.toList()) : 
                 new ArrayList<>());
-        
         return dto;
     }
 

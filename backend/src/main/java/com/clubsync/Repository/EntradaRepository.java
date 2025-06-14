@@ -91,13 +91,23 @@ public interface EntradaRepository extends JpaRepository<Entrada, Integer> {
      * @return Lista de mapas con las estadísticas de cada evento
      */
     @Query(value = "SELECT e.nombre, e.fecha_hora AS fechaHora, " +
+            //Conteo condicional que cuenta solo entradas de tipo NORMAL
             "COUNT(CASE WHEN en.tipo = 'NORMAL' THEN 1 END) AS entradasEstandar, " +
+            //Conteo condicional que cuenta solo entradas de tipo RESERVADO (VIP)
             "COUNT(CASE WHEN en.tipo = 'RESERVADO' THEN 1 END) AS entradasVIP, " +
+            //Conteo total de todas las entradas independientemente del tipo
             "COUNT(en.id_entrada) AS totalEntradas, " +
+             /** Cálculo del porcentaje de ocupación:
+        *   -- 1. Multiplica el número de entradas por 100 para obtener porcentaje
+        *   -- 2. Divide por la capacidad total del evento
+        *   -- 3. Convierte el resultado a entero sin signo para eliminar decimales */
             "CAST((COUNT(en.id_entrada) * 100 / e.capacidad) AS UNSIGNED) AS porcentajeOcupacion " +
+            // Unión con tabla entrada para encontrar todas las entradas vendidas por evento
             "FROM evento e " +
             "JOIN entrada en ON e.id_evento = en.evento_id_evento " +
+            // Agrupación por todos los campos no agregados para evitar ambigüedades
             "GROUP BY e.id_evento, e.nombre, e.fecha_hora, e.capacidad " +
+            // Ordenación descendente para mostrar eventos más recientes primero
             "ORDER BY e.fecha_hora DESC", 
             nativeQuery = true)
     List<Map<String, Object>> getEstadisticasAsistencia();

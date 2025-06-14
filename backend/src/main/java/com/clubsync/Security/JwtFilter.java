@@ -26,7 +26,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
     /**
      * Proveedor de tokens JWT para validar y extraer información del token
-     * Inyectado automáticamente por la anotación @RequiredArgsConstructor
      */
     private final JwtTokenProvider tokenProvider;
     

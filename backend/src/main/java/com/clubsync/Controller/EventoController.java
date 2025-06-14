@@ -251,7 +251,7 @@ public class EventoController {
      * que además correspondan a un tipo concreto 
      * 
      * Esta combinación de filtros es útil para:
-     * - Mostrar eventos temáticos específicos de un local
+     * - Mostrar eventos regulares o vip específicos de un local
      * - Generar listados especializados por categorías
      * 
      * Flujo de ejecución:
@@ -261,7 +261,7 @@ public class EventoController {
      * 4. Devuelve la colección de eventos filtrados
      *
      * @param discotecaId Identificador único de la discoteca
-     * @param tipoEvento Tipo de evento a filtrar (concierto, festival, etc.)
+     * @param tipoEvento Tipo de evento a filtrar (regular o vip)
      * @return Lista de eventos del tipo especificado en la discoteca indicada
      */
     @Operation(

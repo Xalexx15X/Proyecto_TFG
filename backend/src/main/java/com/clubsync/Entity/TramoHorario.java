@@ -1,16 +1,14 @@
 package com.clubsync.Entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * Entidad que representa los tramos horarios para entradas a eventos
- * Permite implementar precios dinámicos según la hora de acceso
- */
+
 @Entity
 @Table(name = "tramoHorario")
 @Data
@@ -22,12 +20,16 @@ public class TramoHorario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idTramoHorario;
     
+    @NotNull(message = "La hora de inicio es obligatoria")
     @Column(name = "hora_inicio", nullable = false)
     private LocalDateTime horaInicio;
     
+    @NotNull(message = "La hora de fin es obligatoria")
     @Column(name = "hora_fin", nullable = false)
     private LocalDateTime horaFin;
     
+    @NotBlank(message = "El multiplicador de precio es obligatorio")
+    @Pattern(regexp = "^\\d+(\\.\\d{1,2})?$", message = "El multiplicador debe ser un valor numérico válido")
     @Column(name = "multiplicador_precio", nullable = false, length = 45)
     private String multiplicadorPrecio;
     
@@ -35,6 +37,7 @@ public class TramoHorario {
      * Relación con Discoteca: Cada tramo horario pertenece a una discoteca específica
      * Cada discoteca define sus propios tramos horarios y políticas de precios
      */
+    @NotNull(message = "La discoteca es obligatoria")
     @ManyToOne
     @JoinColumn(name = "discoteca_idDiscoteca", nullable = false)
     private Discoteca discoteca;

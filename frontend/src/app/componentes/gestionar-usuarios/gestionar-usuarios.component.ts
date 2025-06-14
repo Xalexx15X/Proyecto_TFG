@@ -3,10 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; 
 import { UsuarioService, Usuario } from '../../service/usuario.service';
 
-/**
- * Componente para la gestión de usuarios por parte del administrador
- * Permite crear, editar, eliminar y listar usuarios de todos los roles
- */
 @Component({
   selector: 'app-gestionar-usuarios',
   standalone: true, 
@@ -18,19 +14,19 @@ export class GestionarUsuariosComponent implements OnInit {
   // Propiedades para almacenar y gestionar datos de usuarios
   usuarios: Usuario[] = []; // Lista completa de usuarios del sistema
   usuarioSeleccionado: Usuario | null = null; // Usuario seleccionado para edición
-  modoEdicion = false; // Bandera para controlar si estamos editando o creando
-  mostrarFormulario = false; // Controla la visibilidad del formulario
+  modoEdicion = false; // Bandera para controlar si estoy editando o creando
+  mostrarFormulario = false; // Controlo la visibilidad del formulario
   terminoBusqueda = ''; // Término para filtrar usuarios
   roles = this.usuarioService.roles; // Lista de roles disponibles en el sistema
 
-  // Modelo para nuevo usuario (valores por defecto)
+  // Modelo para nuevo usuario
   nuevoUsuario: Usuario = {
     nombre: '', // Nombre completo del usuario
     email: '', // Correo electrónico (identificador único)
     password: '', // Contraseña para acceso
     role: 'ROLE_CLIENTE', // Rol predeterminado (cliente estándar)
-    monedero: 0, // Saldo inicial del monedero virtual (comienza en 0)
-    puntosRecompensa: 0 // Puntos de fidelización iniciales (comienza en 0)
+    monedero: 0, // Saldo inicial del monedero virtual 
+    puntosRecompensa: 0 // Puntos de fidelización iniciales
   };
 
   // Objeto para almacenar errores de validación por campo
@@ -42,10 +38,6 @@ export class GestionarUsuariosComponent implements OnInit {
     general: '' // Error general del formulario
   };
 
-  /**
-   * Constructor con inyección de dependencias
-   * @param usuarioService Servicio para gestionar usuarios
-   */
   constructor(private usuarioService: UsuarioService) {}
 
   /**
@@ -53,39 +45,70 @@ export class GestionarUsuariosComponent implements OnInit {
    * Carga la lista de usuarios al iniciar
    */
   ngOnInit(): void {
-    this.cargarUsuarios(); // Carga la lista de usuarios al iniciar el componente
+    this.cargarUsuarios(); // Cargo la lista de usuarios 
   }
 
   /**
-   * Carga todos los usuarios desde el servidor
+   * Cargo todos los usuarios desde el servidor
    * Se ejecuta al iniciar el componente y cuando se necesita refrescar datos
    */
   cargarUsuarios(): void {
     this.usuarioService.getUsuarios().subscribe({
-      next: usuarios => this.usuarios = usuarios, // Almacena los usuarios recibidos
-      error: error => alert('Error al cargar usuarios') // Muestra un mensaje de error simple
+      next: usuarios => this.usuarios = usuarios, // Almaceno los usuarios recibidos
+      error: error => this.handleError(error) 
     });
   }
 
   /**
-   * Crea un nuevo usuario con los datos del formulario se usa en el html
-   * Valida los datos y envía la petición al servidor
+   * Preparo el formulario para editar un usuario existente, se usa en el html
+   * @param usuario Usuario a editar
+   */
+  editarUsuario(usuario: Usuario): void {
+    // Creo una copia del objeto para no modificar la lista original directamente
+    this.usuarioSeleccionado = {...usuario};
+    this.modoEdicion = true; // Activo modo edición
+    this.mostrarFormulario = true; // Muestro el formulario
+  }
+
+  /**
+   * Preparo el formulario para crear un nuevo usuario, se usa en el html
+   * Reseteo el formulario y muestro la interfaz de creación
+   */
+  mostrarCrear(): void {
+    this.mostrarFormulario = true; // Muestro el formulario
+    this.modoEdicion = false; // No estoy en modo edición
+    this.limpiarFormulario(); // Limpio cualquier dato previo del formulario
+  }
+
+  /**
+   * Cierro el formulario y reseteo todos los estados, se usa en el html
+   * lo uso para cancelar operaciones o después de completarlas
+   */
+  cerrarFormulario(): void {
+    this.mostrarFormulario = false; // Oculto el formulario
+    this.modoEdicion = false; // Desactivo modo edición
+    this.usuarioSeleccionado = null; // Quito selección actual
+  }
+
+  /**
+   * Creo un nuevo usuario con los datos del formulario, se usa en el html
+   * Valido los datos y envío la petición al servidor
    */
   crearUsuario(): void {
-    this.limpiarErrores(); // Limpia errores previos
+    this.limpiarErrores(); // Limpio errores previos
     
-    // Valida el formulario antes de enviar
+    // Valido el formulario antes de enviar
     if (!this.validarFormulario()) {
-      return; // Detiene el proceso si hay errores de validación
+      return; // Detengo el proceso si hay errores de validación
     }
 
-    // Envía solicitud de creación al servidor
+    // Envío solicitud de creación al servidor
     this.usuarioService.createUsuario(this.nuevoUsuario).subscribe({
       next: (usuario) => {
-        // Si la creación es exitosa, añade al principio de la lista
+        // Si la creación es exitosa, añado al principio de la lista
         this.usuarios.unshift(usuario);
-        this.mostrarFormulario = false; // Oculta el formulario
-        this.limpiarFormulario(); // Limpia el formulario
+        this.mostrarFormulario = false; // Oculto el formulario
+        this.limpiarFormulario(); // Limpio el formulario
       },
       error: (error) => {
         // Maneja error específico de email duplicado
@@ -100,66 +123,65 @@ export class GestionarUsuariosComponent implements OnInit {
   }
 
   /**
-   * Actualiza un usuario existente con los nuevos datos se usa en el html
-   * Envía la solicitud de actualización al servidor
+   * Actualizo un usuario existente con los nuevos datos, se usa en el html
+   * Envío la solicitud de actualización al servidor
    */
   actualizarUsuario(): void {
-    // Verifica que exista un usuario seleccionado con ID válido
+    // Verifico que exista un usuario seleccionado con ID válido
     if (this.usuarioSeleccionado?.idUsuario) {
-      // Envía solicitud de actualización al servidor
+      // Envío solicitud de actualización al servidor
       this.usuarioService.updateUsuario(
         this.usuarioSeleccionado.idUsuario, // ID del usuario a actualizar
         this.usuarioSeleccionado // Nuevos datos
       ).subscribe({
         next: (usuarioActualizado) => {
-          // Busca el usuario en la lista actual y lo reemplaza
+          // Busca el usuario en la lista actual y lo reemplazo
           const index = this.usuarios.findIndex(u => u.idUsuario === usuarioActualizado.idUsuario);
-          if (index !== -1) {
+          if (index !== -1) { // Si se encuentra, actualiza la lista
             this.usuarios[index] = usuarioActualizado; // Actualiza en la lista
           }
-          this.cerrarFormulario(); // Cierra el formulario
+          this.cerrarFormulario(); // Cierro el formulario
         },
-        error: (error) => alert('Error al actualizar el usuario') // Mensaje de error simple
+        error: (error) => this.handleError(error)
       });
     }
   }
 
   /**
-   * Elimina un usuario del sistema se usa en el html
-   * Solicita confirmación antes de proceder
+   * Elimino un usuario del sistema, se usa en el html
    * @param id ID del usuario a eliminar
    */
   eliminarUsuario(id: number): void {
-    // Solicita confirmación al usuario antes de eliminar
+    // Solicito confirmación al usuario antes de eliminar
     if (confirm('¿Seguro que desea eliminar este usuario?')) {
-      // Envía solicitud de eliminación al servidor
+      // Envío solicitud de eliminación al servidor
       this.usuarioService.deleteUsuario(id).subscribe({
         next: () => {
-          // Elimina el usuario de la lista local (filtrado)
+          // Elimino el usuario de la lista local
           this.usuarios = this.usuarios.filter(u => u.idUsuario !== id);
         },
-        error: (error) => alert('Error al eliminar el usuario') // Mensaje de error simple
+        error: (error) => this.handleError(error)
       });
     }
   }
 
   /**
-   * Filtra usuarios según el término de búsqueda se usa en el html
+   * Filtro usuarios según el término de búsqueda, se usa en el html
    * @param event Evento del input de búsqueda
    */
   buscar(event: any): void {
-    // Obtiene el término de búsqueda y lo convierte a minúsculas
+    // Obtengo el término de búsqueda y lo convierto a minúsculas
     const termino = event.target.value.toLowerCase();
     
-    // Si no hay término, recarga todos los usuarios
+    // Si no hay término, recargo todos los usuarios
     if (!termino) {
       this.cargarUsuarios();
       return;
     }
     
-    // Solo filtra si el término tiene al menos 3 caracteres
+    // Solo filtro si el término tiene al menos 3 caracteres
     if (termino.length >= 3) {
-      // Filtra los usuarios cuyo nombre contiene el término
+      // Filtro los usuarios cuyo nombre contiene el término
       this.usuarios = this.usuarios.filter(usuario => 
         usuario.nombre.toLowerCase().includes(termino)
       );
@@ -167,38 +189,7 @@ export class GestionarUsuariosComponent implements OnInit {
   }
 
   /**
-   * Prepara el formulario para editar un usuario existente se usa en el html
-   * @param usuario Usuario a editar
-   */
-  editarUsuario(usuario: Usuario): void {
-    // Crea una copia del objeto para no modificar la lista original directamente
-    this.usuarioSeleccionado = {...usuario};
-    this.modoEdicion = true; // Activa modo edición
-    this.mostrarFormulario = true; // Muestra el formulario
-  }
-
-  /**
-   * Prepara el formulario para crear un nuevo usuario se usa en el html
-   * Resetea el formulario y muestra la interfaz de creación
-   */
-  mostrarCrear(): void {
-    this.mostrarFormulario = true; // Muestra el formulario
-    this.modoEdicion = false; // No estamos en modo edición (creación)
-    this.limpiarFormulario(); // Limpia cualquier dato previo del formulario
-  }
-
-  /**
-   * Cierra el formulario y resetea todos los estados se usa en el html
-   * Se usa para cancelar operaciones o después de completarlas
-   */
-  cerrarFormulario(): void {
-    this.mostrarFormulario = false; // Oculta el formulario
-    this.modoEdicion = false; // Desactiva modo edición
-    this.usuarioSeleccionado = null; // Quita selección actual
-  }
-
-  /**
-   * Reinicia el formulario a sus valores predeterminados
+   * Reinicio el formulario a sus valores predeterminados
    */
   limpiarFormulario(): void {
     this.nuevoUsuario = {
@@ -212,7 +203,7 @@ export class GestionarUsuariosComponent implements OnInit {
   }
 
   /**
-   * Valida todos los campos del formulario
+   * Valido todos los campos del formulario
    * @returns booleano indicando si el formulario es válido
    */
   validarFormulario(): boolean {
@@ -246,7 +237,7 @@ export class GestionarUsuariosComponent implements OnInit {
   }
 
   /**
-   * Valida que un email tenga el formato correcto usando expresión regular
+   * Valido que un email tenga el formato correcto usando expresión regular
    * @param email El email a validar
    * @returns boolean - true si el email es válido, false si no lo es
    */
@@ -256,7 +247,7 @@ export class GestionarUsuariosComponent implements OnInit {
   }
 
   /**
-   * Reinicia todos los mensajes de error
+   * Reinicio todos los mensajes de error
    */
   limpiarErrores(): void {
     this.formErrors = {
@@ -266,5 +257,10 @@ export class GestionarUsuariosComponent implements OnInit {
       role: '',
       general: ''
     };
+  }
+
+  handleError(error: any): void {
+    // Manejo de errores en la petición
+    this.formErrors.general = 'Ocurrió un error al procesar la solicitud. Intente nuevamente más tarde.';
   }
 }

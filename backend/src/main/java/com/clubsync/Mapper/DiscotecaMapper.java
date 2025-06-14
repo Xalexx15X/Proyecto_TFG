@@ -53,14 +53,13 @@ public class DiscotecaMapper implements GenericMapper<Discoteca, DtoDiscoteca> {
         dto.setImagen(entity.getImagen());
         
         // Mapeo de relación con Ciudad (N:1)
-        // Extrae solo el ID de la ciudad para evitar datos geográficos redundantes
+        // Extrae solo el ID de la ciudad
         dto.setIdCiudad(entity.getCiudad() != null ? entity.getCiudad().getIdCiudad() : null);
         
         // Mapeo de relación con Usuario/Administrador (1:1)
-        // Extrae solo el ID del administrador para proteger datos sensibles
+        // Extrae solo el ID del administrador
         dto.setIdAdministrador(entity.getAdministrador() != null ? 
             entity.getAdministrador().getIdUsuario() : null);
-        
         return dto;
     }
 

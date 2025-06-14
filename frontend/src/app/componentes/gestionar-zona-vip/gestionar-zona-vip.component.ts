@@ -4,10 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { ZonaVipService, ZonaVip } from '../../service/zona-vip.service'; 
 import { AuthService } from '../../service/auth.service'; 
 
-/**
- * Componente para la gestión de zonas VIP de una discoteca
- * Permite a administradores de discoteca crear, editar, eliminar y listar sus zonas premium
- */
 @Component({
   selector: 'app-gestionar-zona-vip', 
   standalone: true, 
@@ -19,18 +15,18 @@ export class GestionarZonaVipComponent implements OnInit {
   // Propiedades para almacenar y gestionar datos de zonas VIP
   zonasVip: ZonaVip[] = []; // Lista completa de zonas VIP de la discoteca
   zonaVipSeleccionada: ZonaVip | null = null; // Zona VIP seleccionada para edición
-  modoEdicion = false; // Bandera para controlar si estamos editando o creando
-  mostrarFormulario = false; // Controla la visibilidad del formulario
+  modoEdicion = false; // Bandera para controlar si estoy editando o creando
+  mostrarFormulario = false; // Controlo la visibilidad del formulario
   terminoBusqueda = ''; // Término para filtrar zonas VIP
   idDiscoteca: number | null = null; // ID de la discoteca del administrador actual
 
-  // Modelo para nueva zona VIP (valores por defecto)
+  // Modelo para nueva zona VIP 
   nuevaZonaVip: ZonaVip = {
     nombre: '', // Nombre de la zona VIP
     descripcion: '', // Descripción detallada
     aforoMaximo: 0, // Capacidad máxima de personas
     estado: 'DISPONIBLE', // Estado inicial (disponible por defecto)
-    idDiscoteca: 0 // ID de la discoteca (se asigna automáticamente)
+    idDiscoteca: 0 // ID de la discoteca 
   };
 
   // Objeto para almacenar errores de validación por campo
@@ -42,14 +38,9 @@ export class GestionarZonaVipComponent implements OnInit {
     general: '' // Error general del formulario
   };
 
-  /**
-   * Constructor con inyección de dependencias
-   * @param zonaVipService Servicio para gestionar zonas VIP
-   * @param authService Servicio de autenticación para identificar la discoteca
-   */
   constructor(
-    private zonaVipService: ZonaVipService, // Inyecta el servicio de zonas VIP
-    private authService: AuthService // Inyecta el servicio de autenticación
+    private zonaVipService: ZonaVipService, 
+    private authService: AuthService 
   ) {}
 
   /**
@@ -57,145 +48,144 @@ export class GestionarZonaVipComponent implements OnInit {
    * Obtiene la discoteca del usuario autenticado y carga sus zonas VIP
    */
   ngOnInit(): void {
-    this.idDiscoteca = this.authService.getDiscotecaId(); // Obtiene ID de discoteca del usuario autenticado
-    this.cargarZonasVip(); // Carga las zonas VIP de esa discoteca
+    this.idDiscoteca = this.authService.getDiscotecaId(); // Obtengo ID de discoteca del usuario autenticado
+    this.cargarZonasVip(); // Cargo las zonas VIP de esa discoteca
   }
 
   /**
-   * Carga las zonas VIP de la discoteca desde el servidor
+   * Cargo las zonas VIP de la discoteca desde el servidor
    * Se ejecuta al iniciar el componente y cuando se necesita refrescar datos
    */
   private cargarZonasVip(): void {
-    // Verifica que exista una discoteca asociada al usuario
+    // Verifico que exista una discoteca asociada al usuario
     if (this.idDiscoteca) {
-      // Solicita las zonas VIP de la discoteca específica
+      // Solicito las zonas VIP de la discoteca específica
       this.zonaVipService.getZonasVipByDiscoteca(this.idDiscoteca).subscribe({
-        next: zonasVip => this.zonasVip = zonasVip, // Almacena las zonas recibidas
-        error: error => this.handleError(error) // Maneja cualquier error
+        next: zonasVip => this.zonasVip = zonasVip, // Almaceno las zonas recibidas
+        error: error => this.handleError(error) // Manejo cualquier error
       });
     }
   }
 
   /**
-   * Prepara el formulario para crear una nueva zona VIP se usa en el html
-   * Resetea el formulario y muestra la interfaz de creación
+   * Preparo el formulario para crear una nueva zona VIP, se usa en el html
+   * Reseteo el formulario y muestro la interfaz de creación
    */
   mostrarCrear(): void {
-    this.mostrarFormulario = true; // Muestra el formulario
-    this.modoEdicion = false; // No estamos en modo edición (creación)
-    this.limpiarFormulario(); // Limpia cualquier dato previo del formulario
+    this.mostrarFormulario = true; // Muestro el formulario
+    this.modoEdicion = false; // No estoy en modo edición 
+    this.limpiarFormulario(); // Limpio cualquier dato previo del formulario
   }
 
   /**
-   * Cierra el formulario y resetea todos los estados se usa en el html
-   * Se usa para cancelar operaciones o después de completarlas
+   * Cierro el formulario y reseteo todos los estados, se usa en el html
+   * lo uso para cancelar operaciones o después de completarlas
    */
   cerrarFormulario(): void {
-    this.mostrarFormulario = false; // Oculta el formulario
-    this.modoEdicion = false; // Desactiva modo edición
-    this.zonaVipSeleccionada = null; // Quita selección actual
-    this.limpiarFormulario(); // Limpia datos del formulario
+    this.mostrarFormulario = false; // Oculto el formulario
+    this.modoEdicion = false; // Desactivo modo edición
+    this.zonaVipSeleccionada = null; // Quito selección actual
+    this.limpiarFormulario(); // Limpio datos del formulario
   }
 
   /**
-   * Crea una nueva zona VIP con los datos del formulario se usa en el html
-   * Valida los datos y envía petición al servidor
+   * Creo una nueva zona VIP con los datos del formulario, se usa en el html
+   * Valido los datos y envío petición al servidor
    */
   crearZonaVip(): void {
     // Valida el formulario antes de enviar
-    if (!this.validarFormulario()) return;
-    // Verifica que exista ID de discoteca
+    if (!this.validarFormulario()) return; // Detiene el proceso si hay errores
+    // Verifico que exista ID de discoteca
     if (!this.idDiscoteca) return;
 
-    // Asigna el ID de la discoteca actual a la nueva zona VIP
+    // Asigno el ID de la discoteca actual a la nueva zona VIP
     this.nuevaZonaVip.idDiscoteca = this.idDiscoteca;
 
-    // Envía solicitud de creación al servidor
+    // Envío solicitud de creación al servidor
     this.zonaVipService.createZonaVip(this.nuevaZonaVip).subscribe({
       next: zonaVip => {
-        // Si la creación es exitosa, añade al principio de la lista
+        // Si la creación es exitosa, añado al principio de la lista
         this.zonasVip.unshift(zonaVip);
-        this.cerrarFormulario(); // Cierra el formulario
+        this.cerrarFormulario(); // Cierro el formulario
       },
-      error: error => this.handleError(error) // Maneja errores
+      error: error => this.handleError(error)
     });
   }
 
   /**
-   * Prepara el formulario para editar una zona VIP existente se usa en el html
+   * Preparo el formulario para editar una zona VIP existente, se usa en el html
    * @param zonaVip Zona VIP a editar
    */
   editarZonaVip(zonaVip: ZonaVip): void {
-    // Crea una copia del objeto para no modificar la lista original directamente
+    // Creo una copia del objeto para no modificar la lista original directamente
     this.zonaVipSeleccionada = {...zonaVip};
-    this.nuevaZonaVip = {...zonaVip}; // Copia datos al modelo del formulario
-    this.modoEdicion = true; // Activa modo edición
-    this.mostrarFormulario = true; // Muestra el formulario
+    this.nuevaZonaVip = {...zonaVip}; // Copio datos al modelo del formulario
+    this.modoEdicion = true; // Activo modo edición
+    this.mostrarFormulario = true; // Muestro el formulario
   }
 
   /**
-   * Actualiza una zona VIP existente con los nuevos datos se usa en el html
-   * Valida y envía la solicitud de actualización al servidor
+   * Actualizo una zona VIP existente con los nuevos datos, se usa en el html
+   * Valido y envío la solicitud de actualización al servidor
    */
   actualizarZonaVip(): void {
-    // Verifica que exista una zona VIP seleccionada con ID válido
+    // Verifico que exista una zona VIP seleccionada con ID válido
     if (!this.zonaVipSeleccionada?.idZonaVip) return;
-    // Valida el formulario antes de enviar
+    // Valido el formulario antes de enviar
     if (!this.validarFormulario()) return;
 
-    // Envía solicitud de actualización al servidor
+    // Envío solicitud de actualización al servidor
     this.zonaVipService.updateZonaVip(
       this.zonaVipSeleccionada.idZonaVip, // ID de la zona a actualizar
       this.nuevaZonaVip // Nuevos datos
     ).subscribe({
       next: zonaVipActualizada => {
-        // Busca la zona en la lista actual y la reemplaza
-        const index = this.zonasVip.findIndex(z => z.idZonaVip === zonaVipActualizada.idZonaVip); // Encuentra el índice de la zona actualizada
-        if (index !== -1) {
-          this.zonasVip[index] = zonaVipActualizada; // Actualiza en la lista
+        // Busco la zona en la lista actual y la reemplazo
+        const index = this.zonasVip.findIndex(z => z.idZonaVip === zonaVipActualizada.idZonaVip); // Encuentro el índice de la zona actualizada
+        if (index !== -1) { // Si se encuentra, actualizo la lista
+          this.zonasVip[index] = zonaVipActualizada; // Actualizo en la lista
         }
-        this.cerrarFormulario(); // Cierra el formulario
+        this.cerrarFormulario(); // Cierro el formulario
       },
-      error: error => this.handleError(error) // Maneja errores
+      error: error => this.handleError(error)
     });
   }
 
   /**
-   * Elimina una zona VIP del sistema se usa en el html
-   * Solicita confirmación antes de proceder
+   * Elimino una zona VIP del sistema, se usa en el html
    * @param id ID de la zona VIP a eliminar
    */
   eliminarZonaVip(id: number): void {
-    // Solicita confirmación al usuario antes de eliminar
+    // Solicito confirmación al usuario antes de eliminar
     if (confirm('¿Seguro que desea eliminar esta zona VIP?')) {
-      // Envía solicitud de eliminación al servidor
+      // Envío solicitud de eliminación al servidor
       this.zonaVipService.deleteZonaVip(id).subscribe({
         next: () => {
-          // Elimina la zona VIP de la lista local (filtrado)
+          // Elimino la zona VIP de la lista local
           this.zonasVip = this.zonasVip.filter(z => z.idZonaVip !== id);
         },
-        error: error => this.handleError(error) // Maneja errores
+        error: error => this.handleError(error)
       });
     }
   }
 
   /**
-   * Filtra las zonas VIP según el término de búsqueda se usa en el html
+   * Filtro las zonas VIP según el término de búsqueda, se usa en el html
    * @param event Evento del input de búsqueda
    */
   buscar(event: any): void {
-    // Obtiene el término de búsqueda y lo convierte a minúsculas
+    // Obtengo el término de búsqueda y lo convierto a minúsculas
     const termino = event.target.value.toLowerCase();
     
-    // Si no hay término, recarga todas las zonas
+    // Si no hay término, recargo todas las zonas
     if (!termino) {
       this.cargarZonasVip();
       return;
     }
     
-    // Solo filtra si el término tiene al menos 3 caracteres
+    // Solo filtro si el término tiene al menos 3 caracteres
     if (termino.length >= 3) {
-      // Filtra las zonas que contienen el término en nombre o descripción
+      // Filtro las zonas que contienen el término en nombre o descripción
       this.zonasVip = this.zonasVip.filter(zona => 
         zona.nombre.toLowerCase().includes(termino) ||
         zona.descripcion.toLowerCase().includes(termino)
@@ -204,8 +194,8 @@ export class GestionarZonaVipComponent implements OnInit {
   }
 
   /**
-   * Reinicia el formulario a sus valores predeterminados
-   * Mantiene el ID de discoteca actual
+   * Reinicio el formulario a sus valores predeterminados
+   * Mantengo el ID de discoteca actual
    */
   private limpiarFormulario(): void {
     this.nuevaZonaVip = {
@@ -218,12 +208,12 @@ export class GestionarZonaVipComponent implements OnInit {
   }
 
   /**
-   * Valida todos los campos del formulario
+   * Valido todos los campos del formulario
    * @returns booleano indicando si el formulario es válido
    */
   private validarFormulario(): boolean {
-    this.limpiarErrores(); // Limpia errores previos
-    let isValid = true; // Asume que el formulario es válido inicialmente
+    this.limpiarErrores(); // Limpio errores previos
+    let isValid = true; // Asumo que el formulario es válido inicialmente
 
     // Valida que el nombre no esté vacío
     if (!this.nuevaZonaVip.nombre) {
@@ -248,11 +238,11 @@ export class GestionarZonaVipComponent implements OnInit {
       this.nuevaZonaVip.estado = 'DISPONIBLE';
     }
 
-    return isValid; // Retorna resultado de validación
+    return isValid; // Retorno resultado de validación
   }
 
   /**
-   * Reinicia todos los mensajes de error
+   * Reinicio todos los mensajes de error
    */
   private limpiarErrores(): void {
     this.formErrors = {
@@ -265,7 +255,7 @@ export class GestionarZonaVipComponent implements OnInit {
   }
 
   /**
-   * Maneja errores de las peticiones al servidor
+   * Manejo errores de las peticiones al servidor
    * @param error Error recibido de la API
    */
   private handleError(error: any): void {

@@ -1,6 +1,7 @@
 package com.clubsync.Entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,10 +13,6 @@ import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-/**
- * Entidad que representa a los usuarios del sistema
- * Implementa UserDetails para integración con Spring Security
- */
 @Entity
 @Table(name = "usuario")
 @Data
@@ -27,23 +24,31 @@ public class Usuario implements org.springframework.security.core.userdetails.Us
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idUsuario;
     
+    @NotBlank(message = "El nombre es obligatorio")
+    @Size(min = 2, max = 70, message = "El nombre debe tener entre 2 y 70 caracteres")
     @Column(nullable = false, length = 70)
     private String nombre;
     
-    @Column(nullable = false, length = 80)
+    @NotBlank(message = "El email es obligatorio")
+    @Column(nullable = false, length = 80, unique = true)
     private String email;
     
+    @NotBlank(message = "La contraseña es obligatoria")
+    @Size(min = 6, max = 255, message = "La contraseña debe tener al menos 6 caracteres")
     @Column(nullable = false, length = 255)
     private String password;
     
+    @NotBlank(message = "El rol es obligatorio")
     @Column(nullable = false, length = 20)
     private String role;
     
+    @PositiveOrZero(message = "El saldo del monedero debe ser un valor positivo o cero")
     @Column
-    private Double monedero;
+    private Double monedero = 0.0;
     
+    @PositiveOrZero(message = "Los puntos de recompensa deben ser un valor positivo o cero")
     @Column(name = "puntos_recompensa")
-    private Integer puntosRecompensa;
+    private Integer puntosRecompensa = 0;
     
     /**
      * Relación con Entrada: Un usuario puede tener múltiples entradas
@@ -78,7 +83,7 @@ public class Usuario implements org.springframework.security.core.userdetails.Us
      * Relación bidireccional con la entidad Recompensa
      */
     @ManyToMany(mappedBy = "usuarios", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private List<Recompensa> recompensas;
+    private List<Recompensa> recompensas = new ArrayList<>();
 
     /**
      * Relación con RecompensaTieneUsuario: Detalle del canje de recompensas

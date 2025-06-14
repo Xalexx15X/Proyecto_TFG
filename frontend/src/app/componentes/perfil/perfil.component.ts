@@ -46,68 +46,66 @@ export class PerfilComponent implements OnInit {
    * Carga los datos del usuario
    */
   cargarDatosUsuario(): void { 
-    this.error = ''; // Limpiamos mensajes de error
+    this.error = ''; // Limpio error anterior
     
-    const userId = this.authService.getUserId(); // Obtenemos el ID del usuario autenticado
-    if (!userId) { // Si no hay usuario autenticado, mostramos un error
+    const userId = this.authService.getUserId(); // Obtengo el ID del usuario autenticado
+    if (!userId) { // Si no hay usuario autenticado, muestro un error
       this.error = 'No se ha encontrado usuario autenticado'; 
-      return; // Salimos del método si no hay usuario autenticado
+      return; // Salgo del método si no hay usuario autenticado
     }
 
-    this.usuarioService.getUsuario(userId).subscribe({ // Suscribimos al observable para obtener los datos del usuario
-      next: (usuario) => { // Si la petición es exitosa, actualizamos los datos del usuario
-        this.usuario = usuario; // Actualizamos el usuario con los datos obtenidos
-        this.authService.updateUserData(usuario); // Actualizamos los datos del usuario en localStorage
+    this.usuarioService.getUsuario(userId).subscribe({ 
+      next: (usuario) => { // Si la petición es exitosa, actualizo los datos del usuario
+        this.usuario = usuario; 
+        this.authService.updateUserData(usuario); // Actualizo los datos del usuario en localStorage
       },
       error: (err) => { 
-        console.error('Error al cargar usuario:', err);
         this.error = 'No se pudieron cargar los datos del usuario';
       }
     });
   }
 
   /**
-   * Guarda los cambios del perfil, incluyendo la contraseña si se proporciona se usa en el html
+   * Guardo los cambios del perfil, incluyendo la contraseña si se proporciona, se usa en el html
    */
-  guardarCambios(): void { // Método para guardar los cambios del perfil
-    this.error = ''; // Limpiamos mensajes de error
-    this.exito = ''; // Limpiamos mensajes de éxito y error
+  guardarCambios(): void { 
+    this.error = ''; // Limpio mensajes de error
+    this.exito = ''; // Limpio mensajes de éxito
 
     this.usuarioService.updateInfoBasica(
       this.usuario.idUsuario, // ID del usuario a actualizar
-      this.usuario.nombre, // Pasamos el nombre
-      this.usuario.email, // Pasamos el email
-      this.nuevaPassword // Pasamos la contraseña (será undefined si está vacía)
+      this.usuario.nombre, // Paso el nombre
+      this.usuario.email, // Paso el email
+      this.nuevaPassword // Paso la contraseña (será undefined si está vacía)
     ).subscribe({
       next: (usuarioActualizado) => { // Si la actualización es exitosa
-        this.usuario = usuarioActualizado; // Actualizamos el usuario
-        this.authService.updateUserData(usuarioActualizado); // Actualizamos el usuario en localStorage
+        this.usuario = usuarioActualizado; // Actualizo el usuario
+        this.authService.updateUserData(usuarioActualizado); // Actualizo el usuario en localStorage
         this.exito = 'Datos actualizados correctamente'; // Mensaje de éxito
-        this.editando = false; // Desactivamos el modo de edición
-        this.nuevaPassword = ''; // Limpiar la contraseña después de actualizar 
+        this.editando = false; // Desactivo el modo de edición
+        this.nuevaPassword = ''; // LimpiO la contraseña después de actualizar 
       },
       error: (err) => {
-        console.error('Error al actualizar usuario:', err); 
         this.error = 'Error al guardar los cambios';
       }
     });
   }
 
   /**
-   * Gestiona el modo de edición se usa en el html
+   * Gestiono el modo de edición, se usa en el html
    */
-  toggleEdicion(activar: boolean): void { // Método para activar o desactivar el modo de edición
-    this.editando = activar; // Activamos o desactivamos el modo de edición
-    if (!activar) { // Si se desactiva el modo de edición...
-      this.cargarDatosUsuario(); // recargamos los datos del usuario
-      this.nuevaPassword = ''; // Limpiar la contraseña al cancelar 
+  toggleEdicion(activar: boolean): void {
+    this.editando = activar; // ActivO o desactivO el modo de edición
+    if (!activar) { // Si se desactiva el modo de edición
+      this.cargarDatosUsuario(); // recargo los datos del usuario
+      this.nuevaPassword = ''; // Limpio la contraseña al cancelar
     }
-    this.error = ''; 
-    this.exito = ''; 
+    this.error = ''; // Limpio mensajes de error 
+    this.exito = ''; // Limpio mensajes de éxito
   } 
 
   /**
-   * Convierte el código de rol a un nombre legible se usa en el html
+   * Convierto el código de rol a un nombre legible, se usa en el html
    */
   getNombreRol(): string { 
     const roles = {  // Mapeo de roles a nombres legibles
@@ -115,11 +113,11 @@ export class PerfilComponent implements OnInit {
       'ROLE_ADMIN_DISCOTECA': 'Administrador de Discoteca',
       'ROLE_ADMIN': 'Administrador del Sistema'
     };
-    return roles[this.usuario.role as keyof typeof roles] || 'Usuario';  // Retorna 'Usuario' si el rol no está definido
+    return roles[this.usuario.role as keyof typeof roles] || 'Usuario';  // Retorno 'Usuario' si el rol no está definido
   }
 
   /**
-   * Obtiene la clase CSS para el badge de rol se usa en el html
+   * Obtengo la clase CSS para el badge de rol se, usa en el html
    */
   getClaseRol(): string { 
     const clases = { // Mapeo de roles a clases CSS
@@ -127,6 +125,6 @@ export class PerfilComponent implements OnInit {
       'ROLE_ADMIN_DISCOTECA': 'bg-success', 
       'ROLE_ADMIN': 'bg-danger' 
     };
-    return clases[this.usuario.role as keyof typeof clases] || 'bg-secondary'; // Retorna 'bg-secondary' si el rol no está definido
+    return clases[this.usuario.role as keyof typeof clases] || 'bg-secondary'; // Retorno 'bg-secondary' si el rol no está definido
   }
 }

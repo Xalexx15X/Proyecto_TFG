@@ -97,7 +97,7 @@ export class CarritoComponent implements OnInit {
   }
 
   /**
-   * Formateo una fecha para mostrarla de forma legible
+   * Formateo una fecha para mostrarla de forma legible se usa en el html
    * Lo uso en el HTML para mostrar fechas de eventos
    */
   formatDate(dateString: string): string {
@@ -122,6 +122,7 @@ export class CarritoComponent implements OnInit {
   /**
    * Incremento la cantidad de un item en el carrito
    * Lo llamo desde los botones "+" en la interfaz
+   * @param index Índice del item a incrementar en el array
    */
   incrementarCantidad(index: number): void {
     // Obtengo el item específico usando su índice en el array
@@ -130,7 +131,6 @@ export class CarritoComponent implements OnInit {
     this.carritoService.actualizarCantidad(item.id, item.cantidad + 1).subscribe({
       // Si hay error, lo muestro en la consola y en la interfaz
       error: (err) => {
-        console.error('Error al incrementar cantidad:', err);
         this.error = 'No se pudo actualizar la cantidad. Intente de nuevo.';
       }
     });
@@ -139,6 +139,7 @@ export class CarritoComponent implements OnInit {
   /**
    * Decremento la cantidad de un item en el carrito
    * Lo llamo desde los botones "-" en la interfaz
+   * @param index Índice del item a decrementar en el array
    */
   decrementarCantidad(index: number): void {
     // Obtengo el item específico usando su índice en el array
@@ -149,7 +150,6 @@ export class CarritoComponent implements OnInit {
       this.carritoService.actualizarCantidad(item.id, item.cantidad - 1).subscribe({
         // Si hay error, lo muestro en la consola y en la interfaz
         error: (err) => {
-          console.error('Error al decrementar cantidad:', err);
           this.error = 'No se pudo actualizar la cantidad. Intente de nuevo.';
         }
       });
@@ -159,6 +159,7 @@ export class CarritoComponent implements OnInit {
   /**
    * Elimino un item completo del carrito
    * Lo llamo desde los botones de eliminar en la interfaz
+   * @param index Índice del item a eliminar en el array
    */
   eliminarItem(index: number): void {
     // Pido confirmación al usuario para prevenir eliminaciones accidentales
@@ -185,9 +186,8 @@ export class CarritoComponent implements OnInit {
     if (confirm('¿Estás seguro de que deseas vaciar todo el carrito?')) {
       // Llamo al servicio para vaciar el carrito
       this.carritoService.vaciarCarrito().subscribe({
-        // Si hay error, lo muestro en la consola y en la interfaz
+        // Si hay error, lo muestro en la interfaz
         error: (err) => {
-          console.error('Error al vaciar carrito:', err);
           this.error = 'No se pudo vaciar el carrito. Intente de nuevo.';
         }
       });
@@ -206,6 +206,8 @@ export class CarritoComponent implements OnInit {
   /**
    * Calculo el precio total de las botellas seleccionadas para una reserva VIP
    * Lo uso en el HTML y en otros métodos para calcular precios totales
+   * @param botellas Array de botellas seleccionadas
+   * @returns El total de todas las botellas (precio * cantidad)
    */
   calcularTotalBotellas(botellas: any[]): number {
     // Si no hay botellas, devuelvo 0
@@ -266,7 +268,7 @@ export class CarritoComponent implements OnInit {
           } else {
             // Verifico si el evento ya pasó (considerando duración de 7 horas)
             const fechaEvento = new Date(evento.fechaHora);
-            fechaEvento.setHours(fechaEvento.getHours() + 7);
+            fechaEvento.setHours(fechaEvento.getHours() + 7); // 
             if (new Date() > fechaEvento) {
               // Si ya pasó, lo agrego a la lista de inválidos
               eventosInvalidos.push({id: idEvento, nombre: evento.nombre});
@@ -296,6 +298,7 @@ export class CarritoComponent implements OnInit {
   /**
    * Proceso el resultado de la verificación de eventos
    * Continúo con el pago o muestro error según corresponda
+   * @param eventosInvalidos Lista de eventos que no están disponibles
    */
   procesarVerificacion(eventosInvalidos: {id: number, nombre: string}[]): void {
     // Si hay eventos inválidos, muestro un mensaje de error
@@ -348,7 +351,6 @@ export class CarritoComponent implements OnInit {
       },
       error: (error) => {
         // Si hay error, lo muestro
-        console.error('Error al actualizar saldo:', error);
         this.error = 'Error al actualizar tu saldo. Por favor, inténtalo de nuevo.';
       }
     });
@@ -357,6 +359,7 @@ export class CarritoComponent implements OnInit {
   /**
    * Actualizo los puntos de recompensa del usuario
    * Este es el segundo paso en la secuencia de finalización
+   * @
    */
   actualizarPuntos(idUsuario: number, items: ItemCarrito[]): void {
     // Calculo los nuevos puntos sumando los ganados
@@ -376,7 +379,6 @@ export class CarritoComponent implements OnInit {
       error: (error) => {
         // Si hay error, revierto la transacción (devuelvo el saldo)
         this.revertirTransaccion(idUsuario);
-        console.error('Error al actualizar puntos:', error);
         this.error = 'Error al actualizar tus puntos. Se ha revertido el cargo.';
       }
     });
@@ -385,6 +387,8 @@ export class CarritoComponent implements OnInit {
   /**
    * Finalizo el pedido en el sistema
    * Este es el tercer paso en la secuencia de finalización
+   * @param idUsuario ID del usuario que está comprando
+   * @param items Lista de items del carrito que se están comprando
    */
   finalizarPedido(idUsuario: number, items: ItemCarrito[]): void {
     // Llamo al servicio para marcar el pedido como completado
@@ -396,7 +400,6 @@ export class CarritoComponent implements OnInit {
       error: (error) => {
         // Si hay error, revierto la transacción
         this.revertirTransaccion(idUsuario);
-        console.error('Error al finalizar pedido:', error);
         this.error = 'Error al finalizar el pedido. Se ha revertido el cargo.';
       }
     });
@@ -458,6 +461,11 @@ export class CarritoComponent implements OnInit {
   /**
    * Creo una entrada individual
    * Puede ser una entrada normal o una reserva VIP
+   * @param item Item del carrito que contiene los datos de la entrada
+   * @param idUsuario ID del usuario que está comprando
+   * @param callback Función a llamar cuando se complete la creación
+   * @param callback.success Si la entrada se creó correctamente, contiene el objeto de la entrada
+   * @param callback.error Si hubo error, contiene un mensaje de error
    */
   crearEntrada(item: ItemCarrito, idUsuario: number, callback: (resultado: any) => void): void {
     // Preparo los datos para crear la entrada
@@ -486,7 +494,6 @@ export class CarritoComponent implements OnInit {
       },
       error: (error) => {
         // Si hay error, lo registro y notifico
-        console.error('Error al crear entrada:', error);
         callback({ error: true, mensaje: 'Error al crear entrada' });
       }
     });
@@ -495,6 +502,11 @@ export class CarritoComponent implements OnInit {
   /**
    * Creo una reserva VIP asociada a una entrada
    * Solo se llama para items de tipo RESERVA_VIP
+   * @param item Item del carrito que contiene los datos de la reserva
+   * @param entradaCreada Objeto de la entrada que se creó anteriormente
+   * @param callback Función a llamar cuando se complete la creación
+   * @param callback.success Si la reserva se creó correctamente, contiene el objeto de la reserva
+   * @param callback.error Si hubo error, contiene un mensaje de error
    */
   crearReservaVIP(item: ItemCarrito, entradaCreada: any, callback: (resultado: any) => void): void {
     // Preparo los datos para crear la reserva
@@ -526,14 +538,12 @@ export class CarritoComponent implements OnInit {
           }, 
           // Callback de error
           (error) => {
-            console.error('Error al crear detalles de botellas:', error);
             callback({ error: true, mensaje: 'Error al crear detalles de botellas' });
           }
         );
       },
       error: (error) => {
         // Si hay error, lo registro y notifico
-        console.error('Error al crear reserva:', error);
         callback({ error: true, mensaje: 'Error al crear reserva' });
       }
     });
@@ -542,13 +552,14 @@ export class CarritoComponent implements OnInit {
   /**
    * Creo los detalles de botellas para una reserva VIP
    * Cada botella seleccionada genera un detalle
+   * @param botellas Array de botellas seleccionadas
+   * @param idReservaBotella ID de la reserva VIP
+   * @param onExito Callback para ejecutar cuando se completa la creación
+   * @param onError Callback para ejecutar cuando hay error
+   * @param onExito.success Si todo salió bien, se llama sin parámetros
+   * @param onError.error Si hubo error, contiene un mensaje de error
    */
-  crearDetallesBotellas(
-    botellas: any[], 
-    idReservaBotella: number, 
-    onExito: () => void, 
-    onError: (error: any) => void
-  ): void {
+  crearDetallesBotellas(botellas: any[], idReservaBotella: number, onExito: () => void, onError: (error: any) => void): void {
     // Inicializo contadores para seguir el progreso
     let completadas = 0;
     let errores = 0;
@@ -558,7 +569,6 @@ export class CarritoComponent implements OnInit {
       onExito();
       return;
     }
-    
     // Para cada botella, creo un detalle
     botellas.forEach(botella => {
       // Preparo los datos del detalle
@@ -568,7 +578,6 @@ export class CarritoComponent implements OnInit {
         idBotella: botella.idBotella,
         idReservaBotella: idReservaBotella
       };
-      
       // Llamo al servicio para crear el detalle
       this.detalleReservaBotellaService.createDetalleReservaBotella(detalle).subscribe({
         next: () => {
@@ -608,7 +617,6 @@ export class CarritoComponent implements OnInit {
   mostrarExito(): void {
     // Muestro mensaje con los puntos ganados
     this.exito = `¡Compra realizada con éxito! Has ganado ${this.puntosGanados} puntos de recompensa.`;
-    
     // Después de 2 segundos, redirijo a la página de entradas
     setTimeout(() => {
       this.router.navigate(['/perfil/entradas']);
@@ -618,6 +626,7 @@ export class CarritoComponent implements OnInit {
   /**
    * Revierto una transacción fallida
    * Devuelve el saldo y puntos a sus valores originales
+   * @param idUsuario ID del usuario al que se le revertirá la transacción
    */
   revertirTransaccion(idUsuario: number): void {
     // Devuelvo el saldo original

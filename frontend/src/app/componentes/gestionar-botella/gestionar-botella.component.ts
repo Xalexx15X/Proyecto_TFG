@@ -4,22 +4,18 @@ import { FormsModule } from '@angular/forms';
 import { BotellaService, Botella } from '../../service/botella.service'; 
 import { AuthService } from '../../service/auth.service';
 
-/**
- * Componente para la gestión de botellas en una discoteca
- * Permite a administradores de discoteca crear, editar, eliminar y listar su catálogo de bebidas
- */
 @Component({
-  selector: 'app-gestionar-botella', // Selector CSS para usar este componente
-  standalone: true, // Indica que es un componente independiente
-  imports: [CommonModule, FormsModule], // Módulos necesarios importados
-  templateUrl: './gestionar-botella.component.html', // Ruta al archivo HTML asociado
-  styleUrls: ['./gestionar-botella.component.css'] // Ruta al archivo CSS asociado
+  selector: 'app-gestionar-botella', 
+  standalone: true, 
+  imports: [CommonModule, FormsModule], 
+  templateUrl: './gestionar-botella.component.html',
+  styleUrls: ['./gestionar-botella.component.css']
 })
 export class GestionarBotellaComponent implements OnInit {
   // Propiedades para almacenar y gestionar datos
   botellas: Botella[] = []; // Lista completa de botellas de la discoteca
   botellaSeleccionada: Botella | null = null; // Botella seleccionada para edición
-  modoEdicion = false; // Bandera para controlar si estamos editando o creando
+  modoEdicion = false; // Bandera para controlar si estoy editando o creando
   mostrarFormulario = false; // Controla la visibilidad del formulario
   terminoBusqueda = ''; // Término para filtrar botellas
   idDiscoteca: number | null = null; // ID de la discoteca del administrador actual
@@ -27,13 +23,13 @@ export class GestionarBotellaComponent implements OnInit {
 
   // Modelo para nueva botella (valores por defecto)
   nuevaBotella: Botella = {
-    nombre: '', // Nombre de la botella/bebida
-    tipo: '', // Tipo de bebida (licor, champán, vodka, etc.)
-    tamano: '', // Tamaño de la botella (750ml, 1L, etc.)
+    nombre: '', // Nombre de la botella
+    tipo: '', // Tipo de bebida 
+    tamano: '', // Tamaño de la botella (750ml, 1L)
     precio: 0, // Precio base de la botella
-    disponibilidad: 'DISPONIBLE', // Estado inicial (DISPONIBLE por defecto)
+    disponibilidad: 'DISPONIBLE', // Estado inicial
     imagen: '', // Imagen de la botella en Base64
-    idDiscoteca: 0 // ID de la discoteca (se asigna automáticamente)
+    idDiscoteca: 0 // ID de la discoteca
   };
 
   // Objeto para almacenar errores de validación por campo
@@ -47,14 +43,9 @@ export class GestionarBotellaComponent implements OnInit {
     general: '' // Error general del formulario
   };
 
-  /**
-   * Constructor con inyección de dependencias
-   * @param botellaService Servicio para gestionar botellas
-   * @param authService Servicio de autenticación para identificar la discoteca
-   */
   constructor(
-    private botellaService: BotellaService, // Inyecta el servicio de botellas
-    private authService: AuthService // Inyecta el servicio de autenticación
+    private botellaService: BotellaService, 
+    private authService: AuthService
   ) {}
 
   /**
@@ -80,7 +71,7 @@ export class GestionarBotellaComponent implements OnInit {
   }
 
   /**
-   * Prepara el formulario para crear una nueva botella
+   * Preparo el formulario para crear una nueva botella
    * Resetea el formulario y muestra la interfaz de creación se usa en el html
    */
   mostrarCrear(): void {
@@ -106,7 +97,7 @@ export class GestionarBotellaComponent implements OnInit {
    */
   crearBotella(): void {
     if (!this.validarFormulario()) return; // Detiene el proceso si hay errores
-    if (!this.idDiscoteca) return; // Verifica que exista ID de discoteca
+    if (!this.idDiscoteca) return; // Verifico que exista ID de discoteca
 
     // Asigna el ID de discoteca a la botella
     this.nuevaBotella.idDiscoteca = this.idDiscoteca;
@@ -118,7 +109,7 @@ export class GestionarBotellaComponent implements OnInit {
         this.botellas.unshift(botella);
         this.cerrarFormulario(); // Cierra el formulario
       },
-      error: error => this.handleError(error) // Maneja errores
+      error: error => this.handleError(error)
     });
   }
 
@@ -133,7 +124,7 @@ export class GestionarBotellaComponent implements OnInit {
     this.modoEdicion = true; // Activa modo edición
     this.mostrarFormulario = true; // Muestra el formulario
     
-    // Si hay imagen, establecer también la vista previa
+    // Si hay imagen, establezco también la vista previa
     if (botella.imagen) {
       this.imagenPreview = botella.imagen;
     }
@@ -144,25 +135,25 @@ export class GestionarBotellaComponent implements OnInit {
    * Valida y envía la solicitud de actualización al servidor se usa en el html
    */
   actualizarBotella(): void {
-    // Verifica que exista una botella seleccionada con ID válido
+    // Verifico que exista una botella seleccionada con ID válido
     if (!this.botellaSeleccionada?.idBotella) return;
-    // Valida el formulario antes de enviar
+    // Valido el formulario antes de enviar
     if (!this.validarFormulario()) return;
 
-    // Envía solicitud de actualización al servidor
+    // Envío solicitud de actualización al servidor
     this.botellaService.updateBotella(
       this.botellaSeleccionada.idBotella, // ID de la botella a actualizar
       this.nuevaBotella // Nuevos datos
     ).subscribe({
       next: botellaActualizada => {
-        // Busca la botella en la lista actual y la reemplaza
+        // Busco la botella en la lista actual y la reemplazo
         const index = this.botellas.findIndex(b => b.idBotella === botellaActualizada.idBotella);
-        if (index !== -1) {
+        if (index !== -1) {// Si la botella existe en la lista
           this.botellas[index] = botellaActualizada; // Actualiza en la lista
         }
         this.cerrarFormulario(); // Cierra el formulario
       },
-      error: error => this.handleError(error) // Maneja errores
+      error: error => this.handleError(error) 
     });
   }
 
@@ -172,15 +163,15 @@ export class GestionarBotellaComponent implements OnInit {
    * @param id ID de la botella a eliminar
    */
   eliminarBotella(id: number): void {
-    // Solicita confirmación al usuario antes de eliminar
+    // Solicito confirmación al usuario antes de eliminar
     if (confirm('¿Seguro que desea eliminar esta botella?')) {
-      // Envía solicitud de eliminación al servidor
+      // Envío solicitud de eliminación al servidor
       this.botellaService.deleteBotella(id).subscribe({
         next: () => {
-          // Elimina la botella de la lista local (filtrado)
+          // Elimino la botella de la lista local (filtrado)
           this.botellas = this.botellas.filter(b => b.idBotella !== id);
         },
-        error: error => this.handleError(error) // Maneja errores
+        error: error => this.handleError(error) 
       });
     }
   }
@@ -228,9 +219,9 @@ export class GestionarBotellaComponent implements OnInit {
       return;
     }
     
-    // Solo filtra si el término tiene al menos 3 caracteres
+    // Solo filtro si el término tiene al menos 3 caracteres
     if (termino.length >= 3) {
-      // Filtra las botellas que contienen el término en nombre o tipo
+      // Filtro las botellas que contienen el término en nombre o tipo
       this.botellas = this.botellas.filter(botella => 
         botella.nombre.toLowerCase().includes(termino) ||
         botella.tipo.toLowerCase().includes(termino)
@@ -248,11 +239,11 @@ export class GestionarBotellaComponent implements OnInit {
       tipo: '',
       tamano: '',
       precio: 0,
-      disponibilidad: 'DISPONIBLE', // Valor predeterminado para facilitar la creación
+      disponibilidad: 'DISPONIBLE', // Valor predeterminado 
       imagen: '',
       idDiscoteca: this.idDiscoteca || 0
     };
-    this.imagenPreview = ''; // Limpia también la vista previa
+    this.imagenPreview = ''; // Limpio también la vista previa
   }
 
   /**
@@ -260,8 +251,8 @@ export class GestionarBotellaComponent implements OnInit {
    * @returns booleano indicando si el formulario es válido
    */
   private validarFormulario(): boolean {
-    this.limpiarErrores(); // Limpia errores previos
-    let isValid = true; // Asume que el formulario es válido inicialmente
+    this.limpiarErrores();
+    let isValid = true; // Asumo que el formulario es válido inicialmente
 
     // Validación del nombre
     if (!this.nuevaBotella.nombre) {
@@ -299,7 +290,7 @@ export class GestionarBotellaComponent implements OnInit {
       isValid = false;
     }
 
-    return isValid; // Retorna resultado de validación
+    return isValid; // Retorno resultado de validación
   }
 
   /**
@@ -318,11 +309,10 @@ export class GestionarBotellaComponent implements OnInit {
   }
 
   /**
-   * Maneja errores de las peticiones al servidor
+   * Manejo errores de las peticiones al servidor
    * @param error Error recibido de la API
    */
   private handleError(error: any): void {
-    console.error('Error:', error); // Log para depuración
     this.formErrors.general = 'Ha ocurrido un error. Por favor, inténtelo de nuevo.';
   }
 }

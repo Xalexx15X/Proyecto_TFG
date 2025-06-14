@@ -54,11 +54,8 @@ public interface PedidoRepository extends JpaRepository<Pedido, Integer> {
      * 5. Ordena los resultados por número de mes para visualización cronológica
      * 
      * Campos devueltos en el Map:
-     * - mes: Nombre del mes (en el idioma configurado en la BD, normalmente inglés)
+     * - mes: Nombre del mes 
      * - total: Suma de ingresos totales de ese mes
-     * 
-     * Es utilizada principalmente para la visualización de tendencias de ventas mensuales
-     * y para generar gráficos de evolución de ingresos a lo largo del tiempo.
      * 
      * @return Lista de mapas con los ingresos agrupados por mes
      */
@@ -72,15 +69,10 @@ public interface PedidoRepository extends JpaRepository<Pedido, Integer> {
     List<Map<String, Object>> getEstadisticasIngresos();
 
     /**
-     * Consulta nativa SQL que calcula el total de ingresos de toda la plataforma
-     * 
      * Esta consulta:
      * 1. Utiliza la función SUM() para sumar todos los precios totales de pedidos
      * 2. Filtra únicamente pedidos completados para contar solo ventas reales
      * 3. Devuelve un único valor numérico representando el ingreso total histórico
-     * 
-     * Es utilizada principalmente para estadísticas generales, KPIs financieros
-     * y para los dashboards administrativos que muestran el rendimiento global.
      * 
      * @return Monto total de ingresos de todos los pedidos completados
      */

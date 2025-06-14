@@ -27,18 +27,12 @@ export class EventosDiscotecaComponent implements OnInit {
   filtroActual: string = 'TODOS'; // Tipo de filtro actualmente aplicado
   error: string = ''; // Mensaje de error para mostrar al usuario
 
-  /**
-   * Constructor con inyección de dependencias
-   * @param route Servicio para acceder a parámetros de ruta
-   * @param eventosService Servicio para obtener datos de eventos
-   * @param discotecaService Servicio para obtener datos de discotecas
-   * @param djService Servicio para obtener datos de DJs
-   */
+
   constructor(
-    private route: ActivatedRoute, // Para acceder al ID de discoteca en la URL
-    private eventosService: EventosService, // Para obtener eventos
-    private discotecaService: DiscotecaService, // Para obtener datos de la discoteca
-    private djService: DjService // Para obtener datos de los DJs
+    private route: ActivatedRoute, 
+    private eventosService: EventosService,
+    private discotecaService: DiscotecaService, 
+    private djService: DjService 
   ) {}
 
   /**
@@ -49,7 +43,7 @@ export class EventosDiscotecaComponent implements OnInit {
     // Suscripción a los parámetros de la ruta para obtener el ID
     this.route.params.subscribe(params => {
       this.idDiscoteca = +params['id']; // Convierte el parámetro a número
-      if (this.idDiscoteca) {
+      if (this.idDiscoteca) { // Si hay un ID válido
         this.cargarDiscoteca(); // Carga datos de la discoteca
         this.cargarEventos(); // Carga eventos de la discoteca
       } else {
@@ -68,7 +62,6 @@ export class EventosDiscotecaComponent implements OnInit {
         this.discoteca = data; // Almacena los datos de la discoteca
       },
       error: (error) => {
-        console.error('Error al cargar discoteca:', error); // Log para depuración
         this.error = 'No se pudo cargar la información de la discoteca.'; // Mensaje de error
       }
     });
@@ -76,7 +69,6 @@ export class EventosDiscotecaComponent implements OnInit {
 
   /**
    * Carga los eventos de la discoteca y sus DJs asociados
-   * Versión simplificada para mejor legibilidad y mantenimiento
    */
   cargarEventos(): void {
     // Paso 1: Cargar todos los eventos de la discoteca
@@ -88,7 +80,6 @@ export class EventosDiscotecaComponent implements OnInit {
         this.cargarDatosDeLosDjs(eventos);
       },
       error: (error) => {
-        console.error('Error al cargar eventos:', error);
         this.error = 'No se pudieron cargar los eventos. Intenta nuevamente más tarde.';
       }
     });
@@ -118,7 +109,7 @@ export class EventosDiscotecaComponent implements OnInit {
     
     // Paso 3: Cargar datos de todos los DJs con una sola operación combinada
     forkJoin(
-      idsDeLosDjs.map(id => this.djService.getDj(id)) //Creamos un array de Observables, uno por cada ID de DJ
+      idsDeLosDjs.map(id => this.djService.getDj(id)) //Creo un array de Observables, uno por cada ID de DJ
     ).subscribe({
       // 1. Toma un array de Observables (en este caso, cada getDj(id) devuelve un Observable)
       // 2. Ejecuta todos los Observables en paralelo
@@ -134,21 +125,20 @@ export class EventosDiscotecaComponent implements OnInit {
         // Este objeto funcionará como un diccionario: {1: dj1, 2: dj2, 3: dj3}
         
         // Paso 5: Llenar el diccionario
-        djs.forEach(dj => {
-          if (dj && dj.idDj !== undefined) {
+        djs.forEach(dj => {if (dj && dj.idDj !== undefined) {
             // Si el DJ existe y tiene un ID válido...
             djsPorId[dj.idDj] = dj;
-            // Lo guardamos en el diccionario usando su ID como clave
-            // Esto nos permitirá acceder directamente: djsPorId[5] nos da el DJ con ID 5
+            // Lo guardo en el diccionario usando su ID como clave
+            // Esto me permite acceder directamente: djsPorId[5] nos da el DJ con ID 5
           }
         });
         // Paso 6: Asignar cada DJ a su evento correspondiente
         this.eventos.forEach(evento => {
-          // Para cada evento en nuestra lista
+          // Para cada evento en la lista
           if (evento.idDj && djsPorId[evento.idDj]) {
-            // Si el evento tiene un DJ asignado y ese DJ existe en nuestro diccionario
+            // Si el evento tiene un DJ asignado y ese DJ existe en el diccionario
             evento.dj = djsPorId[evento.idDj];
-            // Añadimos el objeto DJ completo al evento
+            // Añado el objeto DJ completo al evento
             // Ahora cada evento tiene una propiedad .dj con todos los datos del DJ
           }
         });
@@ -159,7 +149,6 @@ export class EventosDiscotecaComponent implements OnInit {
       
       error: (error) => {        
         this.filtrarEventosIniciales();
-        // A pesar del error, aplicamos el filtro inicial con los datos que tengamos
       }
     });
   }
@@ -176,14 +165,10 @@ export class EventosDiscotecaComponent implements OnInit {
       this.eventosFiltrados = [...this.eventos]; // Copia todos los eventos
     } else if (tipo === 'CANCELADO') { 
       // Filtra solo los eventos cancelados
-      this.eventosFiltrados = this.eventos.filter(evento =>  // Verifica si el evento está cancelado
-        evento.estado === 'CANCELADO' // Solo muestra eventos con estado CANCELADO
-      );
+      this.eventosFiltrados = this.eventos.filter(evento => evento.estado === 'CANCELADO');
     } else { // Si es REGULAR o ESPECIAL
       // Filtra por tipo específico (REGULAR o ESPECIAL) y que no estén cancelados
-      this.eventosFiltrados = this.eventos.filter(evento => // Verifica el tipo de evento
-        evento.tipoEvento === tipo && evento.estado !== 'CANCELADO' // Solo muestra eventos del tipo seleccionado que no estén cancelados
-      );
+      this.eventosFiltrados = this.eventos.filter(evento => evento.tipoEvento === tipo && evento.estado !== 'CANCELADO');
     }
   }
 

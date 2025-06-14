@@ -83,7 +83,6 @@ public class BotellaMapper implements GenericMapper<Botella, DtoBotella> {
         
         // Resolución de la relación con Discoteca (N:1)
         // Se carga la entidad Discoteca completa desde la base de datos usando su ID
-        // Esto garantiza la integridad referencial al guardar la entidad Botella
         if (dto.getIdDiscoteca() != null) {
             entity.setDiscoteca(discotecaRepository.findById(dto.getIdDiscoteca()).orElse(null));
         }

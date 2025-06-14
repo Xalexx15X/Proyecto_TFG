@@ -4,27 +4,22 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../service/auth.service';
 
-// Decorador @Component que define las propiedades del componente
 @Component({
-  selector: 'app-register', // Selector CSS para usar este componente en HTML
-  standalone: true, // Indica que es un componente independiente (no requiere NgModule)
-  imports: [
-    CommonModule, // Importa directivas como ngIf, ngFor
-    FormsModule // Importa soporte para formularios basados en plantillas
-  ],
-  templateUrl: './register.component.html', // Ruta al archivo HTML asociado
-  styleUrls: ['./register.component.css'] // Ruta al archivo CSS asociado
+  selector: 'app-register', 
+  standalone: true, 
+  imports: [ CommonModule, FormsModule ],
+  templateUrl: './register.component.html', 
+  styleUrls: ['./register.component.css'] 
 })
 export class RegisterComponent {
-  // Modelo de datos para el formulario de registro
-  // Contiene todos los campos necesarios para crear un nuevo usuario
+  // objeto para almacenar los datos del formulario de registro
   registerData = {
     nombre: '', // Nombre completo del usuario
     email: '', // Correo electrónico (será el identificador único)
     password: '', // Contraseña para acceso
     role: 'ROLE_CLIENTE', // Rol predeterminado (cliente estándar)
-    monedero: 0, // Saldo inicial del monedero virtual (comienza en 0)
-    puntosRecompensa: 0 // Puntos de fidelización iniciales (comienza en 0)
+    monedero: 0, // Saldo inicial del monedero virtual 
+    puntosRecompensa: 0 // Puntos de fidelización iniciales 
   };
 
   // Variables para control de estado del formulario
@@ -39,40 +34,32 @@ export class RegisterComponent {
     general: '' // Error general del formulario
   };
 
-  /**
-   * Constructor con inyección de dependencias
-   * @param authService Servicio de autenticación para registrar usuarios
-   * @param router Servicio de enrutamiento para navegar entre páginas
-   */
   constructor(
-    private authService: AuthService, // Inyecta el servicio de autenticación
-    private router: Router // Inyecta el servicio de router para navegación
+    private authService: AuthService,
+    private router: Router 
   ) {}
 
   /**
    * Método que se ejecuta al enviar el formulario de registro
-   * Valida los datos y llama al servicio de autenticación para crear el usuario
+   * Valido los datos y llamo al servicio de autenticación para crear el usuario
    */
   onRegister(): void {
-    // Primero valida el formulario y si no es válido, detiene el proceso
+    // Primero valido el formulario y si no es válido, detengo el proceso
     if (!this.validarFormulario()) return;
 
-    // Llama al método register del servicio de autenticación enviando los datos del usuario
+    // Llamo al método register del servicio de autenticación enviando los datos del usuario
     this.authService.register(this.registerData).subscribe({
-      // Callback para respuesta exitosa
       next: (response) => {
-        // Marca como exitoso el registro
+        // Marco como exitoso el registro
         this.success = true;
-        
-        // Redirecciona al login después de 2 segundos (permite al usuario ver el mensaje de éxito)
+        // Redirecciono al login después de 2 segundos
         setTimeout(() => {
-          this.router.navigate(['/login']); // Navega a la página de login
-        }, 2000); // Espera 2000ms (2 segundos)
+          this.router.navigate(['/login']); // Navego a la página de login
+        }, 2000); // Espero (2 segundos)
       },
       
-      // Callback para manejo de errores
       error: (err) => {
-        // Maneja específicamente el error de email duplicado
+        // Manejo específico del error de email duplicado
         if (err.error === 'El email ya está registrado') {
           this.formErrors.email = 'Este email ya está registrado';
         } else {
@@ -84,14 +71,14 @@ export class RegisterComponent {
   }
 
   /**
-   * Valida todos los campos del formulario antes de enviarlo
+   * Valido todos los campos del formulario antes de enviarlo
    * @returns boolean - true si el formulario es válido, false si hay errores
    */
   validarFormulario(): boolean {
-    // Limpia errores anteriores antes de validar
+    // Limpio errores anteriores antes de validar
     this.limpiarErrores();
     
-    // Variable para controlar si el formulario es válido en general
+    // variable para controlar si el formulario es válido en general
     let isValid = true;
 
     // Valida el nombre (mínimo 3 caracteres)
@@ -100,24 +87,24 @@ export class RegisterComponent {
       isValid = false;
     }
 
-    // Valida el email (formato correcto usando expresión regular)
+    // Valida el email 
     if (!this.registerData.email || !this.validarEmail(this.registerData.email)) {
       this.formErrors.email = 'Introduce un email válido';
       isValid = false;
     }
 
-    // Valida la contraseña (mínimo 6 caracteres)
+    // Valida la contraseña 
     if (!this.registerData.password || this.registerData.password.length < 6) {
       this.formErrors.password = 'La contraseña debe tener al menos 6 caracteres';
       isValid = false;
     }
 
-    // Retorna el resultado de la validación
+    // Retorno el resultado de la validación
     return isValid;
   }
 
   /**
-   * Reinicia todos los mensajes de error del formulario
+   * Reinicio todos los mensajes de error del formulario
    * Se llama antes de cada validación para limpiar errores previos
    */
   limpiarErrores(): void {
@@ -130,14 +117,14 @@ export class RegisterComponent {
   }
 
   /**
-   * Valida que un email tenga el formato correcto usando expresión regular
+   * Valido que un email tenga el formato correcto usando expresión regular
    * @param email El email a validar
    * @returns boolean - true si el email es válido, false si no lo es
    */
   validarEmail(email: string): boolean {
     // Expresión regular para validar formato de email
     const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@(([^<>()[\]\.,;:\s@"]+\.[^<>()[\]\.,;:\s@"]{2,}))$/i;
-    // Prueba si el email coincide con el patrón (convertido a minúsculas)
+    // Prueba si el email coincide con el patrón 
     return re.test(String(email).toLowerCase());
   }
 }

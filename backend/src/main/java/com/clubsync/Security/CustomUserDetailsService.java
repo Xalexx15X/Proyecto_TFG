@@ -15,8 +15,7 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Servicio personalizado para la carga de usuarios durante el proceso de autenticación
- * Implementa la interfaz UserDetailsService de Spring Security para integrar
- * nuestro modelo de usuarios con el sistema de seguridad de Spring
+ * Implementa la interfaz UserDetailsService de Spring Security 
  */
 @Service // Registra esta clase como un bean de servicio en el contenedor de Spring
 @RequiredArgsConstructor // Genera automáticamente un constructor con los campos finales como parámetros
@@ -47,7 +46,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new org.springframework.security.core.userdetails.User(
             usuario.getEmail(),    // Username: Usamos el email como identificador único
             usuario.getPassword(), // Password: La contraseña cifrada almacenada en la base de datos
-            Collections.singletonList(new SimpleGrantedAuthority(usuario.getRole()))
+            Collections.singletonList(new SimpleGrantedAuthority(usuario.getRole())) // Authorities: Convertimos el rol del usuario en una lista de autoridades
         );
     }
 }

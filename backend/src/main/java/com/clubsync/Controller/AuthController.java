@@ -106,26 +106,26 @@ public class AuthController {
         @RequestBody AuthRequestDTO loginRequest
     ) {
         try {
-            Usuario usuario = usuarioService.findByEmail(loginRequest.getEmail())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            Usuario usuario = usuarioService.findByEmail(loginRequest.getEmail()) // Buscar usuario por email
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado")); // Lanzar error si no existe
 
-            Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                    loginRequest.getEmail(),
+            Authentication authentication = authenticationManager.authenticate( // Autenticar con email y contraseña
+                new UsernamePasswordAuthenticationToken( // Crear token de autenticación
+                    loginRequest.getEmail(), 
                     loginRequest.getPassword()
                 )
             );
 
-            String token = jwtTokenProvider.generateToken(authentication);
+            String token = jwtTokenProvider.generateToken(authentication); // Generar token JWT
             
             // Obtener el ID de la discoteca si es admin de discoteca
             Integer idDiscoteca = null;
-            if ("ROLE_ADMIN_DISCOTECA".equals(usuario.getRole()) && 
-                usuario.getDiscotecaAdministrada() != null) {
-                idDiscoteca = usuario.getDiscotecaAdministrada().getIdDiscoteca();
+            if ("ROLE_ADMIN_DISCOTECA".equals(usuario.getRole()) && // Si es admin de discoteca
+                usuario.getDiscotecaAdministrada() != null) { // Verificar que tiene discoteca asignada
+                idDiscoteca = usuario.getDiscotecaAdministrada().getIdDiscoteca(); // Obtener ID de la discoteca
             }
 
-            AuthResponseDTO authResponse = new AuthResponseDTO(
+            AuthResponseDTO authResponse = new AuthResponseDTO( // Crear respuesta con datos del usuario y token
                 token,
                 usuario.getEmail(),
                 usuario.getNombre(),
@@ -136,10 +136,10 @@ public class AuthController {
                 usuario.getIdUsuario()
             );
 
-            return ResponseEntity.ok(authResponse);
+            return ResponseEntity.ok(authResponse); // Retornar respuesta con token y datos del usuario
 
-        } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+        } catch (AuthenticationException e) { // Si no se puede autenticar
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED) // Retornar respuesta 401
                 .body(new AuthResponseDTO(null, null, null, null, null, null, null,null));
         }
     }

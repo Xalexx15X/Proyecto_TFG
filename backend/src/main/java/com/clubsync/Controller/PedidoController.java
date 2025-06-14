@@ -221,7 +221,7 @@ public class PedidoController {
     })
     @GetMapping("/estado/{estado}")
     public ResponseEntity<List<DtoPedido>> getPedidosByEstado(
-        @Parameter(description = "Estado del pedido (PENDIENTE, EN_PROCESO, COMPLETADO, CANCELADO)", required = true)
+        @Parameter(description = "Estado del pedido (EN_PROCESO, COMPLETADO)", required = true)
         @PathVariable String estado
     ) {
         List<Pedido> pedidos = pedidoService.findByEstado(estado);
@@ -332,11 +332,11 @@ public class PedidoController {
         @PathVariable Integer idDiscoteca
     ) {
         try {
-            // Utilizamos los métodos simplificados
+            // Obtenemos los datos de ingresos por mes y el total acumulado
             List<Map<String, Object>> datosIngresos = pedidoRepository.getEstadisticasIngresos();
             Double totalIngresos = pedidoRepository.getTotalIngresos();
             
-            // Construimos el resultado usando streams para mejorar la legibilidad
+            // Construyo el resultado usando streams para mejorar la legibilidad
             List<String> meses = datosIngresos.stream() // Extraemos los meses de los datos
                 .map(dato -> (String) dato.get("mes")) // Aseguramos que el mes sea un String
                 .collect(Collectors.toList()); // Convertimos a lista de meses
@@ -346,8 +346,8 @@ public class PedidoController {
                 .map(dato -> dato.get("total") != null ? ((Number) dato.get("total")).doubleValue() : 0.0)
                 .collect(Collectors.toList()); // Convertimos a lista de ingresos totales por mes
             
-            // Usamos Map.of para crear un mapa inmutable más limpio
-            return ResponseEntity.ok(Map.of(
+            // Uso Map.of para crear un mapa inmutable más limpio
+            return ResponseEntity.ok(Map.of( 
                 "meses", meses, // Lista de meses
                 "ingresos", ingresos, // Lista de ingresos totales por mes
                 "totalIngresos", totalIngresos != null ? totalIngresos : 0.0 // Suma total de ingresos

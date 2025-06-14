@@ -64,10 +64,6 @@ public class SecurityConfig {
                 .requestMatchers("/api/admin/discotecas/**").hasRole("ADMIN")
                 .requestMatchers("/api/admin/recompensas/**").hasRole("ADMIN")
                 
-                // ===== RUTAS PARA ADMIN_DISCOTECA =====
-                // Simplificamos usando un patrón general para reducir la duplicación
-                .requestMatchers("/api/admin-discoteca/**").hasRole("ADMIN_DISCOTECA")
-                
                 // ===== RUTAS PARA CLIENTES Y USUARIOS AUTENTICADOS =====
                 // Perfil de usuario (cualquier rol autenticado puede acceder)
                 .requestMatchers("/api/usuarios/perfil/**").authenticated()

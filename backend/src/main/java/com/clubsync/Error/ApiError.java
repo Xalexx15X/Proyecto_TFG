@@ -5,9 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * Clase para representar y estructurar los errores de la API de forma consistente
- * Proporciona un formato estandarizado para todas las respuestas de error
- * facilitando su procesamiento en el frontend
+ * Clase para representar y estructurar los errores de la API
  */
 @Data // Genera automáticamente getters, setters, equals, hashCode y toString
 public class ApiError {

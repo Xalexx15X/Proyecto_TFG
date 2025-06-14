@@ -12,7 +12,6 @@ public interface BotellaRepository extends JpaRepository<Botella, Integer> {
     
     /**
      * Recupera todas las botellas disponibles en una discoteca específica
-     * Método generado automáticamente por Spring Data basado en la convención de nombres
      * 
      * @param discotecaId El identificador único de la discoteca
      * @return Lista de botellas asociadas a la discoteca especificada

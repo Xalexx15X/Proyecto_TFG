@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
         // Crear respuesta de error
         ApiError apiError = new ApiError(
             HttpStatus.NOT_FOUND.value(), // 404
-            "Not Found",
+            "No se ha encontrado el recurso",
             ex.getMessage(),
             request.getDescription(false)
         );
@@ -115,7 +115,7 @@ public class GlobalExceptionHandler {
         ApiError apiError = new ApiError(
             HttpStatus.INTERNAL_SERVER_ERROR.value(), // 500
             "Error",
-            "Ha ocurrido un error inesperado",
+            "Ha ocurrido un error inesperado, o error en el servidor",
             request.getDescription(false)
         );
         

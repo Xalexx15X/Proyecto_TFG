@@ -153,7 +153,7 @@ public class PedidoServiceImpl implements PedidoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Pedido", "id", idPedido));
         // Solo actualizamos el estado sin tocar las líneas
         pedido.setEstado("COMPLETADO");
-        // Actualizamos la fecha si es necesario
+        // Actualizamos la fecha
         if (pedido.getFechaHora() == null) {
             pedido.setFechaHora(LocalDateTime.now());
         }

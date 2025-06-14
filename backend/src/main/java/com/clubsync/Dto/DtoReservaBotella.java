@@ -10,7 +10,7 @@ public class DtoReservaBotella {
     private Double precioTotal;
     private String tipoReserva;
     private Integer idEntrada;
-    private Integer idZonaVip; // Añadir este campo que falta
+    private Integer idZonaVip; 
     private List<Integer> idDetallesReservasBotella;
     private List<Integer> idRecompensas; 
 }
