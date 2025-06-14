@@ -106,26 +106,28 @@ clubsync/
 │   └── src/assets/           # Imágenes, iconos, etc.
 └── database/                 # Scripts SQL y modelo de datos
 
-🔐 Usuarios predeterminados
+##🔐 Usuarios predeterminados
 Para facilitar las pruebas, el sistema incluye varios usuarios predefinidos:
 
-Administrador general:
+### Administrador general:
 
 Email: admin@clubsync.com
 Contraseña: admin123
-Administrador de discoteca:
+
+### Administrador de discoteca:
 
 Email: adminclub@clubsync.com
 Contraseña: admin123
-Cliente:
+
+### Cliente:
 
 Email: cliente@clubsync.com
 Contraseña: cliente123
 
-📋 API REST
+##📋 API REST
 El backend expone una API REST completa. La documentación detallada está disponible a través de Swagger una vez que el servidor esté en ejecución:
 
-Los principales endpoints incluyen:
+### Los principales endpoints incluyen:
 
 /api/auth: Autenticación y registro
 /api/usuarios: Gestión de usuarios
@@ -135,15 +137,17 @@ Los principales endpoints incluyen:
 /api/entradas: Gestión de entradas
 /api/estadisticas: Endpoints para datos estadísticos
 
-✅ Testing
-Backend
+##✅ Testing
+### Backend
+```bash
   cd backend
   ./mvnw test
-Frontend
+### Frontend
+ ```bash
   cd frontend
   ng test
   
-🔄 Flujo de trabajo recomendado para desarrollo
+## 🔄 Flujo de trabajo recomendado para desarrollo
 1. Clonar el repositorio
 2. Crear una nueva rama para la funcionalidad a desarrollar
 3. Realizar cambios en el código
