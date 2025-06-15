@@ -42,10 +42,10 @@ import jakarta.validation.Valid;
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class AuthController {
-    private final AuthenticationManager authenticationManager;  // Gestiona el proceso de autenticación
-    private final JwtTokenProvider jwtTokenProvider;          // Genera y valida tokens JWT
-    private final UsuarioService usuarioService;              // Operaciones de usuario en BD
-    private final PasswordEncoder passwordEncoder;            // Encriptación de contraseñas
+    private final AuthenticationManager authenticationManager; 
+    private final JwtTokenProvider jwtTokenProvider;          
+    private final UsuarioService usuarioService;         
+    private final PasswordEncoder passwordEncoder;   
 
     /**
      * Endpoint para autenticar usuarios y generar tokens JWT

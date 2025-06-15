@@ -97,7 +97,7 @@ export class CarritoComponent implements OnInit {
   }
 
   /**
-   * Formateo una fecha para mostrarla de forma legible se usa en el html
+   * Formateo una fecha para mostrarla de forma legible, se usa en el html
    * Lo uso en el HTML para mostrar fechas de eventos
    */
   formatDate(dateString: string): string {
@@ -193,7 +193,7 @@ export class CarritoComponent implements OnInit {
       });
     }
   }
-
+  
   /**
    * Redirijo al usuario a la página de discotecas para seguir comprando
    * Lo llamo desde el botón "Continuar comprando" en la interfaz
@@ -215,10 +215,7 @@ export class CarritoComponent implements OnInit {
       return 0;
     }
     // Uso reduce para sumar el precio de cada botella multiplicado por su cantidad
-    return botellas.reduce(
-      (total, botella) => total + (botella.precio * botella.cantidad),
-      0 // Valor inicial del acumulador
-    );
+    return botellas.reduce((total, botella) => total + (botella.precio * botella.cantidad), 0 ); // Valor inicial del acumulador
   }
 
   /**
@@ -231,18 +228,15 @@ export class CarritoComponent implements OnInit {
       this.error = 'Tu carrito está vacío';
       return; // Salgo del método si no hay items
     }
-    
     // Verifico que el saldo sea suficiente
     if (!this.saldoSuficiente) {
       this.error = 'No tienes suficiente saldo en tu monedero. Por favor, añade fondos.';
       return; // Salgo del método si no hay saldo suficiente
     }
-
     // Limpio mensajes previos
     this.error = '';
     this.exito = '';
-    
-    // Empiezo verificando que los eventos sigan disponibles
+    // Inicio el proceso de verificación de eventos
     this.verificarEventos();
   }
 
@@ -359,7 +353,8 @@ export class CarritoComponent implements OnInit {
   /**
    * Actualizo los puntos de recompensa del usuario
    * Este es el segundo paso en la secuencia de finalización
-   * @
+   * @param idUsuario ID del usuario que está comprando
+   * @param items Lista de items del carrito que se están comprando
    */
   actualizarPuntos(idUsuario: number, items: ItemCarrito[]): void {
     // Calculo los nuevos puntos sumando los ganados
@@ -407,40 +402,37 @@ export class CarritoComponent implements OnInit {
 
   /**
    * Creo las entradas y reservas para cada item
-   * Este es el cuarto paso en la secuencia de finalización
+   * Este es el último paso en la secuencia de finalización
+   * @param idUsuario ID del usuario que está comprando
+   * @param items Lista de items del carrito que se están comprando
    */
   crearEntradasYReservas(idUsuario: number, items: ItemCarrito[]): void {
-    // Inicializo contadores para seguir el progreso
-    let tareasCompletadas = 0;
-    let tareasConError = 0;
-    // Calculo el total de entradas a crear
-    let totalTareas = this.contarTareasTotales(items);
-    
-    // Si no hay tareas, muestro éxito directamente
-    if (totalTareas === 0) {
+    // Verifico si hay items para procesar
+    if (!items || items.length === 0) {
       this.mostrarExito();
       return;
     }
-    
-    // Para cada item y por cada unidad, creo una entrada
+    // Variables para controlar el proceso
+    let totalEntradas = 0;
+    let entradasCreadas = 0;
+    let errores = 0;
+    // Cuento el número total de entradas a crear
+    items.forEach(item => {
+      totalEntradas += item.cantidad;
+    });
+    // Por cada item, creo las entradas necesarias
     items.forEach(item => {
       for (let i = 0; i < item.cantidad; i++) {
-        // Llamo al método para crear la entrada
         this.crearEntrada(item, idUsuario, (resultado) => {
-          // Incremento el contador de tareas completadas
-          tareasCompletadas++;
-          // Si hubo error, incremento ese contador también
+          entradasCreadas++;
           if (resultado.error) {
-            tareasConError++;
+            errores++;
           }
-          
-          // Si ya completé todas las tareas, verifico el resultado final
-          if (tareasCompletadas === totalTareas) {
-            if (tareasConError > 0) {
-              // Si hubo errores, muestro mensaje
+          // Verifico si ya terminé todas las entradas
+          if (entradasCreadas === totalEntradas) {
+            if (errores > 0) {
               this.error = 'Hubo errores al procesar algunas entradas. Contacte a soporte.';
             } else {
-              // Si todo salió bien, muestro éxito
               this.mostrarExito();
             }
           }
@@ -450,25 +442,13 @@ export class CarritoComponent implements OnInit {
   }
 
   /**
-   * Cuento el número total de entradas a crear
-   * Es la suma de las cantidades de todos los items
-   */
-  contarTareasTotales(items: ItemCarrito[]): number {
-    // Uso reduce para sumar las cantidades de todos los items
-    return items.reduce((total, item) => total + item.cantidad, 0);
-  }
-
-  /**
    * Creo una entrada individual
-   * Puede ser una entrada normal o una reserva VIP
-   * @param item Item del carrito que contiene los datos de la entrada
-   * @param idUsuario ID del usuario que está comprando
-   * @param callback Función a llamar cuando se complete la creación
-   * @param callback.success Si la entrada se creó correctamente, contiene el objeto de la entrada
-   * @param callback.error Si hubo error, contiene un mensaje de error
+   * @param item Item del carrito
+   * @param idUsuario ID del usuario
+   * @param callback Función a llamar cuando se complete la operación
    */
-  crearEntrada(item: ItemCarrito, idUsuario: number, callback: (resultado: any) => void): void {
-    // Preparo los datos para crear la entrada
+  private crearEntrada(item: ItemCarrito, idUsuario: number, callback: (resultado: any) => void): void {
+    // Datos de la entrada
     const datosEntrada = {
       fechaReservada: item.fechaEvento,
       estado: 'ACTIVA',
@@ -480,134 +460,108 @@ export class CarritoComponent implements OnInit {
       idTramoHorario: item.idTramoHorario
     };
     
-    // Llamo al servicio para crear la entrada
+    // Creo la entrada
     this.entradaService.createEntrada(datosEntrada).subscribe({
       next: (entradaCreada) => {
         // Si es una entrada normal, termino aquí
-        if (item.tipo !== 'RESERVA_VIP' || !item.idZonaVip) {
-          callback({ success: true, entrada: entradaCreada });
-          return;
+        if (item.tipo !== 'ENTRADA' && item.idZonaVip) {
+          // Si es una reserva VIP, creo la reserva
+          this.crearReserva(item, entradaCreada, callback);
+        } else {
+          // Notifico que la entrada se creó correctamente
+          callback({ success: true });
         }
-        
-        // Si es una reserva VIP, continúo creando la reserva
-        this.crearReservaVIP(item, entradaCreada, callback);
       },
       error: (error) => {
-        // Si hay error, lo registro y notifico
-        callback({ error: true, mensaje: 'Error al crear entrada' });
+        console.error('Error al crear entrada:', error);
+        callback({ error: true });
       }
     });
   }
 
   /**
-   * Creo una reserva VIP asociada a una entrada
-   * Solo se llama para items de tipo RESERVA_VIP
-   * @param item Item del carrito que contiene los datos de la reserva
-   * @param entradaCreada Objeto de la entrada que se creó anteriormente
-   * @param callback Función a llamar cuando se complete la creación
-   * @param callback.success Si la reserva se creó correctamente, contiene el objeto de la reserva
-   * @param callback.error Si hubo error, contiene un mensaje de error
+   * Crea una reserva VIP
+   * @param item Item del carrito
+   * @param entradaCreada La entrada ya creada
+   * @param callback Función a llamar cuando se complete la operación
    */
-  crearReservaVIP(item: ItemCarrito, entradaCreada: any, callback: (resultado: any) => void): void {
-    // Preparo los datos para crear la reserva
+  private crearReserva(item: ItemCarrito, entradaCreada: any, callback: (resultado: any) => void): void {
+    // Datos de la reserva
     const datosReserva = {
-      aforo: item.aforoZona || 1, // Personas que ocuparán la reserva
+      aforo: item.aforoZona || 1, 
       precioTotal: item.precioUnitario * item.multiplicadorPrecio + 
-                 this.calcularTotalBotellas(item.botellas || []), // Precio total con botellas
+                 this.calcularTotalBotellas(item.botellas || []),
       tipoReserva: 'ZONA_VIP',
-      idEntrada: entradaCreada.idEntrada, // Entrada a la que se asocia
-      idZonaVip: item.idZonaVip // Zona VIP seleccionada
+      idEntrada: entradaCreada.idEntrada,
+      idZonaVip: item.idZonaVip
     };
-    
-    // Llamo al servicio para crear la reserva
+    // Creo la reserva
     this.reservaBotellaService.createReservaBotella(datosReserva).subscribe({
       next: (reservaCreada) => {
-        // Si no hay botellas o la reserva no se creó bien, termino aquí
+        // Si no hay botellas, termino aquí
         if (!item.botellas || item.botellas.length === 0 || !reservaCreada.idReservaBotella) {
-          callback({ success: true, entrada: entradaCreada, reserva: reservaCreada });
+          callback({ success: true });
           return;
         }
-        
-        // Si hay botellas, creo los detalles de botellas
-        this.crearDetallesBotellas(
-          item.botellas, 
-          reservaCreada.idReservaBotella, 
-          // Callback de éxito
-          () => {
-            callback({ success: true, entrada: entradaCreada, reserva: reservaCreada });
-          }, 
-          // Callback de error
-          (error) => {
-            callback({ error: true, mensaje: 'Error al crear detalles de botellas' });
-          }
-        );
+        // Si hay botellas, creo los detalles
+        this.crearBotellas(item.botellas, reservaCreada.idReservaBotella, callback);
       },
       error: (error) => {
-        // Si hay error, lo registro y notifico
-        callback({ error: true, mensaje: 'Error al crear reserva' });
+        console.error('Error al crear reserva:', error);
+        callback({ error: true });
       }
     });
   }
 
   /**
-   * Creo los detalles de botellas para una reserva VIP
-   * Cada botella seleccionada genera un detalle
+   * Creo los detalles de botellas para una reserva
    * @param botellas Array de botellas seleccionadas
-   * @param idReservaBotella ID de la reserva VIP
-   * @param onExito Callback para ejecutar cuando se completa la creación
-   * @param onError Callback para ejecutar cuando hay error
-   * @param onExito.success Si todo salió bien, se llama sin parámetros
-   * @param onError.error Si hubo error, contiene un mensaje de error
+   * @param idReservaBotella ID de la reserva
+   * @param callback Función a llamar cuando se complete la operación
    */
-  crearDetallesBotellas(botellas: any[], idReservaBotella: number, onExito: () => void, onError: (error: any) => void): void {
-    // Inicializo contadores para seguir el progreso
-    let completadas = 0;
-    let errores = 0;
-    
-    // Si no hay botellas, llamo al callback de éxito y termino
+  private crearBotellas(botellas: any[], idReservaBotella: number, callback: (resultado: any) => void): void {
+    // Si no hay botellas, termino aquí
     if (!botellas || botellas.length === 0) {
-      onExito();
+      callback({ success: true });
       return;
     }
-    // Para cada botella, creo un detalle
+    // Variables para controlar el proceso
+    let totalBotellas = botellas.length;
+    let botellasCreadas = 0;
+    let errores = 0;
+    // Creo cada detalle de botella
     botellas.forEach(botella => {
-      // Preparo los datos del detalle
       const detalle = {
         cantidad: botella.cantidad,
         precioUnidad: botella.precio,
         idBotella: botella.idBotella,
         idReservaBotella: idReservaBotella
       };
-      // Llamo al servicio para crear el detalle
+      // Llamo al servicio para crear el detalle de botella
       this.detalleReservaBotellaService.createDetalleReservaBotella(detalle).subscribe({
-        next: () => {
-          // Incremento el contador de completadas
-          completadas++;
-          // Verifico si ya terminé todas
-          verificarFinalizacion();
+        next: () => { 
+          botellasCreadas++; // Incremento el contador de creaciones
+          verificarFinalizacion(); // Verifico si ya terminé todas las creaciones
         },
-        error: (error) => {
-          // Incremento ambos contadores
-          completadas++;
-          errores++;
-          // Verifico si ya terminé todas
-          verificarFinalizacion();
+        error: (error) => { // Si hay error
+          console.error('Error al crear detalle de botella:', error);
+          botellasCreadas++; // Incremento el contador de creaciones
+          errores++; // Incremento el contador de errores
+          verificarFinalizacion(); // Verifico si ya terminé todas las creaciones
         }
       });
     });
-    
-    // Función interna para verificar si ya terminé todas las botellas
-    function verificarFinalizacion() {
-      if (completadas === botellas.length) {
-        if (errores === 0) {
-          // Si no hubo errores, llamo al callback de éxito
-          onExito();
-        } else {
-          // Si hubo errores, llamo al callback de error
-          onError({ mensaje: 'Hubo errores al crear algunos detalles de botellas' });
+
+    // Función para verificar si ya no quedan botellas por crear
+    const verificarFinalizacion = () => {
+      if (botellasCreadas === totalBotellas) {
+        if (errores > 0) { // Si hay errores
+          callback({ error: true }); // Notifico error
+        } else { // Si no hay errores
+          callback({ success: true }); // Notifico éxito
         }
       }
-    }
+    };
   }
 
   /**

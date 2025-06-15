@@ -14,7 +14,7 @@ export interface ItemCarrito {
   tipo: 'ENTRADA' | 'RESERVA_VIP'; // Tipo de item (entrada normal o reserva VIP)
   idEvento: number; // ID del evento asociado
   nombre: string; // Nombre del evento
-  imagen: string; // URL de la imagen del evento
+  imagen: string; // imagen del evento
   cantidad: number; // Cantidad de unidades del mismo item
   precioUnitario: number; // Precio base por unidad
   multiplicadorPrecio: number; // Factor que multiplica el precio (ej: 1.5 para VIP)
@@ -60,7 +60,7 @@ export class CarritoService {
   ) { }
 
   /**
-   * Cargo los items del carrito desde la base de datos
+   * Cargo los items del carrito desde la base de datos, se usa en el navbar
    * Se llama al inicializar la aplicación o tras iniciar sesión
    */
   cargarCarrito(): void {
@@ -93,7 +93,6 @@ export class CarritoService {
         }
       },
       error: (error) => {
-        // Si hay error, lo registro y limpio el carrito
         console.error('Error al cargar pedidos:', error);
         this.limpiarCarrito();
       }
@@ -160,7 +159,7 @@ export class CarritoService {
   }
 
   /**
-   * Agrego un nuevo item al carrito
+   * Agrego un nuevo item al carrito, lo uso en comprar entrada
    * Si ya existe un item similar, aumento su cantidad
    * @param item Item a agregar
    * @returns Observable con la respuesta del servidor
@@ -177,7 +176,7 @@ export class CarritoService {
     // Hago una copia del array actual de items
     const items = [...this.itemsSubject.value];
     // Busco si ya existe un item similar
-    const itemExistente = this.buscarItemSimilar(items, item);
+    const itemExistente = this.buscarItemSimilar(items, item); 
     
     // Si existe un item similar, aumento su cantidad
     if (itemExistente) {
@@ -545,8 +544,7 @@ export class CarritoService {
     this.pedidoService.deletePedido(pedidoId).subscribe({
       error: (err) => console.error('Error al eliminar pedido:', err)
     });
-    
-     
+
     return of({ success: true });
   }
 
@@ -606,22 +604,20 @@ export class CarritoService {
     return items.reduce((total, item) => {
       // Calculo el subtotal del item base (precio * multiplicador * cantidad)
       let itemTotal = item.precioUnitario * item.multiplicadorPrecio * item.cantidad;
-      
       // Si tiene botellas, añado su costo
       if (item.botellas && item.botellas.length > 0) { // Verifico si hay botellas
         // Sumo el precio de cada botella multiplicado por su cantidad
         itemTotal += item.botellas.reduce((sum, botella) => 
           sum + (botella.precio * botella.cantidad), 0); // Valor inicial del acumulador es 0
       }
-      
       // Añado el total de este item al acumulador
       return total + itemTotal;
     }, 0); // Valor inicial del acumulador es 0
   }
 
   /**
-   * Obtengo la cantidad total de items en el carrito
-   * Sumo las cantidades de todos los items
+   * Obtengo la cantidad total de items en el carrito, lo uso en el navbar
+   * Recorro el array de items y sumo las cantidades
    */
   obtenerCantidadItems(): number {
     // Uso reduce para sumar las cantidades

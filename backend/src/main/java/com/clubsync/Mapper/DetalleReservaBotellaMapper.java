@@ -78,8 +78,7 @@ public class DetalleReservaBotellaMapper implements GenericMapper<DetalleReserva
         // Resolución de la relación con ReservaBotella (N:1)
         // Carga la entidad completa desde la base de datos usando su ID
         if (dto.getIdReservaBotella() != null) {
-            entity.setReservaBotella(
-                    reservaBotellaRepository.findById(dto.getIdReservaBotella()).orElse(null));
+            entity.setReservaBotella(reservaBotellaRepository.findById(dto.getIdReservaBotella()).orElse(null));
         }
         
         // Resolución de la relación con Botella (N:1)

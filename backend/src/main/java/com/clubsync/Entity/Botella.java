@@ -40,7 +40,6 @@ public class Botella {
     private Double precio;
     
     @NotBlank(message = "La disponibilidad es obligatoria")
-    @Pattern(regexp = "DISPONIBLE|AGOTADO|DESCATALOGADO", message = "La disponibilidad debe ser: DISPONIBLE, AGOTADO o DESCATALOGADO")
     @Column(nullable = false, length = 80)
     private String disponibilidad;
     

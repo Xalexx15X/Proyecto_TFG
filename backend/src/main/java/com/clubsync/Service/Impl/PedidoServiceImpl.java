@@ -149,7 +149,7 @@ public class PedidoServiceImpl implements PedidoService {
     @Override
     @Transactional
     public Pedido completarPedido(Integer idPedido) {
-        Pedido pedido = findById(idPedido)
+        Pedido pedido = findById(idPedido) // Recuperamos el pedido por ID
                 .orElseThrow(() -> new ResourceNotFoundException("Pedido", "id", idPedido));
         // Solo actualizamos el estado sin tocar las líneas
         pedido.setEstado("COMPLETADO");
